@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -euo pipefail
+
+UPLOAD_ROOT="data/uploads"
+APPLY_CHANGES=false
+
+if [[ "${1:-}" == "--apply" ]]; then
+    APPLY_CHANGES=true
+fi
+
+if [[ ! -d "$UPLOAD_ROOT" ]]; then
+    echo "Upload directory not found: $UPLOAD_ROOT"
+    exit 0
+fi
+
+mapfile -t BATCH_DIRS < <(find "$UPLOAD_ROOT" -mindepth 3 -maxdepth 3 -type d | sort)
+
+if [[ "${#BATCH_DIRS[@]}" -eq 0 ]]; then
+    echo "No upload batch folders found under $UPLOAD_ROOT"
+    exit 0
+fi
+
+if [[ "$APPLY_CHANGES" == false ]]; then
+    echo "Dry run. The following upload batch folders would be deleted:"
+    printf '  %s\n' "${BATCH_DIRS[@]}"
+    echo
+    echo "Run with --apply to delete them."
+    exit 0
+fi
+
+echo "Deleting upload batch folders under $UPLOAD_ROOT"
+printf '  %s\n' "${BATCH_DIRS[@]}"
+
+for batch_dir in "${BATCH_DIRS[@]}"; do
+    rm -rf "$batch_dir"
+done
+
+find "$UPLOAD_ROOT" -depth -type d -empty -delete
+
+echo "Upload batch cleanup complete."

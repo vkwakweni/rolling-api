@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Script to run verification: ingest, import, and analyse
+
+set -e  # Exit on error
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Change to the script directory (project root)
+cd "$SCRIPT_DIR"
+
+# Run the verification command
+python3 -m app.verify_ingest_import_analyse "$@"

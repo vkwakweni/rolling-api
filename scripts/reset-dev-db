@@ -1,0 +1,32 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SQL_FILE="$REPO_ROOT/sql/00-clear-dev-data.sql"
+
+if [[ ! -f "$SQL_FILE" ]]; then
+    echo "Reset SQL file not found: $SQL_FILE" >&2
+    exit 1
+fi
+
+if [[ "${1:-}" != "--apply" ]]; then
+    cat <<EOF
+Dry run only. No database changes were made.
+
+This script will execute:
+  psql "\$DATABASE_URL" -f "$SQL_FILE"
+
+To apply the reset, run:
+  ./scripts/reset-dev-db --apply
+EOF
+    exit 0
+fi
+
+if [[ -z "${DATABASE_URL:-}" ]]; then
+    echo "DATABASE_URL is not set." >&2
+    exit 1
+fi
+
+echo "Applying development database reset using $SQL_FILE"
+psql "$DATABASE_URL" -f "$SQL_FILE"
