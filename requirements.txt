@@ -1,0 +1,10 @@
+fastapi
+fastapi[standard]
+uvicorn[standard]
+pydantic
+pyjwt
+pwdlib[argon2]
+sqlalchemy
+psycopg[binary]
+psycopg2-binary
+email-validator
