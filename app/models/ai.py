@@ -62,8 +62,9 @@ class GenerateAIReportResponse(BaseModel):
 class AIPrompt(BaseModel):
     system_prompt: str # high level standing instructions
     user_prompt: str # task specific content
-    tools: list[dict[str, Any]] = Field(default=list)
-    allowed_tool_names: list[str] = Field(default=list)
+    tools: list[dict[str, Any]] = Field(default_factory=list)
 
 class AIModelOutput(BaseModel):
-    ...
+    model_name: str
+    report_text: str
+    summary_text: Optional[str] = None

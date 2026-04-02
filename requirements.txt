@@ -8,3 +8,4 @@ sqlalchemy
 psycopg[binary]
 psycopg2-binary
 email-validator
+openai
