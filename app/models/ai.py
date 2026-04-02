@@ -13,24 +13,54 @@ class AIReportInput(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
-class AITracePayload(BaseModel):
-    report_text: str
-    summary_text: Optional[str] = None
-    model_name: Optional[str] = None
-    traditional_report_excerpt: Optional[str] = None
-    comparison: dict[str, Any] = Field(default_factory=dict)
+class AgentTraceMetadata(BaseModel):
+    status: Optional[str] = None
+    operation: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class AgentTraceCreate(BaseModel):
+    analysis_run_id: UUID
+    step_name: str
+    tool_name: str
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentTraceResponse(BaseModel):
     agent_trace_id: UUID
     analysis_run_id: UUID
     step_name: str
-    tool_name: Optional[str] = None
-    trace_payload: AITracePayload
+    tool_name: str
+    metadata: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
 
 
-class AIReportGenerationResponse(BaseModel):
-    agent_trace: AgentTraceResponse
+class AIAnalysisReportCreate(BaseModel):
+    analysis_run_id: UUID
+    agent_trace_id: UUID
+    model_name: str
     report_text: str
     summary_text: Optional[str] = None
+    comparison_notes: Optional[str] = None
+
+
+class AIAnalysisReportResponse(BaseModel):
+    ai_analysis_report_id: UUID
+    analysis_run_id: UUID
+    agent_trace_id: UUID
+    model_name: str
+    report_text: str
+    summary_text: Optional[str] = None
+    comparison_notes: Optional[str] = None
+    created_at: datetime
+
+
+class GenerateAIReportResponse(BaseModel):
+    agent_trace: AgentTraceResponse
+    ai_report: AIAnalysisReportResponse
+
+class AIPrompt(BaseModel):
+    ...
+
+class AIModelOutput(BaseModel):
+    ...
