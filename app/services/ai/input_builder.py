@@ -12,25 +12,38 @@ class AIInputBuilder:
                            "hormone_dysmenorrhea_performance_statistics"}
     
     def build_allowed_ai_input(self,
-                               analysis_result: AnalysisResultResponse,
+                               analysis_results: list[AnalysisResultResponse],
                                analysis_report: AnalysisReportResponse,
                                ) -> AIReportInput:
         """
         Main boundary builder.
         This is for policy enforcement.
         """
-        result_payload = analysis_result.result_payload
+        combined_summaries = []
+        combined_tables = []
 
-        summary = result_payload.get("summary", {})
-        tables = result_payload.get("tables", [])
-        approved_tables = self.extract_approved_tables(tables)
+        for analysis_result in analysis_results:
+            result_payload = analysis_result.result_payload
 
-        metadata = {"analysis_run_id": str(analysis_result.analysis_run_id),
-                    "result_type": analysis_result.result_type,
-                    "table_names": [table["name"] for table in approved_tables]}
-        
-        return AIReportInput(summary=summary,
-                             tables=approved_tables,
+            summary = result_payload.get("summary", {})
+            tables = result_payload.get("tables", [])
+            approved_tables = self.extract_approved_tables(tables=tables,
+                                                           analysis_result=analysis_result)
+            
+            combined_summaries.append({"analysis_result_id": str(analysis_result.analysis_result_id),
+                                       "analysis_run_id": str(analysis_result.analysis_run_id),
+                                       "result_type": analysis_result.result_type,
+                                       "summary": summary})
+            
+            combined_tables = [*combined_tables, *approved_tables]
+            
+        metadata = {"analysis_run_id": str(analysis_report.analysis_run_id),
+                    "source_result_ids": [str(result.analysis_result_id) for result in analysis_results],
+                    "result_types": [result.result_type for result in analysis_results],
+                    "table_names": [table["name"] for table in combined_tables]}
+    
+        return AIReportInput(summary={"results": combined_summaries},
+                             tables=combined_tables,
                              report_text=analysis_report.report_text,
                              summary_text=analysis_report.summary_text,
                              metadata=metadata)
@@ -38,7 +51,8 @@ class AIInputBuilder:
 
     # HELPERS
     def extract_approved_tables(self,
-                                tables: list[dict[str, Any]]
+                                tables: list[dict[str, Any]],
+                                analysis_result: AnalysisResultResponse
                                 ) -> list[dict[str, Any]]:
         approved_tables = []
         for table in tables:
@@ -49,6 +63,8 @@ class AIInputBuilder:
                 continue
 
             approved_tables.append({"name": table_name,
-                                    "rows": table_rows})
+                                    "rows": table_rows,
+                                    "source_analysis_result_id": str(analysis_result.analysis_result_id),
+                                    "source_result_type": analysis_result.result_type})
             
         return approved_tables
