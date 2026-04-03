@@ -55,14 +55,20 @@ class AIAnalysisReportResponse(BaseModel):
     created_at: datetime
 
 
+class GenerateAIReportRequest(BaseModel):
+    model_name: str
+    
+
 class GenerateAIReportResponse(BaseModel):
     agent_trace: AgentTraceResponse
     ai_report: AIAnalysisReportResponse
+
 
 class AIPrompt(BaseModel):
     system_prompt: str # high level standing instructions
     user_prompt: str # task specific content
     tools: list[dict[str, Any]] = Field(default_factory=list)
+
 
 class AIModelOutput(BaseModel):
     model_name: str

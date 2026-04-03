@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.ai_client import create_openai_client
 from app.dependencies.auth import get_current_analyst_id
 from app.models.analyses import (AnalysisRunCreate,
                                  AnalysisRunResponse,
@@ -9,6 +10,7 @@ from app.models.analyses import (AnalysisRunCreate,
                                  AnalysisReportResponse,
                                  RunDescriptiveHormoneAnalysisRequest,
                                  RunDescriptiveAnalysisResponse)
+from app.models.ai import GenerateAIReportRequest, GenerateAIReportResponse
 from app.repositories.analyses import (create_analysis_run,
                                        analyst_can_access_analysis_run,
                                        analyst_can_access_analysis_result,
@@ -19,6 +21,8 @@ from app.repositories.analyses import (create_analysis_run,
                                        get_analysis_report_by_analysis_run)
 from app.repositories.projects import analyst_can_access_project
 from app.services.analysis_runner import run_descriptive_hormone_analysis
+from app.services.ai.orchestrator import AIReportOrchestrator
+from app.services.ai.provider import OpenAIProvider
 
 router = APIRouter(prefix="/analyses", tags=["analyses"])
 
@@ -134,3 +138,26 @@ def get_analysis_report_for_run_route(analysis_run_id: UUID,
                             detail="Analysis report not found")
     
     return AnalysisReportResponse(**row)
+
+@router.post("/runs/{analysis_run_id}/ai-report", response_model=GenerateAIReportResponse)
+def create_ai_analysis_report_route(analysis_run_id: UUID,
+                                    payload: GenerateAIReportRequest,
+                                    current_analyst_id: UUID = Depends(get_current_analyst_id),
+                                    ) -> GenerateAIReportResponse:
+    # TODO provider mapping?
+    openai_client = create_openai_client()
+    provider = OpenAIProvider(openai_client)
+
+    orchestrator = AIReportOrchestrator(payload.model_name, provider)
+
+    try:
+        response = orchestrator.generate_ai_report_for_analysis_run(analyst_id=current_analyst_id,
+                                                                    analysis_run_id=analysis_run_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="AI report could not be generated")
+    except PermissionError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Not allowed access to this analysis run")
+
+    return response

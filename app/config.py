@@ -21,15 +21,9 @@ class DatabaseSettings:
             f"postgresql://{self.db_user}:{self.db_pass}"
             f"@{self.db_host}:{self.db_port}/{self.db_name}"
         )
-    
-def _get_bool_env(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def get_settings() -> DatabaseSettings:
+def get_db_settings() -> DatabaseSettings:
     return DatabaseSettings(
         app_name=os.getenv("APP_NAME", "Rolling"),
         app_env=os.getenv("APP_ENV", "development"),
@@ -40,5 +34,23 @@ def get_settings() -> DatabaseSettings:
         db_pass=os.getenv("DB_PASS", ""),
     )
 
+    
+@dataclass(frozen=True)
+class OpenAIClientSettings:
+    api_key: str
 
-dbSettings = get_settings()
+
+@dataclass(frozen=True)
+class OllamaClientSettings:
+    ...
+    
+
+def get_ai_api_settings(model: str):
+    match model:
+        case "openai":
+            return OpenAIClientSettings(api_key=os.getenv("OPENAI_API_KEY", ""))
+        case "ollama":
+            return OllamaClientSettings()
+
+dbSettings = get_db_settings()
+OpenAISettings = get_ai_api_settings("openai")

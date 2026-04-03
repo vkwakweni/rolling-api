@@ -22,10 +22,10 @@ class AIReportOrchestrator:
         self.model_client = model_client.AIModelClient(model_name=model_name, provider=provider)
         self.validator = validator.AIReportValidator()
 
-    def generate_for_analysis_run(self,
-                                  analyst_id: UUID,
-                                  analysis_run_id: UUID,
-                                  ) -> GenerateAIReportResponse:
+    def generate_ai_report_for_analysis_run(self,
+                                            analyst_id: UUID,
+                                            analysis_run_id: UUID,
+                                            ) -> GenerateAIReportResponse:
         if not analyst_can_access_analysis_run(analyst_id=analyst_id, analysis_run_id=analysis_run_id):
             raise PermissionError("Analayst cannot access this analysis run")
         
