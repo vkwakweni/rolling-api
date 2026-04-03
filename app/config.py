@@ -42,7 +42,9 @@ class OpenAIClientSettings:
 
 @dataclass(frozen=True)
 class OllamaClientSettings:
-    ...
+    host: str
+    model_name: str
+    headers: dict
     
 
 def get_ai_api_settings(model: str):
@@ -51,6 +53,12 @@ def get_ai_api_settings(model: str):
             return OpenAIClientSettings(api_key=os.getenv("OPENAI_API_KEY", ""))
         case "ollama":
             return OllamaClientSettings()
+        
+def get_ollama_api_settings() -> OllamaClientSettings:
+    return OllamaClientSettings(host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+                                model_name=os.getenv("OLLAMA_MODEL_NAME", "codellama"),
+                                headers={"Authorization": "Bearer " + os.getenv("OLLAMA_API_KEY")})
 
 dbSettings = get_db_settings()
 OpenAISettings = get_ai_api_settings("openai")
+OllamaSettings = get_ollama_api_settings()

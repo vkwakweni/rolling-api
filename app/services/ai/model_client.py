@@ -16,7 +16,7 @@ class AIModelClient:
         return self._normalise_provider_response(provider_response)
 
     def _build_provider_request(self, prompt_payload: AIPrompt) -> dict:
-        return {"model": self.model_name,
+        return {"model_name": self.model_name,
                 "system_prompt": prompt_payload.system_prompt,
                 "user_prompt": prompt_payload.user_prompt,
                 "tools": prompt_payload.tools}

@@ -1,7 +1,7 @@
 from uuid import UUID
-from typing import Optional
 
 from app.models.ai import GenerateAIReportResponse
+from app.models.analyses import AnalysisReportResponse, AnalysisResultResponse
 from app.services.ai import (input_builder,
                              prompt_builder,
                              model_client,
@@ -33,9 +33,12 @@ class AIReportOrchestrator:
         if not analysis_results:
             raise ValueError("Empty result set")
         
+        analysis_results = [AnalysisResultResponse(**result) for result in analysis_results]
+        
         analysis_report = get_analysis_report_by_analysis_run(analysis_run_id)
         if not analysis_report:
             raise ValueError("Empty report")
+        analysis_report = AnalysisReportResponse(**analysis_report)
 
         ai_input = self.input_builder.build_allowed_ai_input(analysis_results=analysis_results,
                                                              analysis_report=analysis_report)
