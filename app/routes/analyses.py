@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.ai_client import create_openai_client
+from app.ai_client import create_ollama_client
 from app.dependencies.auth import get_current_analyst_id
 from app.models.analyses import (AnalysisRunCreate,
                                  AnalysisRunResponse,
@@ -22,7 +22,7 @@ from app.repositories.analyses import (create_analysis_run,
 from app.repositories.projects import analyst_can_access_project
 from app.services.analysis_runner import run_descriptive_hormone_analysis
 from app.services.ai.orchestrator import AIReportOrchestrator
-from app.services.ai.provider import OpenAIProvider
+from app.services.ai.provider import OllamaProvider
 
 router = APIRouter(prefix="/analyses", tags=["analyses"])
 
@@ -144,11 +144,12 @@ def create_ai_analysis_report_route(analysis_run_id: UUID,
                                     payload: GenerateAIReportRequest,
                                     current_analyst_id: UUID = Depends(get_current_analyst_id),
                                     ) -> GenerateAIReportResponse:
-    # TODO provider mapping?
-    openai_client = create_openai_client()
-    provider = OpenAIProvider(openai_client)
 
-    orchestrator = AIReportOrchestrator(payload.model_name, provider)
+    ollama_client = create_ollama_client()
+    provider = OllamaProvider(ollama_client)
+
+    orchestrator = AIReportOrchestrator(model_name=payload.model_name,
+                                        provider=provider)
 
     try:
         response = orchestrator.generate_ai_report_for_analysis_run(analyst_id=current_analyst_id,
