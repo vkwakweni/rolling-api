@@ -8,7 +8,7 @@ class AIModelClient:
         self.model_name = model_name
         self.provider = provider
 
-    def generate_report(self,
+    def generate_ai_analyis_report(self,
                         prompt_payload: AIPrompt
                         ) -> AIModelOutput:
         provider_request = self._build_provider_request(prompt_payload)

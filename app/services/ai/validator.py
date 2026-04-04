@@ -1,5 +1,3 @@
-from typing import Any
-
 from app.models.ai import AIModelOutput
 
 class AIReportValidator:

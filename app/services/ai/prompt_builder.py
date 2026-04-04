@@ -1,7 +1,7 @@
 from typing import Any
 import json
 
-from app.models.ai import AIReportInput, AIPrompt
+from app.models.ai import AIAnalysisReportInput, AIPrompt
 
 class AIReportPromptBuilder:
     SYSTEM_PROMPT = ("You are assisting with descriptive research reporting for a hormone "
@@ -15,7 +15,7 @@ class AIReportPromptBuilder:
     # TODO allow an analyst to submit their own prompts.
 
     def build_prompt(self,
-                     ai_input: AIReportInput
+                     ai_input: AIAnalysisReportInput
                      ) -> AIPrompt:
         summary_section = self._build_summary_section(ai_input)
         tables_section = self._build_tables_section(ai_input)
@@ -37,13 +37,13 @@ class AIReportPromptBuilder:
                         user_prompt=user_prompt)
 
     # HELPERS
-    def _build_summary_section(self, ai_input: AIReportInput) -> str:
+    def _build_summary_section(self, ai_input: AIAnalysisReportInput) -> str:
         summary_payload = ai_input.summary
         result_summaries = summary_payload.get("results", [])
         return ("Result summaries:\n"
                 f"{json.dumps(result_summaries, indent=2)}")
     
-    def _build_tables_section(self, ai_input: AIReportInput) -> str:
+    def _build_tables_section(self, ai_input: AIAnalysisReportInput) -> str:
         return ("Approved tables:\n"
                 f"{json.dumps(ai_input.tables, indent=2)}")
 

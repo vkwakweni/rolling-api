@@ -19,7 +19,7 @@ class AIProvider(ABC):
     
 
 class MockAIProvider(AIProvider):
-    def generate(self, request: dict[str, Any]) -> dict[str, Any]:
+    def generate(self) -> dict[str, Any]:
         return {"report_text": "This is a mock AI-generated report.",
                 "summary_text": "This is a mock AI-generated summary."}
     
@@ -46,7 +46,7 @@ class OpenAIProvider(AIProvider):
             raise ValueError("OpenAI response did not contain output text.")
         
         try:
-            parsed = json.loads(raw_text) # TODO investigate what else could end up here
+            parsed = json.loads(raw_text)
         except json.JSONDecodeError as e:
             raise ValueError("OpenAI response was not valid JSON") from e
         

@@ -11,7 +11,7 @@ from app.models.analyses import (AnalysisRunCreate,
                                  AnalysisReportResponse,
                                  RunDescriptiveHormoneAnalysisRequest,
                                  RunDescriptiveAnalysisResponse)
-from app.models.ai import GenerateAIReportRequest, GenerateAIReportResponse
+from app.models.ai import GenerateAIAnalysisReportRequest, GenerateAIAnalysisReportResponse
 from app.repositories.analyses import (create_analysis_run,
                                        analyst_can_access_analysis_run,
                                        analyst_can_access_analysis_result,
@@ -140,11 +140,11 @@ def get_analysis_report_for_run_route(analysis_run_id: UUID,
     
     return AnalysisReportResponse(**row)
 
-@router.post("/runs/{analysis_run_id}/ai-report", response_model=GenerateAIReportResponse)
+@router.post("/runs/{analysis_run_id}/ai-report", response_model=GenerateAIAnalysisReportResponse)
 def create_ai_analysis_report_route(analysis_run_id: UUID,
-                                    payload: GenerateAIReportRequest,
+                                    payload: GenerateAIAnalysisReportRequest,
                                     current_analyst_id: UUID = Depends(get_current_analyst_id),
-                                    ) -> GenerateAIReportResponse:
+                                    ) -> GenerateAIAnalysisReportResponse:
 
     ollama_client = create_ollama_client()
     provider = OllamaProvider(ollama_client)

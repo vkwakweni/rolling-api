@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from app.models.ai import GenerateAIReportResponse
+from app.models.ai import GenerateAIAnalysisReportResponse
 from app.models.analyses import AnalysisReportResponse, AnalysisResultResponse
 from app.services.ai import (input_builder,
                              prompt_builder,
@@ -9,8 +9,7 @@ from app.services.ai import (input_builder,
 from app.services.ai.provider import AIProvider
 from app.repositories.ai import (create_agent_trace,
                                  create_ai_analysis_report)
-from app.repositories.analyses import (get_analysis_run_by_id,
-                                       list_analysis_results_by_analysis_run,
+from app.repositories.analyses import (list_analysis_results_by_analysis_run,
                                        get_analysis_report_by_analysis_run,
                                        analyst_can_access_analysis_run)
 
@@ -25,7 +24,7 @@ class AIReportOrchestrator:
     def generate_ai_report_for_analysis_run(self,
                                             analyst_id: UUID,
                                             analysis_run_id: UUID,
-                                            ) -> GenerateAIReportResponse:
+                                            ) -> GenerateAIAnalysisReportResponse:
         if not analyst_can_access_analysis_run(analyst_id=analyst_id, analysis_run_id=analysis_run_id):
             raise PermissionError("Analayst cannot access this analysis run")
         
@@ -45,7 +44,7 @@ class AIReportOrchestrator:
 
         prompt = self.prompt_builder.build_prompt(ai_input=ai_input)
 
-        model_output = self.model_client.generate_report(prompt_payload=prompt)
+        model_output = self.model_client.generate_ai_analyis_report(prompt_payload=prompt)
 
         validated_output = self.validator.validate_generated_report(model_output)
 
@@ -56,7 +55,7 @@ class AIReportOrchestrator:
         trace_record = create_agent_trace(analyst_id=analyst_id,
                                           analysis_run_id=analysis_run_id,
                                           step_name="ai_report_generation",
-                                          tool_name=self.model_client.model_name,
+                                          model_name=self.model_client.model_name,
                                           metadata=metadata)
         
         report_record = create_ai_analysis_report(analyst_id=analyst_id,
@@ -67,5 +66,5 @@ class AIReportOrchestrator:
                                                   summary_text=validated_output.summary_text,
                                                   comparison_notes=None)
 
-        return GenerateAIReportResponse(agent_trace=trace_record,
+        return GenerateAIAnalysisReportResponse(agent_trace=trace_record,
                                         ai_report=report_record)

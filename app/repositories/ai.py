@@ -11,7 +11,7 @@ from app.repositories.analyses import get_analysis_run_by_id
 def create_agent_trace(analyst_id: UUID,
                        analysis_run_id: UUID,
                        step_name: str,
-                       tool_name: str,
+                       model_name: str,
                        metadata: dict[str, Any]
                        ) -> Optional[dict]:
     if get_analysis_run_by_id(analyst_id=analyst_id, analysis_run_id=analysis_run_id) is None:
@@ -21,17 +21,17 @@ def create_agent_trace(analyst_id: UUID,
             INSERT INTO app_private.agent_traces (
                 analysis_run_id,
                 step_name,
-                tool_name,
+                model_name,
                 metadata
                 )
             VALUES (%s, %s, %s, %s)
-            RETURNING agent_trace_id, analysis_run_id, step_name, tool_name,
+            RETURNING agent_trace_id, analysis_run_id, step_name, model_name,
                         metadata, created_at;
             """
     
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(query, (str(analysis_run_id), step_name, tool_name, Json(metadata)))
+            cur.execute(query, (str(analysis_run_id), step_name, model_name, Json(metadata)))
             row = cur.fetchone()
             return dict(row)
 
@@ -39,7 +39,7 @@ def get_agent_trace_by_id(analyst_id: UUID,
                           agent_trace_id: UUID
                           ) -> Optional[dict]:
     query = """
-            SELECT agent_trace_id, analysis_run_id, step_name, tool_name,
+            SELECT agent_trace_id, analysis_run_id, step_name, model_name,
                     metadata, created_at
             FROM app_private.agent_traces
             WHERE agent_trace_id = %s;
@@ -63,7 +63,7 @@ def list_agent_traces_by_analysis_run(analyst_id: UUID,
         return []
     
     query = """
-            SELECT agent_trace_id, analysis_run_id, step_name, tool_name,
+            SELECT agent_trace_id, analysis_run_id, step_name, model_name,
                     metadata, created_at
             FROM app_private.agent_traces
             WHERE analysis_run_id = %s;

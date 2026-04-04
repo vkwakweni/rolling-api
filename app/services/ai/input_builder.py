@@ -2,7 +2,7 @@
 from typing import Any
 
 from app.models.analyses import AnalysisResultResponse, AnalysisReportResponse
-from app.models.ai import AIReportInput
+from app.models.ai import AIAnalysisReportInput
 
 
 class AIInputBuilder:
@@ -14,11 +14,7 @@ class AIInputBuilder:
     def build_allowed_ai_input(self,
                                analysis_results: list[AnalysisResultResponse],
                                analysis_report: AnalysisReportResponse,
-                               ) -> AIReportInput:
-        """
-        Main boundary builder.
-        This is for policy enforcement.
-        """
+                               ) -> AIAnalysisReportInput:
         combined_summaries = []
         combined_tables = []
 
@@ -43,7 +39,7 @@ class AIInputBuilder:
                     "result_types": [result.result_type for result in analysis_results],
                     "table_names": [table["name"] for table in combined_tables]}
     
-        return AIReportInput(summary={"results": combined_summaries},
+        return AIAnalysisReportInput(summary={"results": combined_summaries},
                              tables=combined_tables,
                              report_text=analysis_report.report_text,
                              summary_text=analysis_report.summary_text,

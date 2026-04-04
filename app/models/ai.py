@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
-class AIReportInput(BaseModel):
+class AIAnalysisReportInput(BaseModel):
     summary: dict[str, Any] = Field(default_factory=dict)
     tables: list[dict[str, Any]] = Field(default_factory=list)
     report_text: Optional[str] = None
@@ -22,7 +22,7 @@ class AgentTraceMetadata(BaseModel):
 class AgentTraceCreate(BaseModel):
     analysis_run_id: UUID
     step_name: str
-    tool_name: str
+    model_name: str
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -30,7 +30,7 @@ class AgentTraceResponse(BaseModel):
     agent_trace_id: UUID
     analysis_run_id: UUID
     step_name: str
-    tool_name: str
+    model_name: str
     metadata: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
 
@@ -55,11 +55,11 @@ class AIAnalysisReportResponse(BaseModel):
     created_at: datetime
 
 
-class GenerateAIReportRequest(BaseModel):
+class GenerateAIAnalysisReportRequest(BaseModel):
     model_name: str
     
 
-class GenerateAIReportResponse(BaseModel):
+class GenerateAIAnalysisReportResponse(BaseModel):
     agent_trace: AgentTraceResponse
     ai_report: AIAnalysisReportResponse
 
