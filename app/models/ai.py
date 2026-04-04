@@ -64,6 +64,10 @@ class GenerateAIAnalysisReportResponse(BaseModel):
     ai_report: AIAnalysisReportResponse
 
 
+class AIAnalysisReportRequest(BaseModel):
+    ai_analysis_report_id: UUID
+
+
 class AIPrompt(BaseModel):
     system_prompt: str # high level standing instructions
     user_prompt: str # task specific content

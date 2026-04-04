@@ -5,6 +5,7 @@ from psycopg2.extras import Json
 
 from app.db import get_connection
 from app.repositories.analyses import get_analysis_run_by_id
+from app.repositories.analyses import analyst_can_access_analysis_run
 
 
 # AI AGENT TRACES
@@ -114,6 +115,12 @@ def create_ai_analysis_report(analyst_id: UUID,
 def get_ai_analysis_report_by_id(analyst_id: UUID,
                                  ai_analysis_report_id: UUID
                                  ) -> Optional[dict]:
+    run_query = """
+                SELECT analysis_run_id
+                FROM research.ai_analysis_reports aar
+                WHERE ai_analysis_report_id = %s;
+                """
+    
     query = """
             SELECT ai_analysis_report_id, analysis_run_id, agent_trace_id, model_name,
                     report_text, summary_text, comparison_notes, created_at
@@ -123,6 +130,13 @@ def get_ai_analysis_report_by_id(analyst_id: UUID,
     
     with get_connection() as conn:
         with conn.cursor() as cur:
+            cur.execute(run_query, (str(ai_analysis_report_id),))
+            row = cur.fetchone()
+            if row is not None:
+                if not analyst_can_access_analysis_run(analyst_id=analyst_id,
+                                                       analysis_run_id=row.get("analysis_run_id")):
+                    return None
+
             cur.execute(query, (str(ai_analysis_report_id),))
             row = cur.fetchone()
             if not row:

@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.models.ai import GenerateAIAnalysisReportRequest, GenerateAIAnalysisReportResponse
+
 # ANALYSIS RUNS
 class AnalysisRunCreate(BaseModel):
     project_id: UUID
@@ -52,10 +54,13 @@ class RunDescriptiveHormoneAnalysisRequest(BaseModel):
     include_symptom_names: Optional[list[str]] = None
     date_from: Optional[date] = None
     date_to: Optional[date] = None
+    ai_assisted_report: bool = False
+    ai_analysis_report_request: Optional[GenerateAIAnalysisReportRequest] = None
 
 
 class RunDescriptiveAnalysisResponse(BaseModel):
     analysis_run: AnalysisRunResponse
     analysis_result: Optional[AnalysisResultResponse]
     analysis_report: Optional[AnalysisReportResponse]
+    ai_analysis_report: Optional[GenerateAIAnalysisReportResponse] = None
     engine_result: dict[str, Any]

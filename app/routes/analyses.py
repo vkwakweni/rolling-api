@@ -11,7 +11,10 @@ from app.models.analyses import (AnalysisRunCreate,
                                  AnalysisReportResponse,
                                  RunDescriptiveHormoneAnalysisRequest,
                                  RunDescriptiveAnalysisResponse)
-from app.models.ai import GenerateAIAnalysisReportRequest, GenerateAIAnalysisReportResponse
+from app.models.ai import (GenerateAIAnalysisReportRequest,
+                           GenerateAIAnalysisReportResponse,
+                           AIAnalysisReportResponse,
+                           AIAnalysisReportRequest)
 from app.repositories.analyses import (create_analysis_run,
                                        analyst_can_access_analysis_run,
                                        analyst_can_access_analysis_result,
@@ -21,6 +24,7 @@ from app.repositories.analyses import (create_analysis_run,
                                        list_analysis_results_by_analysis_run,
                                        get_analysis_report_by_analysis_run)
 from app.repositories.projects import analyst_can_access_project
+from app.repositories.ai import get_ai_analysis_report_by_id
 from app.services.analysis_runner import run_descriptive_hormone_analysis
 from app.services.ai.orchestrator import AIReportOrchestrator
 from app.services.ai.provider import OllamaProvider
@@ -45,8 +49,31 @@ def execute_descriptive_hormone_analysis(payload: RunDescriptiveHormoneAnalysisR
                                                 include_performance_types=payload.include_performance_types,
                                                 include_symptom_names=payload.include_symptom_names,
                                                 date_from=payload.date_from,
-                                                date_to=payload.date_to
+                                                date_to=payload.date_to,
                                                 )
+    
+    if payload.ai_assisted_report and payload.ai_analysis_report_request and analysis is not None:
+        ollama_client = create_ollama_client()
+        provider = OllamaProvider(ollama_client)
+        try:
+            orchestrator = AIReportOrchestrator(model_name=payload.ai_analysis_report_request.model_name,
+                                                provider=provider)
+            ai_analysis_report = orchestrator.generate_ai_report_for_analysis_run(analyst_id=current_analyst_id,
+                                                                                  analysis_run_id=analysis["analysis_run"]["analysis_run_id"])
+            analysis["ai_analysis_report"] = ai_analysis_report
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="AI report could not be generated")
+        except PermissionError:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Not allowed access to this analysis run")
+        except AIProviderModelError:
+            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY,
+                                detail="Invalid or unavailable AI model for the configured provider")
+        except ConnectionError as e:
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                                detail=str(e))
+
     if analysis is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="No observations found for the specified filters, cannot run analysis")
@@ -87,7 +114,8 @@ def get_analysis_run_route(analysis_run_id: UUID,
 
 @router.get("/projects/{project_id}/runs", response_model=list[AnalysisRunResponse])
 def list_analysis_runs_for_project_route(project_id: UUID,
-                                         current_analyst_id: UUID = Depends(get_current_analyst_id),) -> list[AnalysisRunResponse]:
+                                         current_analyst_id: UUID = Depends(get_current_analyst_id),
+                                         ) -> list[AnalysisRunResponse]:
     rows = get_analysis_runs_for_project(project_id, current_analyst_id)
     if rows is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -124,6 +152,7 @@ def list_analysis_results_for_run_route(analysis_run_id: UUID,
     rows = list_analysis_results_by_analysis_run(analysis_run_id=analysis_run_id)
     return [AnalysisResultResponse(**row) for row in rows]
 
+# ANALYSIS REPORTS
 @router.get("/runs/{analysis_run_id}/report", response_model=AnalysisReportResponse)
 def get_analysis_report_for_run_route(analysis_run_id: UUID,
                                       current_analyst_id: UUID = Depends(get_current_analyst_id),
@@ -168,3 +197,21 @@ def create_ai_analysis_report_route(analysis_run_id: UUID,
                             detail=str(e))
 
     return response
+
+@router.get("/runs/{analysis_run_id}/ai-report", response_model=AIAnalysisReportResponse)
+def get_ai_analysis_report_route(analysis_run_id: UUID,
+                                 payload: AIAnalysisReportRequest,
+                                 current_analyst_id: UUID = Depends(get_current_analyst_id),
+                                ) -> AIAnalysisReportResponse:
+    if not analyst_can_access_analysis_run(analyst_id=current_analyst_id,
+                                           analysis_run_id=analysis_run_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Not allowed access to this analysis run")
+    
+    row = get_ai_analysis_report_by_id(analyst_id=current_analyst_id,
+                                       ai_analysis_report_id=payload.ai_analysis_report_id)
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Not allowed access to this AI analysis report")
+
+    return AIAnalysisReportResponse(**row)
