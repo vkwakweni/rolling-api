@@ -29,13 +29,14 @@ class AIInputBuilder:
             tables = result_payload.get("tables", [])
             approved_tables = self.extract_approved_tables(tables=tables,
                                                            analysis_result=analysis_result)
-            
+            redacted_tables = self.remove_measured_values_from_tables(approved_tables)
+
             combined_summaries.append({"analysis_result_id": str(analysis_result.analysis_result_id),
                                        "analysis_run_id": str(analysis_result.analysis_run_id),
                                        "result_type": analysis_result.result_type,
                                        "summary": summary})
             
-            combined_tables = [*combined_tables, *approved_tables]
+            combined_tables = [*combined_tables, *redacted_tables]
             
         metadata = {"analysis_run_id": str(analysis_report.analysis_run_id),
                     "source_result_ids": [str(result.analysis_result_id) for result in analysis_results],
@@ -47,7 +48,6 @@ class AIInputBuilder:
                              report_text=analysis_report.report_text,
                              summary_text=analysis_report.summary_text,
                              metadata=metadata)
-
 
     # HELPERS
     def extract_approved_tables(self,
@@ -68,3 +68,19 @@ class AIInputBuilder:
                                     "source_result_type": analysis_result.result_type})
             
         return approved_tables
+    
+    def remove_measured_values_from_tables(self, tables: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        redacted_tables = []
+        for table in tables:
+            table_name = table.get("name")
+            table_rows = table.get("rows", [])
+
+            redacted_rows = []
+            for row in table_rows:
+                row = row.copy()
+                row.pop("measured_values", None)
+                redacted_rows.append(row)
+
+            redacted_tables.append({"name": table_name,
+                                    "rows": redacted_rows})
+        return redacted_tables

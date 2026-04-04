@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Any
 import json
-from datetime import datetime
+
+from ollama._types import ResponseError
 
 from app.config import get_ollama_api_settings
+from app.exceptions import AIProviderModelError
 
 
 class AIProvider(ABC):
@@ -75,22 +77,26 @@ class OllamaProvider(AIProvider):
             "done": true
         }
         """
-        print(f"Request started at: {datetime.now()}")
-        response = self.client.chat(model=request["model_name"],
-                                    messages=[{"role": "system",
-                                               "content": request["system_prompt"]},
-                                               {"role": "user",
-                                                "content": request["user_prompt"]}],
-                                    tools=request.get("tools", []),
+        try:
+            # response is of type ChatResponse
+            response = self.client.chat(model=request["model_name"],
+                                        messages=[{"role": "system",
+                                                "content": request["system_prompt"]},
+                                                {"role": "user",
+                                                    "content": request["user_prompt"]}],
+                                        tools=request.get("tools", []),
                                     format="json")
-        print(f"Request finished at: {datetime.now()}")
+        except ResponseError as e:
+            raise AIProviderModelError(f"Ollama API request failed with status {e.status_code}: {e}") from e
+        except ConnectionError as e:
+            raise ConnectionError(f"{e}. If already installed and accessible, check configuration values.") from e
 
         return self._normalise_response(response)
     
     def _normalise_response(self, response) -> dict[str, Any]:
         raw_text = response.message.content
         if not raw_text:
-            raise ValueError("Ollama response did nto contain message content.")
+            raise ValueError("Ollama response did not contain message content.")
         
         try:
             parsed = json.loads(raw_text)
@@ -101,7 +107,7 @@ class OllamaProvider(AIProvider):
         summary_text = parsed.get("summary_text")
 
         if not report_text:
-            raise ValueError("Ollama response did not contian report_text.")
+            raise ValueError("Ollama response did not contain report_text.")
         
         return {"report_text": report_text,
                 "summary_text": summary_text}

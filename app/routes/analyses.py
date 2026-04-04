@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.exceptions import AIProviderModelError
 from app.ai_client import create_ollama_client
 from app.dependencies.auth import get_current_analyst_id
 from app.models.analyses import (AnalysisRunCreate,
@@ -148,10 +149,9 @@ def create_ai_analysis_report_route(analysis_run_id: UUID,
     ollama_client = create_ollama_client()
     provider = OllamaProvider(ollama_client)
 
-    orchestrator = AIReportOrchestrator(model_name=payload.model_name,
-                                        provider=provider)
-
     try:
+        orchestrator = AIReportOrchestrator(model_name=payload.model_name,
+                                            provider=provider)
         response = orchestrator.generate_ai_report_for_analysis_run(analyst_id=current_analyst_id,
                                                                     analysis_run_id=analysis_run_id)
     except ValueError:
@@ -160,5 +160,11 @@ def create_ai_analysis_report_route(analysis_run_id: UUID,
     except PermissionError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Not allowed access to this analysis run")
+    except AIProviderModelError:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY,
+                            detail="Invalid or unavailable AI model for the configured provider")
+    except ConnectionError as e:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                            detail=str(e))
 
     return response

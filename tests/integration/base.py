@@ -4,7 +4,7 @@
 # optional test DB setup helpers
 from unittest import TestCase
 from fastapi.testclient import TestClient
-from uuid import uuid4
+from uuid import uuid4, UUID
 from pathlib import Path
 
 from app.main import app
@@ -57,3 +57,15 @@ class BaseIntegrationTestCase(TestCase):
                 cur.execute(query, (analyst_id,))
                 rows = cur.fetchall()
                 return [dict(row) for row in rows]
+            
+    def create_analysis_run(self, project_id: str, analyst_id: str) -> dict:
+        response = self.client.post("/analyses/run",
+                                    json={"project_id": project_id,
+                                          "analysis_kind": "mock_analysis",
+                                          "execution_mode": "mock_traditional",
+                                          "status": "failed",
+                                          "parameters": {"param1": "value1"}},
+                                    headers=self.get_auth_headers(analyst_id))
+        self.assertEqual(response.status_code, 201)
+        return response.json()
+    
