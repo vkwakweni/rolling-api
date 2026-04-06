@@ -35,8 +35,7 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
         for row in sorted(hormone_rows,
                           key=lambda item: item["hormone_name"]):
             lines.append(f"- {row['hormone_name']}: ")
-            lines.append(f"\t- n={row['observation_count']} ")
-            lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
+            lines.extend(create_single_parameter_summary_stats_lines(row))
 
     if hormone_performance_rows:
         lines.extend(["", "## Hormone by Performance Type"])
@@ -45,8 +44,7 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             key=lambda item: (item["performance_type"], item["hormone_name"]),
         ):
             lines.append(f"- {row['hormone_name']} in '{row['performance_type']}': ")
-            lines.append(f"\t- n={row['observation_count']} ")
-            lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
+            lines.extend(create_single_parameter_summary_stats_lines(row))
 
     if comparative_hormone_performance_rows:
         lines.extend(["", "## Hormone by Comparing Performance Types"])
@@ -55,8 +53,7 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             key=lambda item: item["hormone_name"]
         ):
             lines.append(f"- {row['hormone_name']} in ['{row['performance_type_a']}', '{row['performance_type_b']}']: ")
-            lines.append(f"\t- n={row['observation_count']} ")
-            lines.append(f"\t- cohen's d={row['cohens_d']}, independent_t={row['independent_t']}")
+            lines.extend(create_multiple_parameter_summary_states_lines(row))
 
     if hormone_dysmenorrhea_rows:
         lines.extend(["", "## Hormone by Dysmenorrhea Presence"])
@@ -64,10 +61,9 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             hormone_dysmenorrhea_rows,
             key=lambda item: (item["hormone_name"], item["dysmenorrhea_present"]),
         ):
-            dys_label = "dysmenorrhea present" if row["dysmenorrhea_present"] else "dysmenorrhea absent"
+            dys_label = create_dysmenorrhea_label(row)
             lines.append(f"- {row['hormone_name']} with {dys_label}: ")
-            lines.append(f"\t- n={row['observation_count']}")
-            lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
+            lines.extend(create_single_parameter_summary_stats_lines(row))
 
     if comparative_hormone_dysmenorrhea_rows:
         lines.extend(["", "## Hormone by Comparing Dysmenorrhea Presence"])
@@ -75,11 +71,9 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             comparative_hormone_dysmenorrhea_rows,
             key=lambda item: item["hormone_name"]
         ):
-            dys_label_a = "dysmenorrhea present" if str(row.get("dysmenorrhea_present_a")).lower() == "true" else "dysmenorrhea absent"
-            dys_label_b = "dysmenorrhea present" if str(row.get("dysmenorrhea_present_b")).lower() == "true" else "dysmenorrhea absent"
+            dys_label_a, dys_label_b = create_dysmenorrhea_label(row)
             lines.append(f"- {row['hormone_name']} in ['{dys_label_a}', '{dys_label_b}']: ")
-            lines.append(f"\t- n={row['observation_count']}")
-            lines.append(f"\t- cohen's d={row['cohens_d']}, independent_t={row['independent_t']}")
+            lines.extend(create_multiple_parameter_summary_states_lines(row))
 
     if hormone_dysmenorrhea_performance_rows:
         lines.extend(["", "## Hormone by Dysmenorrhea Presence and Performance Type"])
@@ -91,10 +85,9 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
                 item["dysmenorrhea_present"],
             ),
         ):
-            dys_label = "dysmenorrhea present" if row["dysmenorrhea_present"] else "dysmenorrhea absent"
+            dys_label = create_dysmenorrhea_label(row)
             lines.append(f"- {row['hormone_name']} in '{row['performance_type']}' with {dys_label}: ")
-            lines.append(f"\t- n={row['observation_count']} ")
-            lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
+            lines.extend(create_single_parameter_summary_stats_lines(row))
 
     if comparative_hormone_dysmenorrhea_performance_rows:
         lines.extend(["", "## Hormone by Comparing Dysmenorrhea Presence and Performance Types"])
@@ -106,8 +99,7 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             dys_label_b = "dysmenorrhea present" if str(row.get("dysmenorrhea_present_b")).lower() == "true" else "dysmenorrhea absent"
             lines.append(f"- {row['hormone_name']} in ['{dys_label_a}', '{dys_label_b}'] "
                             f"comparing performance types ['{row.get('performance_type_a', 'Unknown')}', '{row.get('performance_type_b', 'Unknown')}']")
-            lines.append(f"\t- n={row['observation_count']} ")
-            lines.append(f"\t- cohen's d={row['cohens_d']}, independent_t={row['independent_t']}")
+            lines.extend(create_multiple_parameter_summary_states_lines(row))
 
     if result.conclusions:
         lines.extend(["", "## Conclusions"])
@@ -124,3 +116,23 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
     
     return {"report_text": "\n".join(lines),
             "summary_text": summary_text,}
+
+# HELPERS
+def create_single_parameter_summary_stats_lines(row) -> list:
+    lines = []
+    lines.append(f"\t- n={row['observation_count']} ")
+    lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
+    return lines
+
+def create_multiple_parameter_summary_states_lines(row) -> list:
+    lines = []
+    lines.append(f"\t- n={row['observation_count']} ")
+    lines.append(f"\t- cohen's d={row['cohens_d']}, independent t={row['independent_t']}")
+    return lines
+
+def create_dysmenorrhea_label(row) -> str:
+    if "dysmenorrhea_present" in row.keys():
+        return "dysmenorrhea present" if row["dysmenorrhea_present"] else "dysmenorrhea absent"
+    if "dysmenorrhea_present_a" in row.keys() and "dysmenorrhea_present_b" in row.keys():
+        return "dysmenorrhea present" if row["dysmenorrhea_present_a"] else "dysmenorrhea absent", \
+            "dysmenorrhea present" if row["dysmenorrhea_present_b"] else "dysmenorrhea absent"
