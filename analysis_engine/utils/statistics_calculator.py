@@ -64,7 +64,7 @@ class StatisticsCalculator:
         TODO throw warning for length
         TODO look at the actual difference between this and Hedge's g
         """
-        mean_diff = abs(self.mean(group_a) - self.mean(group_b))
+        mean_diff = float(abs(self.mean(group_a) - self.mean(group_b)))
         pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
         return mean_diff / pooled_stdev
 
@@ -72,7 +72,7 @@ class StatisticsCalculator:
         """
         TODO I don't think this is what we used in the paper
         """
-        mean_diff = abs(self.mean(group_a) - self.mean(group_b))
+        mean_diff = float(abs(self.mean(group_a) - self.mean(group_b)))
         pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
         pooled_sterror = self.cohen_pooled_standard_error(group_a, group_b)
         return mean_diff / (pooled_stdev * pooled_sterror)

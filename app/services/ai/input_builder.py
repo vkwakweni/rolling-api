@@ -9,7 +9,10 @@ class AIInputBuilder:
     ALLOWED_TABLE_NAMES = {"hormone_statistics",
                            "hormone_performance_statistics",
                            "hormone_dysmenorrhea_statistics",
-                           "hormone_dysmenorrhea_performance_statistics"}
+                           "hormone_dysmenorrhea_performance_statistics",
+                           "comparative_hormone_performance_statistics",
+                           "comparative_hormone_dysmenorrhea_statistics",
+                           "comparative_hormone_dysmenorrhea_performance_statistics"}
     
     def build_allowed_ai_input(self,
                                analysis_results: list[AnalysisResultResponse],
@@ -75,6 +78,8 @@ class AIInputBuilder:
             for row in table_rows:
                 row = row.copy()
                 row.pop("measured_values", None)
+                row.pop("measured_values_a", None)
+                row.pop("measured_values_b", None)
                 redacted_rows.append(row)
 
             redacted_tables.append({"name": table_name,
