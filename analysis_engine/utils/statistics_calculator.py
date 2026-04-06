@@ -108,8 +108,8 @@ class NonNumericError(CalculatorError):
 
 class EmptySampleError(CalculatorError):
     def __init__(self):
-        super().__init__("Empty sample cannot be used for statistical calculation.") # TODO write a better exception
+        super().__init__("Empty sample submitted cannot be used for statistical calculation.")
 
 class InsufficientSampleSizeError(CalculatorError):
-    def __init__(self, sample_size): # TODO write a better message
-        super().__init__(f"There are not sufficient values given. Sample size: {sample_size}.")
+    def __init__(self, sample_size, minimum_size): # TODO write a better message
+        super().__init__(f"Sample size {sample_size} is below the minimum required size of {minimum_size}.")

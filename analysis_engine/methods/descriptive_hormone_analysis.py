@@ -56,10 +56,6 @@ class DescriptiveHormoneAnalysis:
         comparative_hormone_dysmenorrhea_statistics = self.build_hormone_dysmenorrhea_statistics(hormone_dysmenorrhea_statistics)
         comparative_hormone_dysmenorrhea_performance_statistics = self.build_hormone_dysmenorrhea_performance_statistics(hormone_dysmenorrhea_performance_statistics)
         
-        # Check that the statistics were actually computed
-        if not hormone_dysmenorrhea_performance_statistics:
-            raise AnalysisDataError("No descriptive group statistics could be computed.")
-        
         statistics = {"hormone_statistics": hormone_statistics,
                       "hormone_performance_statistics": hormone_performance_statistics,
                       "hormone_dysmenorrhea_statistics": hormone_dysmenorrhea_statistics,
@@ -147,7 +143,6 @@ class DescriptiveHormoneAnalysis:
                         compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_performance_statistics and compared:
                             comparative_hormone_performance_statistics.append(compared)
-                    # break
         return comparative_hormone_performance_statistics
 
     def build_hormone_dysmenorrhea_statistics(self, group_statistics: list[dict]) -> list[dict]:

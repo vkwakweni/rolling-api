@@ -52,7 +52,7 @@ def create_symptom_record_batch(rows: list[dict]) -> list[dict]:
             """
     
     parameters = []
-    for row in rows: # TODO rename this pattern
+    for row in rows:
         parameter = (str(row.get("athlete_id")),
                      str(row.get("dataset_id")),
                      str(row.get("symptom_id")),

@@ -96,18 +96,18 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             lines.append(f"\t- n={row['observation_count']} ")
             lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
 
-        if comparative_hormone_dysmenorrhea_performance_rows:
-            lines.extend(["", "## Hormone by Comparing Dysmenorrhea Presence and Performance Types"])
-            for row in sorted(
-                comparative_hormone_dysmenorrhea_performance_rows,
-                key=lambda item: item["hormone_name"]
-            ):
-                dys_label_a = "dysmenorrhea present" if str(row.get("dysmenorrhea_present_a")).lower() == "true" else "dysmenorrhea absent"
-                dys_label_b = "dysmenorrhea present" if str(row.get("dysmenorrhea_present_b")).lower() == "true" else "dysmenorrhea absent"
-                lines.append(f"- {row['hormone_name']} in ['{dys_label_a}', '{dys_label_b}'] "
-                             f"comparing performance types ['{row.get('performance_type_a', 'Unknown')}', '{row.get('performance_type_b', 'Unknown')}']")
-                lines.append(f"\t- n={row['observation_count']} ")
-                lines.append(f"\t- cohen's d={row['cohens_d']}, independent_t={row['independent_t']}")
+    if comparative_hormone_dysmenorrhea_performance_rows:
+        lines.extend(["", "## Hormone by Comparing Dysmenorrhea Presence and Performance Types"])
+        for row in sorted(
+            comparative_hormone_dysmenorrhea_performance_rows,
+            key=lambda item: item["hormone_name"]
+        ):
+            dys_label_a = "dysmenorrhea present" if str(row.get("dysmenorrhea_present_a")).lower() == "true" else "dysmenorrhea absent"
+            dys_label_b = "dysmenorrhea present" if str(row.get("dysmenorrhea_present_b")).lower() == "true" else "dysmenorrhea absent"
+            lines.append(f"- {row['hormone_name']} in ['{dys_label_a}', '{dys_label_b}'] "
+                            f"comparing performance types ['{row.get('performance_type_a', 'Unknown')}', '{row.get('performance_type_b', 'Unknown')}']")
+            lines.append(f"\t- n={row['observation_count']} ")
+            lines.append(f"\t- cohen's d={row['cohens_d']}, independent_t={row['independent_t']}")
 
     if result.conclusions:
         lines.extend(["", "## Conclusions"])

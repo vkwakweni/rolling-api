@@ -109,14 +109,13 @@ class BaseContentMapper(ABC):
             return int(symptom["menstrual_symptom_id"])
         raise RecordNotFoundException(name, self.filename)
 
-            
     # DATE PARSER HELPER
     def parse_date(self, value: str) -> Optional[date]:
         valid_patterns = ("%Y-%m-%d", "%Y-%m-%d %H:%M", "%Y-%m-%d %H:%M:%S")
         for pattern in valid_patterns:
             try:
                 if value is None or value.strip() == "":
-                    return None
+                    return None # TODO should raise an error
                 return datetime.strptime(value, pattern).date()
             except ValueError:
                 continue

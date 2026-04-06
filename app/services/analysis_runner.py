@@ -17,7 +17,7 @@ def run_descriptive_hormone_analysis(project_id: UUID,
                                      include_symptom_names: Optional[list[str]]=None,
                                      date_from: Optional[date]=None,
                                      date_to: Optional[date]=None,
-                                     ) -> dict:
+                                     ) -> dict: # TODO change to Optional
     # verify project access
     if not analyst_can_access_project(analyst_id, project_id):
         return None

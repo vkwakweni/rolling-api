@@ -96,18 +96,18 @@ class OllamaProvider(AIProvider):
     def _normalise_response(self, response) -> dict[str, Any]:
         raw_text = response.message.content
         if not raw_text:
-            raise ValueError("Ollama response did not contain message content.")
+            raise ValueError("Ollama API response did not contain message content.")
         
         try:
             parsed = json.loads(raw_text)
         except json.JSONDecodeError as e:
-            raise ValueError("Ollama response was not valid JSON.")
+            raise ValueError("Ollama API response was not valid JSON.")
         
         report_text = parsed.get("report_text")
         summary_text = parsed.get("summary_text")
 
         if not report_text:
-            raise ValueError("Ollama response did not contain report_text.")
+            raise ValueError("Ollama API response did not contain report_text.")
         
         return {"report_text": report_text,
                 "summary_text": summary_text}

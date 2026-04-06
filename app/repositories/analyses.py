@@ -194,7 +194,7 @@ def analyst_can_access_analysis_run(analyst_id: UUID,
             return row is not None
 
 # ANALYSIS RESULTS
-def create_analysis_result(analysis_run_id: UUID,
+def create_analysis_result(analysis_run_id: UUID, # TODO check access before creating
                            result_type: str,
                            result_payload: dict[str, Any]) -> dict:
     query = """

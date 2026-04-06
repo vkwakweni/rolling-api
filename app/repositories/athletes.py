@@ -54,7 +54,7 @@ def create_athlete_batch(rows: list[dict]) -> list[dict]:
             """
     
     parameters = []
-    for row in rows: # TODO rename this pattern
+    for row in rows:
         parameter = (row.get("external_code"),
                      row.get("dataset_id"),
                      row.get("birth_date"),

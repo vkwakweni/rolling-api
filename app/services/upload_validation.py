@@ -232,7 +232,7 @@ class AthletesCSVValidator(BaseCSVValidator):
             return errors
         
         if not self.athlete_code_pattern.match(value.strip()):
-            errors.append(f"Row {row_number}: column 'athlete_code' must match r'^R[A-Z0-9]{{4}}$")
+            errors.append(f"Row {row_number}: column 'athlete_code' must match r'^R[A-Z0-9]{{4}}$', e.g. R12AB")
 
         return errors
     
