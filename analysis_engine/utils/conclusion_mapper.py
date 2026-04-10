@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 class ConclusionMapper:
     """
@@ -20,7 +20,7 @@ class ConclusionMapper:
         """
     
         if effect_size is None:
-            return "effect size could not be computed."
+            return "effect size could not be computed"
         effect_size = abs(effect_size) # TODO later handle negative number interpretations
         if effect_size >= 0.8:
             return "a large effect"
@@ -41,7 +41,7 @@ class ConclusionMapper:
             return "This is small, but sufficient sample; interpret cautiously."
         return "This is a sufficient sample."
 
-    def build_group_conclusion(self, stats_summary) -> str:
+    def build_group_conclusion(self, stats_summary: dict[str, Any]) -> str:
         """
         Within group descriptive summaries.
         Answers questions like:
@@ -61,10 +61,10 @@ class ConclusionMapper:
         sample_size = stats_summary.get("observation_count", 0)
         descriptive_notes.append(self.map_sample_size_conclusion(sample_size))
 
-        hormone_name = stats_summary.get("hormone_name", "Hormone")
+        hormone_name = stats_summary.get("hormone_name", "UNKNOWN_HORMONE")
         dysmenorrhea_present = stats_summary.get("dysmenorrhea_present")
         performance_type = stats_summary.get("performance_type", "UNSPECIFIED")
-        mean_value = stats_summary.get("mean_hormone_value")
+        mean_value = stats_summary.get("mean")
 
         dysmenorrhea_label = ("with dysmenorrhea present"
                               if dysmenorrhea_present
@@ -125,7 +125,7 @@ class ConclusionMapper:
 
         return conclusions
 
-    def build_overall_conclusions2(self, analysis_rows):
+    def build_overall_detailed_conclusions(self, analysis_rows):
         if not analysis_rows:
             return ["No comparative conclusions could be generated."]
 
