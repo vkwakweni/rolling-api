@@ -1,3 +1,6 @@
+from datetime import datetime, timezone
+from typing import Optional
+
 from analysis_engine.contracts import HormoneAnalysisInput, HormoneAnalysisResult, HormoneObservation
 from analysis_engine.exceptions import AnalysisInputError, AnalysisDataError
 from analysis_engine.group_keys import (GroupKey,
@@ -8,8 +11,6 @@ from analysis_engine.utils.statistics_calculator import StatisticsCalculator
 from analysis_engine.utils.grouping_engine import GroupingEngine
 from analysis_engine.utils.conclusion_mapper import ConclusionMapper
 
-from datetime import datetime, timezone
-
 
 class DescriptiveHormoneAnalysis:
     def __init__(self):
@@ -17,7 +18,7 @@ class DescriptiveHormoneAnalysis:
         self.grouper = GroupingEngine()
         self.conclusion_mapper = ConclusionMapper()
 
-    def run(self, payload: HormoneAnalysisInput) -> HormoneAnalysisResult:
+    def run(self, payload: Optional[HormoneAnalysisInput]) -> HormoneAnalysisResult:
         self.validate_input(payload)
 
         filtered = self.grouper.filter_observations(payload.observations,
@@ -86,7 +87,9 @@ class DescriptiveHormoneAnalysis:
                                      metadata=metadata,
                                      conclusions=conclusions)
 
-    def validate_input(self, payload: HormoneAnalysisInput):
+    def validate_input(self, payload: Optional[HormoneAnalysisInput]):
+        if payload is None:
+            raise AnalysisInputError("Analysis input payload must not be None.")
         if not payload.observations:
             raise AnalysisInputError("Analysis input must include observations.")
     

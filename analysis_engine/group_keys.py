@@ -62,7 +62,7 @@ class HormonePerformanceGroupKey(GroupKey):
 @dataclass(frozen=True)
 class HormoneDysmenorrheaGroupKey(GroupKey):
     hormone_name: str
-    dysmenorrhea_present: str
+    dysmenorrhea_present: bool
 
     def as_dict(self) -> dict[str, object]:
         return {"hormone_name": self.hormone_name,
