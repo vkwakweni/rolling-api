@@ -13,14 +13,14 @@ class HormoneObservation:
     observed_on: date
     hormone_name: str # hormone data
     measured_value: float | int
-    measurement_unit: Optional[str]
-    symptom_name: Optional[str] # menstrual data
-    symptom_severity: Optional[str]
-    relative_day_to_cycle: Optional[int]
-    performance_type: Optional[str] # performance data
-    metric_name: Optional[str]
-    metric_value: Optional[float]
-    metric_unit: Optional[str]
+    measurement_unit: Optional[str] = None
+    symptom_name: Optional[str] = None # menstrual data
+    symptom_severity: Optional[str] = None
+    relative_day_to_cycle: Optional[int] = None
+    performance_type: Optional[str] = None # performance data
+    metric_name: Optional[str] = None
+    metric_value: Optional[float] = None
+    metric_unit: Optional[str] = None
 
 
 @dataclass(frozen=True)

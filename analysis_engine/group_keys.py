@@ -6,11 +6,11 @@ class GroupKey(ABC):
     __slots__ = ("hormone_name", "dysmenorrhea_present", "performance_type")
     @abstractmethod
     def as_dict(self) -> dict[str, object]:
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def as_tuple(self) -> tuple:
-        ...
+        raise NotImplementedError
 
 
 @dataclass(frozen=True)
@@ -27,6 +27,16 @@ class HormoneDysmenorrheaPerformanceGroupKey(GroupKey):
     def as_tuple(self) -> tuple:
         return (self.hormone_name, self.dysmenorrhea_present, self.performance_type)
     
+    def __eq__(self, other):
+        return self.hormone_name == other.hormone_name and \
+                self.dysmenorrhea_present == other.dysmenorrhea_present and \
+                self.performance_type == other.performance_type
+    
+    def __str__(self):
+        return "\{'hormone_name': " + self.hormone_name + \
+            ", 'dysmenorrhea_present': " + str(self.dysmenorrhea_present) + \
+                ", 'performance_type: " + self.performance_type + "}"
+    
 
 @dataclass(frozen=True)
 class HormonePerformanceGroupKey(GroupKey):
@@ -40,6 +50,14 @@ class HormonePerformanceGroupKey(GroupKey):
     def as_tuple(self) -> tuple:
         return (self.hormone_name, self.performance_type)
     
+    def __eq__(self, other):
+        return self.hormone_name == other.hormone_name and \
+                self.performance_type == other.performance_type
+    
+    def __str__(self):
+        return "\{'hormone_name': " + self.hormone_name + \
+                ", 'performance_type: " + self.performance_type + "}"
+
 
 @dataclass(frozen=True)
 class HormoneDysmenorrheaGroupKey(GroupKey):
@@ -53,6 +71,14 @@ class HormoneDysmenorrheaGroupKey(GroupKey):
     def as_tuple(self) -> tuple:
         return (self.hormone_name, self.dysmenorrhea_present)
     
+    def __eq__(self, other):
+        return self.hormone_name == other.hormone_name and \
+                self.dysmenorrhea_present == other.dysmenorrhea_present
+    
+    def __str__(self):
+        return "\{'hormone_name': " + self.hormone_name + \
+                ", 'performance_type: " + self.performance_type + "}"
+    
 
 @dataclass(frozen=True)
 class HormoneGroupKey(GroupKey):
@@ -63,4 +89,10 @@ class HormoneGroupKey(GroupKey):
     
     def as_tuple(self) -> tuple:
         return (self.hormone_name,)
+    
+    def __eq__(self, other):
+        return self.hormone_name == other.hormone_name
+    
+    def __str__(self):
+        return "\{'hormone_name': " + self.hormone_name + "}"
     
