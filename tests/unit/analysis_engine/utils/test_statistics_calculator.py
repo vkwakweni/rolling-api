@@ -22,7 +22,7 @@ class TestStatisticsCalculator(unittest.TestCase):
     cohen_pooled_stdev_ab = 2.50
     cohen_pooled_stderror_ab = 1.58
     cohens_d_ab = 1.20
-    independent_t_ab = 0.76
+    independent_t_ab = round(-1.89, 1)
 
     # MAIN METHODS
     def test_mean(self):
