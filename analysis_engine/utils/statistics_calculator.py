@@ -1,5 +1,6 @@
 import math
 import statistics
+from scipy.stats import ttest_ind
 
 class StatisticsCalculator:
     """
@@ -68,14 +69,15 @@ class StatisticsCalculator:
         pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
         return mean_diff / pooled_stdev
 
-    def independent_t_test(self, group_a, group_b):
+    def welch_test(self, group_a, group_b):
         """
-        TODO I don't think this is what we used in the paper
+        Assumptions: group_a and group_b are normally distributed, independent samples with unequal variances
+        Source: https://en.wikipedia.org/wiki/Welch%27s_t-test
         """
-        mean_diff = float(abs(self.mean(group_a) - self.mean(group_b)))
-        pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
-        pooled_sterror = self.cohen_pooled_standard_error(group_a, group_b)
-        return mean_diff / (pooled_stdev * pooled_sterror)
+        self.validate_numeric_sample(group_a)
+        self.validate_numeric_sample(group_b)
+        t_result = ttest_ind(group_a, group_b, equal_var=False)
+        return float(t_result.statistic)
 
     @staticmethod
     def validate_numeric_sample(values):
@@ -95,6 +97,7 @@ class StatisticsCalculator:
         if denominator == 0:
             raise ZeroDivisionError
         return denominator
+    
     
 
 class CalculatorError(Exception):

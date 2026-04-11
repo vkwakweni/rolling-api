@@ -11,3 +11,4 @@ email-validator
 openai
 requests
 ollama
+scipy

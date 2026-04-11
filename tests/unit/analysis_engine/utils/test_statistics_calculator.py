@@ -97,12 +97,12 @@ class TestStatisticsCalculator(unittest.TestCase):
 
     def test_independent_t_test(self):
         with self.assertRaises(NonNumericError):
-            self.calculator.independent_t_test(self.invalid_input, self.correct_input_a)
+            self.calculator.welch_test(self.invalid_input, self.correct_input_a)
 
         with self.assertRaises(EmptySampleError):
-            self.calculator.independent_t_test(self.empty_input, self.correct_input_a)
+            self.calculator.welch_test(self.empty_input, self.correct_input_a)
 
-        self.assertEqual(round(self.calculator.independent_t_test(self.correct_input_a, self.correct_input_b), 2),
+        self.assertEqual(round(self.calculator.welch_test(self.correct_input_a, self.correct_input_b), 2),
                          self.independent_t_ab)
 
     # HELPER / STATIC METHODS

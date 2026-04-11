@@ -142,7 +142,7 @@ class DescriptiveHormoneAnalysis:
                                                         if len(values_2) > 1
                                                         else None)
                         compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
-                        compared["independent_t"] = self.calculator.independent_t_test(values_1, values_2)
+                        compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                         compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_performance_statistics and compared:
                             comparative_hormone_performance_statistics.append(compared)
@@ -174,7 +174,7 @@ class DescriptiveHormoneAnalysis:
                                                     if len(values_2) > 1
                                                     else None)
                     compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
-                    compared["independent_t"] = self.calculator.independent_t_test(values_1, values_2)
+                    compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_dysmenorrhea_statistics and compared:
                             comparative_hormone_dysmenorrhea_statistics.append(compared)
@@ -208,7 +208,7 @@ class DescriptiveHormoneAnalysis:
                                                     if len(values_2) > 1
                                                     else None)
                     compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
-                    compared["independent_t"] = self.calculator.independent_t_test(values_1, values_2)
+                    compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_dysmenorrhea_performance_statistics and compared:
                             comparative_hormone_dysmenorrhea_performance_statistics.append(compared)
@@ -235,7 +235,7 @@ class DescriptiveHormoneAnalysis:
                                                     if len(values_2) > 1
                                                     else None)
                     compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
-                    compared["independent_t"] = self.calculator.independent_t_test(values_1, values_2)
+                    compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_dysmenorrhea_performance_statistics and compared:
                             comparative_hormone_dysmenorrhea_performance_statistics.append(compared)
