@@ -183,10 +183,12 @@ class DescriptiveHormoneAnalysis:
 
     def build_hormone_dysmenorrhea_performance_statistics(self, group_statistics: list[dict]) -> list[dict]:
         comparative_hormone_dysmenorrhea_performance_statistics = []
-        for stat1 in group_statistics:
-            compared = dict()
-            for stat2 in group_statistics:
-                if (stat1["hormone_name"] == stat2["hormone_name"]) and (stat1["dysmenorrhea_present"] == stat2["dysmenorrhea_present"]) and (stat1["performance_type"] != stat2["performance_type"]):
+        for k, stat1 in enumerate(group_statistics):
+            for stat2 in group_statistics[k:]:
+                compared = dict()
+                if (stat1["hormone_name"] == stat2["hormone_name"]) and \
+                        (stat1["dysmenorrhea_present"] == stat2["dysmenorrhea_present"]) and \
+                        (stat1["performance_type"] != stat2["performance_type"]):
                     compared["hormone_name"] = stat1["hormone_name"]
                     compared["dysmenorrhea_present"] = stat1["dysmenorrhea_present"]
                     values_1 = stat1["measured_values"]
@@ -213,7 +215,9 @@ class DescriptiveHormoneAnalysis:
                     if compared not in comparative_hormone_dysmenorrhea_performance_statistics and compared:
                             comparative_hormone_dysmenorrhea_performance_statistics.append(compared)
                     continue
-                if (stat1["hormone_name"] == stat2["hormone_name"]) and (stat1["dysmenorrhea_present"] != stat2["dysmenorrhea_present"]) and (stat1["performance_type"] == stat2["performance_type"]):
+                if (stat1["hormone_name"] == stat2["hormone_name"]) and \
+                        (stat1["dysmenorrhea_present"] != stat2["dysmenorrhea_present"]) and \
+                        (stat1["performance_type"] == stat2["performance_type"]):
                     compared["hormone_name"] = stat1["hormone_name"]
                     compared["performance_type"] = stat1["performance_type"]
                     values_1 = stat1["measured_values"]

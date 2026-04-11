@@ -410,7 +410,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         stdev_a = 1.8708286933869707
         stdev_b = 2.943920288775949
         cohens_d = abs(-0.8784585919193318)
-        independent_t = 1.5215349135496976 # TODO actual function is still wrong
+        independent_t = -1.5215349135496976
         
         hormone_dysmenorrhea_stats = [
             {
@@ -478,11 +478,11 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         mean_a = 3.5
         mean_b = 5.666666666666667
         median_a = 3.5
-        median_b = 6
+        median_b = 6.0
         stdev_a = 1.8708286933869707
         stdev_b = 2.943920288775949
         cohens_d = abs(-0.8784585919193318)
-        independent_t = 1.5215349135496976 # TODO actual function is still wrong
+        independent_t = -1.5215349135496976
         
         hormone_dysmenorrhea_performance_stats = [
             {
@@ -543,38 +543,651 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
             {
                 "hormone_name": "test_hormone1",
                 "dysmenorrhea_present": True,
-                "performance_type_a": "HIGH INTENSITY",
-                "performance_type_b": "OFF SEASON",
+                "performance_type_a": "OFF SEASON",
+                "performance_type_b": "HIGH INTENSITY",
                 "measured_values_a": values_a,
-                "measured_values_b": values_b,
+                "measured_values_b": values_a,
                 "observation_count_a": count,
                 "observation_count_b": count,
                 "mean_a": mean_a,
-                "mean_b": mean_b,
+                "mean_b": mean_a,
                 "median_a": median_a,
-                "median_b": median_b,
+                "median_b": median_a,
                 "standard_deviation_a": stdev_a,
-                "standard_deviation_b": stdev_b,
-                "cohens_d": cohens_d,
-                "independent_t": independent_t,
+                "standard_deviation_b": stdev_a,
+                "cohens_d": 0,
+                "independent_t": 0,
                 "observation_count": 2 * count
             }
         ]
-        # actual_comparative = self.engine.build_hormone_dysmenorrhea_statistics(hormone_dysmenorrhea_performance_stats)
-        # for i in range(len(intended_comparative)):
-        #     for key in intended_comparative[i].keys(): # TODO format better
-        #         self.assertEqual(intended_comparative[i][key],
-        #                          actual_comparative[i][key])
+        self.assertEqual(len(intended_comparative),
+                         len(self.engine.build_hormone_dysmenorrhea_performance_statistics(hormone_dysmenorrhea_performance_stats)),
+                         msg="Lengths are not equal")
         self.assertEqual(intended_comparative,
                         self.engine.build_hormone_dysmenorrhea_performance_statistics(hormone_dysmenorrhea_performance_stats))
 
     def test_build_summary(self):
-        statistics: dict[str, list[dict]]
-        ...
+        values = [1, 2]
+        count = 2
+        mean = 1.5
+        median = 1.5
+        stdev = 0.7071067811865476
+        statistics = {
+            "hormone_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev
+                }
+            ],
+            "hormone_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type": "HIGH INTENSITY",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                }
+            ],
+            "hormone_dysmenorrhea_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": False,
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "dysmenorrhea_present": True,
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                }
+            ],
+            "hormone_dysmenorrhea_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "performance_type": "HIGH INTENSITY",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "dysmenorrhea_present": False,
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                }
+            ],
+            "comparative_hormone_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type_a": "HIGH INTENSITY",
+                    "performance_type_b": "OFF SEASON",
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                },
+            ],
+            "comparative_hormone_dysmenorrhea_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present_a": True,
+                    "dysmenorrhea_present_b": False,
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                },
+            ],
+            "comparative_hormone_dysmenorrhea_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type": "OFF SEASON",
+                    "dysmenorrhea_present_a": True,
+                    "dysmenorrhea_present_b": False,
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "performance_type_a": "OFF SEASON",
+                    "performance_type_b": "HIGH INTENSITY",
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                }
+            ]
+        }
+
+        intended_summary = {
+            "hormone_row_count": 2,
+            "hormone_performance_row_count": 3,
+            "hormone_dysmenorrhea_row_count": 3,
+            "hormone_dysmenorrhea_performance_row_count": 3,
+            "comparative_hormone_performance_row_count": 1,
+            "comparative_hormone_dysmenorrhea_row_count": 1,
+            "comparative_hormone_dysmenorrhea_performance_row_count": 2,
+            "total_grouped_row_count": 15
+        }
+        self.assertEqual(intended_summary,
+                         self.engine.build_summary(statistics))
 
     def test_build_tables(self):
-        statistics: dict[str, list[dict]]
-        ...
+        values = [1, 2]
+        count = 2
+        mean = 1.5
+        median = 1.5
+        stdev = 0.7071067811865476
+        statistics = {
+            "hormone_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev
+                }
+            ],
+            "hormone_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type": "HIGH INTENSITY",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                }
+            ],
+            "hormone_dysmenorrhea_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": False,
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "dysmenorrhea_present": True,
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                }
+            ],
+            "hormone_dysmenorrhea_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "performance_type": "HIGH INTENSITY",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                },
+                {
+                    "hormone_name": "test_hormone2",
+                    "dysmenorrhea_present": False,
+                    "performance_type": "OFF SEASON",
+                    "measured_values": values,
+                    "observation_count": count,
+                    "mean": mean,
+                    "median": median,
+                    "standard_deviation": stdev,
+                }
+            ],
+            "comparative_hormone_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type_a": "HIGH INTENSITY",
+                    "performance_type_b": "OFF SEASON",
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                },
+            ],
+            "comparative_hormone_dysmenorrhea_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present_a": True,
+                    "dysmenorrhea_present_b": False,
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                },
+            ],
+            "comparative_hormone_dysmenorrhea_performance_statistics": [
+                {
+                    "hormone_name": "test_hormone1",
+                    "performance_type": "OFF SEASON",
+                    "dysmenorrhea_present_a": True,
+                    "dysmenorrhea_present_b": False,
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                },
+                {
+                    "hormone_name": "test_hormone1",
+                    "dysmenorrhea_present": True,
+                    "performance_type_a": "OFF SEASON",
+                    "performance_type_b": "HIGH INTENSITY",
+                    "measured_values_a": values,
+                    "measured_values_b": values,
+                    "observation_count_a": count,
+                    "observation_count_b": count,
+                    "mean_a": mean,
+                    "mean_b": mean,
+                    "median_a": median,
+                    "median_b": median,
+                    "standard_deviation_a": stdev,
+                    "standard_deviation_b": stdev,
+                    "cohens_d": 0,
+                    "independent_t": 0,
+                    "observation_count": 2 * count
+                }
+            ]
+        }
+
+        intended_tables = [
+            {
+                "name": "hormone_statistics",
+                "rows": [
+                    {
+                        "hormone_name": "test_hormone1",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev
+                    },
+                    {
+                        "hormone_name": "test_hormone2",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev
+                    }
+                ],
+            },
+            {
+                "name": "hormone_performance_statistics",
+                "rows": [
+                    {
+                        "hormone_name": "test_hormone1",
+                        "performance_type": "OFF SEASON",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    },
+                    {
+                        "hormone_name": "test_hormone1",
+                        "performance_type": "HIGH INTENSITY",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    },
+                    {
+                        "hormone_name": "test_hormone2",
+                        "performance_type": "OFF SEASON",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    }
+                ],
+            },
+            {
+                "name": "hormone_dysmenorrhea_statistics",
+                "rows": [
+                    {
+                        "hormone_name": "test_hormone1",
+                        "dysmenorrhea_present": True,
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    },
+                    {
+                        "hormone_name": "test_hormone1",
+                        "dysmenorrhea_present": False,
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    },
+                    {
+                        "hormone_name": "test_hormone2",
+                        "dysmenorrhea_present": True,
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    }
+                ],
+            },
+            {
+                "name": "hormone_dysmenorrhea_performance_statistics",
+                "rows": [
+                    {
+                        "hormone_name": "test_hormone1",
+                        "dysmenorrhea_present": True,
+                        "performance_type": "OFF SEASON",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    },
+                    {
+                        "hormone_name": "test_hormone1",
+                        "dysmenorrhea_present": True,
+                        "performance_type": "HIGH INTENSITY",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    },
+                    {
+                        "hormone_name": "test_hormone2",
+                        "dysmenorrhea_present": False,
+                        "performance_type": "OFF SEASON",
+                        "measured_values": values,
+                        "observation_count": count,
+                        "mean": mean,
+                        "median": median,
+                        "standard_deviation": stdev,
+                    }
+                ],
+            },
+            
+            {
+                "name": "comparative_hormone_performance_statistics",
+                "rows": [
+                    {
+                        "hormone_name": "test_hormone1",
+                        "performance_type_a": "HIGH INTENSITY",
+                        "performance_type_b": "OFF SEASON",
+                        "measured_values_a": values,
+                        "measured_values_b": values,
+                        "observation_count_a": count,
+                        "observation_count_b": count,
+                        "mean_a": mean,
+                        "mean_b": mean,
+                        "median_a": median,
+                        "median_b": median,
+                        "standard_deviation_a": stdev,
+                        "standard_deviation_b": stdev,
+                        "cohens_d": 0,
+                        "independent_t": 0,
+                        "observation_count": 2 * count
+                    },
+                ],
+            },
+            {
+                "name": "comparative_hormone_dysmenorrhea_statistics",
+                "rows": [
+                    {
+                        "hormone_name": "test_hormone1",
+                        "dysmenorrhea_present_a": True,
+                        "dysmenorrhea_present_b": False,
+                        "measured_values_a": values,
+                        "measured_values_b": values,
+                        "observation_count_a": count,
+                        "observation_count_b": count,
+                        "mean_a": mean,
+                        "mean_b": mean,
+                        "median_a": median,
+                        "median_b": median,
+                        "standard_deviation_a": stdev,
+                        "standard_deviation_b": stdev,
+                        "cohens_d": 0,
+                        "independent_t": 0,
+                        "observation_count": 2 * count
+                    },
+                ],
+            },
+            {
+                "name": "comparative_hormone_dysmenorrhea_performance_statistics",
+                "rows": [
+                    {
+                        "hormone_name": "test_hormone1",
+                        "performance_type": "OFF SEASON",
+                        "dysmenorrhea_present_a": True,
+                        "dysmenorrhea_present_b": False,
+                        "measured_values_a": values,
+                        "measured_values_b": values,
+                        "observation_count_a": count,
+                        "observation_count_b": count,
+                        "mean_a": mean,
+                        "mean_b": mean,
+                        "median_a": median,
+                        "median_b": median,
+                        "standard_deviation_a": stdev,
+                        "standard_deviation_b": stdev,
+                        "cohens_d": 0,
+                        "independent_t": 0,
+                        "observation_count": 2 * count
+                    },
+                    {
+                        "hormone_name": "test_hormone1",
+                        "dysmenorrhea_present": True,
+                        "performance_type_a": "OFF SEASON",
+                        "performance_type_b": "HIGH INTENSITY",
+                        "measured_values_a": values,
+                        "measured_values_b": values,
+                        "observation_count_a": count,
+                        "observation_count_b": count,
+                        "mean_a": mean,
+                        "mean_b": mean,
+                        "median_a": median,
+                        "median_b": median,
+                        "standard_deviation_a": stdev,
+                        "standard_deviation_b": stdev,
+                        "cohens_d": 0,
+                        "independent_t": 0,
+                        "observation_count": 2 * count
+                    }
+                ],
+            }
+        ]
+        self.assertEqual(intended_tables,
+                         self.engine.build_tables(statistics))
+        
 
     def test_build_data(self):
         payload: HormoneAnalysisInput
