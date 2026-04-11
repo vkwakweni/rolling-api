@@ -47,7 +47,7 @@ class StatisticsCalculator:
         )
         return pooled_stdev
     
-    def cohen_pooled_standard_error(self, group_a, group_b):
+    def cohen_pooled_standard_error(self, group_a, group_b): # TODO double check if pooled stdev should be here
         """
         Source: https://stats.libretexts.org/Bookshelves/Introductory_Statistics/Statistics%3A_Open_for_Everyone_(Peter)/08%3A_Independent_Samples_t-Tests/8.03%3A_The_Independent_Samples_t-Test_Formula
         """

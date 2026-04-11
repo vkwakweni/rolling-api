@@ -328,16 +328,245 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                          self.engine.build_group_statistics(hormone_dysmenorrhea_performance_obs))
 
     def test_build_hormone_performance_statistics(self):
-        group_statistics: list[dict]
-        ...
+        values_a = [1, 2, 3, 4, 5, 6]
+        values_b = [1, 4, 5, 7, 8, 9]
+        count = 6
+        mean_a = 3.5
+        mean_b = 5.666666666666667
+        median_a = 3.5
+        median_b = 6
+        stdev_a = 1.8708286933869707
+        stdev_b = 2.943920288775949
+        cohens_d = abs(-0.8784585919193318)
+        independent_t = 1.5215349135496976 # TODO actual function is still wrong
+        
+        hormone_performance_stats = [
+            {
+                "hormone_name": "test_hormone1",
+                "performance_type": "OFF SEASON",
+                "measured_values": values_a,
+                "observation_count": count,
+                "mean": mean_a,
+                "median": median_a,
+                "standard_deviation": stdev_a
+
+            },
+            {
+                "hormone_name": "test_hormone1",
+                "performance_type": "HIGH INTENSITY",
+                "measured_values": values_b,
+                "observation_count": count,
+                "mean": mean_b,
+                "median": median_b,
+                "standard_deviation": stdev_b
+
+            },
+            {
+                "hormone_name": "test_hormone2",
+                "performance_type": "OFF SEASON",
+                "measured_values": values_a,
+                "observation_count": values_a,
+                "mean": mean_a,
+                "median": median_a,
+                "standard_deviation": stdev_a
+
+            }
+        ]
+
+        intended_comparative = [
+            {
+                "hormone_name": "test_hormone1",
+                "performance_type_a": "HIGH INTENSITY",
+                "performance_type_b": "OFF SEASON",
+                "measured_values_a": values_b,
+                "measured_values_b": values_a,
+                "observation_count_a": count,
+                "observation_count_b": count,
+                "mean_a": mean_b,
+                "mean_b": mean_a,
+                "median_a": median_b,
+                "median_b": median_a,
+                "standard_deviation_a": stdev_b,
+                "standard_deviation_b": stdev_a,
+                "cohens_d": cohens_d,
+                "independent_t": independent_t,
+                "observation_count": 2 * count
+            }
+        ]
+        actual_comparative = self.engine.build_hormone_performance_statistics(hormone_performance_stats)
+        for i in range(len(intended_comparative)):
+            for key in intended_comparative[i].keys(): # TODO format better
+                self.assertEqual(intended_comparative[i][key],
+                                 actual_comparative[i][key])            
 
     def test_build_hormone_dysmenorrhea_statistics(self):
-        group_statistics: list[dict]
-        ...
+        values_a = [1, 2, 3, 4, 5, 6]
+        values_b = [1, 4, 5, 7, 8, 9]
+        count = 6
+        mean_a = 3.5
+        mean_b = 5.666666666666667
+        median_a = 3.5
+        median_b = 6
+        stdev_a = 1.8708286933869707
+        stdev_b = 2.943920288775949
+        cohens_d = abs(-0.8784585919193318)
+        independent_t = 1.5215349135496976 # TODO actual function is still wrong
+        
+        hormone_dysmenorrhea_stats = [
+            {
+                "hormone_name": "test_hormone1",
+                "dysmenorrhea_present": True,
+                "measured_values": values_a,
+                "observation_count": count,
+                "mean": mean_a,
+                "median": median_a,
+                "standard_deviation": stdev_a
+
+            },
+            {
+                "hormone_name": "test_hormone1",
+                "dysmenorrhea_present": False,
+                "measured_values": values_b,
+                "observation_count": count,
+                "mean": mean_b,
+                "median": median_b,
+                "standard_deviation": stdev_b
+
+            },
+            {
+                "hormone_name": "test_hormone2",
+                "dysmenorrhea_present": True,
+                "measured_values": values_a,
+                "observation_count": values_a,
+                "mean": mean_a,
+                "median": median_a,
+                "standard_deviation": stdev_a
+
+            }
+        ]
+        
+        intended_comparative = [
+            {
+                "hormone_name": "test_hormone1",
+                "dysmenorrhea_present_a": True,
+                "dysmenorrhea_present_b": False,
+                "measured_values_a": values_a,
+                "measured_values_b": values_b,
+                "observation_count_a": count,
+                "observation_count_b": count,
+                "mean_a": mean_a,
+                "mean_b": mean_b,
+                "median_a": median_a,
+                "median_b": median_b,
+                "standard_deviation_a": stdev_a,
+                "standard_deviation_b": stdev_b,
+                "cohens_d": cohens_d,
+                "independent_t": independent_t,
+                "observation_count": 2 * count
+            }
+        ]
+        actual_comparative = self.engine.build_hormone_dysmenorrhea_statistics(hormone_dysmenorrhea_stats)
+        for i in range(len(intended_comparative)):
+            for key in intended_comparative[i].keys(): # TODO format better
+                self.assertEqual(intended_comparative[i][key],
+                                 actual_comparative[i][key]) 
 
     def test_build_hormone_dysmenorrhea_performance_statistics(self):
-        group_statistics: list[dict]
-        ...
+        values_a = [1, 2, 3, 4, 5, 6]
+        values_b = [1, 4, 5, 7, 8, 9]
+        count = 6
+        mean_a = 3.5
+        mean_b = 5.666666666666667
+        median_a = 3.5
+        median_b = 6
+        stdev_a = 1.8708286933869707
+        stdev_b = 2.943920288775949
+        cohens_d = abs(-0.8784585919193318)
+        independent_t = 1.5215349135496976 # TODO actual function is still wrong
+        
+        hormone_dysmenorrhea_performance_stats = [
+            {
+                "hormone_name": "test_hormone1",
+                "dysmenorrhea_present": True,
+                "performance_type": "OFF SEASON",
+                "measured_values": values_a,
+                "observation_count": count,
+                "mean": mean_a,
+                "median": median_a,
+                "standard_deviation": stdev_a
+
+            },
+            {
+                "hormone_name": "test_hormone1",
+                "dysmenorrhea_present": False,
+                "performance_type": "OFF SEASON",
+                "measured_values": values_b,
+                "observation_count": count,
+                "mean": mean_b,
+                "median": median_b,
+                "standard_deviation": stdev_b
+
+            },
+            {
+                "hormone_name": "test_hormone1",
+                "dysmenorrhea_present": True,
+                "performance_type": "HIGH INTENSITY",
+                "measured_values": values_a,
+                "observation_count": values_a,
+                "mean": mean_a,
+                "median": median_a,
+                "standard_deviation": stdev_a
+
+            }
+        ]
+        
+        intended_comparative = [
+            {
+                "hormone_name": "test_hormone1",
+                "performance_type": "OFF SEASON",
+                "dysmenorrhea_present_a": True,
+                "dysmenorrhea_present_b": False,
+                "measured_values_a": values_a,
+                "measured_values_b": values_b,
+                "observation_count_a": count,
+                "observation_count_b": count,
+                "mean_a": mean_a,
+                "mean_b": mean_b,
+                "median_a": median_a,
+                "median_b": median_b,
+                "standard_deviation_a": stdev_a,
+                "standard_deviation_b": stdev_b,
+                "cohens_d": cohens_d,
+                "independent_t": independent_t,
+                "observation_count": 2 * count
+            },
+            {
+                "hormone_name": "test_hormone1",
+                "dysmenorrhea_present": True,
+                "performance_type_a": "HIGH INTENSITY",
+                "performance_type_b": "OFF SEASON",
+                "measured_values_a": values_a,
+                "measured_values_b": values_b,
+                "observation_count_a": count,
+                "observation_count_b": count,
+                "mean_a": mean_a,
+                "mean_b": mean_b,
+                "median_a": median_a,
+                "median_b": median_b,
+                "standard_deviation_a": stdev_a,
+                "standard_deviation_b": stdev_b,
+                "cohens_d": cohens_d,
+                "independent_t": independent_t,
+                "observation_count": 2 * count
+            }
+        ]
+        # actual_comparative = self.engine.build_hormone_dysmenorrhea_statistics(hormone_dysmenorrhea_performance_stats)
+        # for i in range(len(intended_comparative)):
+        #     for key in intended_comparative[i].keys(): # TODO format better
+        #         self.assertEqual(intended_comparative[i][key],
+        #                          actual_comparative[i][key])
+        self.assertEqual(intended_comparative,
+                        self.engine.build_hormone_dysmenorrhea_performance_statistics(hormone_dysmenorrhea_performance_stats))
 
     def test_build_summary(self):
         statistics: dict[str, list[dict]]
