@@ -2,7 +2,6 @@ from typing import Optional
 
 from analysis_engine.contracts import HormoneAnalysisResult
 
-
 def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str, Optional[str]]:
     summary = result.summary or {}
     tables_by_name = {table["name"]: table["rows"] for table in result.tables} 
@@ -128,6 +127,8 @@ def create_multiple_parameter_summary_states_lines(row) -> list:
     lines = []
     lines.append(f"\t- n={row['observation_count']} ")
     lines.append(f"\t- cohen's d={row['cohens_d']}, independent t={row['independent_t']}")
+    lines.append(f"\t- cohen's d interpretation: {interpret_cohen(row['cohens_d'])}"
+                 f"\t- independent t interpretation: {interpret_t_statistic(row['independent_t'])}")
     return lines
 
 def create_dysmenorrhea_label(row) -> str:
@@ -136,3 +137,23 @@ def create_dysmenorrhea_label(row) -> str:
     if "dysmenorrhea_present_a" in row.keys() and "dysmenorrhea_present_b" in row.keys():
         return "dysmenorrhea present" if row["dysmenorrhea_present_a"] else "dysmenorrhea absent", \
             "dysmenorrhea present" if row["dysmenorrhea_present_b"] else "dysmenorrhea absent"
+    
+def interpret_cohen(value: Optional[float]) -> Optional[str]:
+    if value is None:
+        return None
+    if abs(value) < 0.2:
+        return "negligible"
+    elif abs(value) < 0.5:
+        return "small"
+    elif abs(value) < 0.8:
+        return "medium"
+    else:
+        return "large"
+    
+def interpret_t_statistic(value: Optional[float]) -> Optional[str]:
+    if value is None:
+        return None
+    if abs(value) < 2:
+        return "not statistically significant"
+    else:
+        return "statistically significant"
