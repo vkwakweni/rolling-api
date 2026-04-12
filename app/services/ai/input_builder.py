@@ -14,6 +14,28 @@ class AIInputBuilder:
                            "comparative_hormone_dysmenorrhea_statistics",
                            "comparative_hormone_dysmenorrhea_performance_statistics"}
     
+    ALLOWED_KEYS = {"hormone_name",
+                    "dysmenorrhea_present",
+                    "performance_type",
+                    "dysmenorrhea_present_a",
+                    "dysmenorrhea_present_b",
+                    "performance_type_a",
+                    "performance_type_b",
+                    "observation_count",
+                    "obervation_count_a",
+                    "observation_count_b",
+                    "mean",
+                    "mean_a",
+                    "mean_b",
+                    "median",
+                    "median_a",
+                    "median_b",
+                    "standard_deviation",
+                    "standard_deviation_a",
+                    "standard_deviation_b",
+                    "cohens_d",
+                    "independent_t"}
+    
     def build_allowed_ai_input(self,
                                analysis_results: list[AnalysisResultResponse],
                                analysis_report: AnalysisReportResponse,
@@ -28,7 +50,7 @@ class AIInputBuilder:
             tables = result_payload.get("tables", [])
             approved_tables = self.extract_approved_tables(tables=tables,
                                                            analysis_result=analysis_result)
-            redacted_tables = self.remove_measured_values_from_tables(approved_tables)
+            redacted_tables = self.get_whitelisted_keys_from_tables(approved_tables)
 
             combined_summaries.append({"analysis_result_id": str(analysis_result.analysis_result_id),
                                        "analysis_run_id": str(analysis_result.analysis_run_id),
@@ -68,7 +90,7 @@ class AIInputBuilder:
             
         return approved_tables
     
-    def remove_measured_values_from_tables(self, tables: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def get_whitelisted_keys_from_tables(self, tables: list[dict[str, Any]]) -> list[dict[str, Any]]:
         redacted_tables = []
         for table in tables:
             table_name = table.get("name")
@@ -76,10 +98,10 @@ class AIInputBuilder:
 
             redacted_rows = []
             for row in table_rows:
-                row = row.copy()
-                row.pop("measured_values", None)
-                row.pop("measured_values_a", None)
-                row.pop("measured_values_b", None)
+                row = dict()
+                for key, value in row.items():
+                    if key in self.ALLOWED_KEYS:
+                        row[key] = value
                 redacted_rows.append(row)
 
             redacted_tables.append({"name": table_name,
