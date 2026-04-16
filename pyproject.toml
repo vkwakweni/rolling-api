@@ -1,0 +1,16 @@
+[project]
+name = "rolling"
+version = "0.1.0"
+description = "A Python package for analysis of hormone data with menstruation cycle tracking."
+authors = [{ name = "Vuyo Kwakweni", email = "vuyo.kwakweni@example.com" }]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "psycopg2-binary",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
