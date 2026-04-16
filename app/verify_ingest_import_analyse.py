@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
 
-from app.main import app
+from main import app
 from app.services.analysis_runner import run_descriptive_hormone_analysis
 
 

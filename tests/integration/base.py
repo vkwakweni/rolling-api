@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from uuid import uuid4, UUID
 from pathlib import Path
 
-from app.main import app
+from main import app
 from app.db import get_connection
 
 
