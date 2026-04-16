@@ -1,6 +1,6 @@
 import unittest
 
-from analysis_engine.utils.statistics_calculator import (StatisticsCalculator,
+from rolling.analysis_engine.utils.statistics_calculator import (StatisticsCalculator,
                                                          EmptySampleError,
                                                          NonNumericError,
                                                          InsufficientSampleSizeError)

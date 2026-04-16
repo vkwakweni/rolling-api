@@ -1,7 +1,7 @@
 import unittest
 from types import SimpleNamespace
 
-from app.services.ai.provider import OllamaProvider
+from rolling.app.services.ai.provider import OllamaProvider
 
 # Helper builders
 def make_response_with_content(content: str):

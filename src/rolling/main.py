@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 
-from app.config import dbSettings
-from app.db import get_connection
-from app.routes.analysts import router as analysts_router
-from app.routes.projects import router as projects_router
-from app.routes.datasets import router as datasets_router
-from app.routes.analyses import router as analyses_router
+from rolling.app.config import dbSettings
+from rolling.app.db import get_connection
+from rolling.app.routes.analysts import router as analysts_router
+from rolling.app.routes.projects import router as projects_router
+from rolling.app.routes.datasets import router as datasets_router
+from rolling.app.routes.analyses import router as analyses_router
 
 app = FastAPI(title=dbSettings.app_name)
 app.include_router(analysts_router)

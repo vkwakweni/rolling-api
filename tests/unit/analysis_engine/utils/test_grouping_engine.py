@@ -2,9 +2,9 @@ import unittest
 from uuid import uuid4
 from datetime import datetime
 
-from analysis_engine.utils.grouping_engine import GroupingEngine
-from analysis_engine.contracts import HormoneObservation
-from analysis_engine.group_keys import (HormoneGroupKey,
+from rolling.analysis_engine.utils.grouping_engine import GroupingEngine
+from rolling.analysis_engine.contracts import HormoneObservation
+from rolling.analysis_engine.group_keys import (HormoneGroupKey,
                                         HormonePerformanceGroupKey,
                                         HormoneDysmenorrheaGroupKey,
                                         HormoneDysmenorrheaPerformanceGroupKey)

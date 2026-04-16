@@ -1,6 +1,6 @@
 import unittest
 
-from app.services.upload_validation import (PerformanceCSVValidator,
+from rolling.app.services.upload_validation import (PerformanceCSVValidator,
                                             HormonesCSVValidator,
                                             MenstruationSymptomsCSVValidator,
                                             MenstruationPhaseCSVValidator)

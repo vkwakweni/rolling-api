@@ -1,8 +1,8 @@
 from tests.integration.base import BaseIntegrationTestCase
-from app.services.ai.orchestrator import AIReportOrchestrator
-from app.services.ai.provider import MockAIProvider
-from app.repositories.analyses import create_analysis_result
-from app.repositories.ai import list_ai_analysis_reports_for_analysis_run, list_agent_traces_by_analysis_run
+from rolling.app.services.ai.orchestrator import AIReportOrchestrator
+from rolling.app.services.ai.provider import MockAIProvider
+from rolling.app.repositories.analyses import create_analysis_result
+from rolling.app.repositories.ai import list_ai_analysis_reports_for_analysis_run, list_agent_traces_by_analysis_run
 
 class TestOrchestrator(BaseIntegrationTestCase):
     mock_provider = MockAIProvider()

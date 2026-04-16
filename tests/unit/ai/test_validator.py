@@ -1,7 +1,7 @@
 import unittest
 
-from app.services.ai.validator import AIReportValidator
-from app.models.ai import AIModelOutput
+from rolling.app.services.ai.validator import AIReportValidator
+from rolling.app.models.ai import AIModelOutput
 
 
 class TestAIValidator(unittest.TestCase):

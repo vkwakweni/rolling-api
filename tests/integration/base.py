@@ -8,7 +8,7 @@ from uuid import uuid4, UUID
 from pathlib import Path
 
 from main import app
-from app.db import get_connection
+from rolling.app.db import get_connection
 
 
 class BaseIntegrationTestCase(TestCase):

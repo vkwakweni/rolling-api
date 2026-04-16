@@ -4,15 +4,15 @@ from uuid import uuid4
 from datetime import datetime, timedelta
 from random import randrange
 
-from analysis_engine.methods.descriptive_hormone_analysis import (DescriptiveHormoneAnalysis,
+from rolling.analysis_engine.methods.descriptive_hormone_analysis import (DescriptiveHormoneAnalysis,
                                                                   AnalysisInputError)
-from analysis_engine.utils.conclusion_mapper import ConclusionMapper
-from analysis_engine.utils.grouping_engine import GroupingEngine
-from analysis_engine.utils.statistics_calculator import StatisticsCalculator
-from analysis_engine.contracts import (HormoneAnalysisInput,
+from rolling.analysis_engine.utils.conclusion_mapper import ConclusionMapper
+from rolling.analysis_engine.utils.grouping_engine import GroupingEngine
+from rolling.analysis_engine.utils.statistics_calculator import StatisticsCalculator
+from rolling.analysis_engine.contracts import (HormoneAnalysisInput,
                                        HormoneAnalysisResult,
                                        HormoneObservation)
-from analysis_engine.group_keys import (GroupKey,
+from rolling.analysis_engine.group_keys import (GroupKey,
                                         HormoneGroupKey,
                                         HormoneDysmenorrheaGroupKey,
                                         HormonePerformanceGroupKey,

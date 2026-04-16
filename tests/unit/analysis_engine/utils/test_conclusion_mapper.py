@@ -1,7 +1,7 @@
 import unittest
 
-from analysis_engine.utils.conclusion_mapper import ConclusionMapper
-from analysis_engine.utils.statistics_calculator import StatisticsCalculator
+from rolling.analysis_engine.utils.conclusion_mapper import ConclusionMapper
+from rolling.analysis_engine.utils.statistics_calculator import StatisticsCalculator
 
 # this may be more of an integration test than a unit test, but it is important to
 # ensure that the mapper produces the expected conclusions given certain inputs.
