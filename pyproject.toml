@@ -11,7 +11,12 @@ dependencies = [
     "psycopg2-binary",
     "dotenv",
     "email-validator",
-    "python-multipart"
+    "python-multipart",
+    "openai",
+    "requests",
+    "ollama",
+    "scipy",
+    "pwdlib[argon2]"
 ]
 
 [build-system]
