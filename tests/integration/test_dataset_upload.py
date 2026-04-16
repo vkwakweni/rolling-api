@@ -67,6 +67,29 @@ class TestDatasetUpload(BaseIntegrationTestCase):
         self.assertGreaterEqual(len(invalid_files), 1)
         self.assertGreaterEqual(len(invalid_files[0]["errors"]), 1)
 
+    def test_upload_missing_athlete_code_returns_validation_errors(self):
+        analyst = self.create_analyst()
+        analyst_id = analyst["analyst_id"]
+        project = self.create_project(analyst_id)
+        project_id = project["project_id"]
+
+        files = [
+            ("files", ("athletes.csv", (self.FIXTURES_DIR / "ingest_import_analyse" / "bad_missing_athlete_code" / "athletes.csv").read_bytes(), "text/csv")),
+            ("files", ("hormones.csv", (self.FIXTURES_DIR / "ingest_import_analyse" / "bad_missing_athlete_code" / "hormones.csv").read_bytes(), "text/csv")),
+        ]
+
+        response = self.client.post(
+            f"/datasets/upload?project_id={project_id}",
+            files=files,
+            headers=self.get_auth_headers(analyst_id),
+        )
+
+        self.assertEqual(response.status_code, 400)
+        body = response.json()
+
+        self.assertIn("not found in database",
+                      body["detail"]["errors"][0])
+
     def test_upload_valid_csv_files_persists_to_db(self):
         analyst = self.create_analyst()
         analyst_id = analyst["analyst_id"]
