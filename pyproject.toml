@@ -10,6 +10,7 @@ dependencies = [
     "pydantic",
     "psycopg2-binary",
     "dotenv",
+    "email-validator",
 ]
 
 [build-system]
