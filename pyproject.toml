@@ -9,6 +9,7 @@ dependencies = [
     "uvicorn",
     "pydantic",
     "psycopg2-binary",
+    "dotenv",
 ]
 
 [build-system]
