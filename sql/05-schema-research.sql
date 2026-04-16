@@ -28,7 +28,7 @@ CREATE TABLE research.analysts (
 CREATE TABLE research.athletes (
     -- might be useful for mapping across different datasets with differing IDs
     athlete_id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    external_code       TEXT UNIQUE NOT NULL, -- TODO: define required format for this code
+    external_code       TEXT NOT NULL, -- TODO: define required format for this code
     dataset_id          UUID references research.datasets(dataset_id) on delete cascade,
     birth_date          DATE,
     birth_year          INTEGER,

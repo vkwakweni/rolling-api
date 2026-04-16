@@ -7,19 +7,20 @@ from tests.integration.base import BaseIntegrationTestCase
 
 class TestDatasetUpload(BaseIntegrationTestCase):
     PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
     def test_upload_valid_csv_files(self):
         analyst = self.create_analyst()
         analyst_id = analyst["analyst_id"]
         project = self.create_project(analyst_id)
         project_id = project["project_id"]
 
+        GOOD_BUNDLE_DIR = self.FIXTURES_DIR / "ingest_import_analyse" / "good_complete_bundle"
+
         files = [
-            ("files", ("athletes.csv", (self.FIXTURES_DIR / "athletes.csv").read_bytes(), "text/csv")),
-            ("files", ("performance.csv", (self.FIXTURES_DIR / "performance.csv").read_bytes(), "text/csv")),
-            ("files", ("hormones.csv", (self.FIXTURES_DIR / "hormones.csv").read_bytes(), "text/csv")),
-            ("files", ("menstruation_symptoms.csv", (self.FIXTURES_DIR / "menstruation_symptoms.csv").read_bytes(), "text/csv")),
-            ("files", ("menstruation_phases.csv", (self.FIXTURES_DIR / "menstruation_phases.csv").read_bytes(), "text/csv")),
+            ("files", ("athletes.csv", (GOOD_BUNDLE_DIR / "athletes.csv").read_bytes(), "text/csv")),
+            ("files", ("performances.csv", (GOOD_BUNDLE_DIR / "performances.csv").read_bytes(), "text/csv")),
+            ("files", ("hormones.csv", (GOOD_BUNDLE_DIR / "hormones.csv").read_bytes(), "text/csv")),
+            ("files", ("symptoms.csv", (GOOD_BUNDLE_DIR / "symptoms.csv").read_bytes(), "text/csv")),
+            ("files", ("cycle_phases.csv", (GOOD_BUNDLE_DIR / "cycle_phases.csv").read_bytes(), "text/csv")),
         ]
 
         response = self.client.post(
@@ -42,10 +43,11 @@ class TestDatasetUpload(BaseIntegrationTestCase):
         analyst_id = analyst["analyst_id"]
         project = self.create_project(analyst_id)
         project_id = project["project_id"]
+        GOOD_BUNDLE_DIR = self.FIXTURES_DIR / "ingest_import_analyse" / "good_complete_bundle"
 
         files = [
-            ("files", ("athletes.csv", (self.FIXTURES_DIR / "athletes.csv").read_bytes(), "text/csv")),
-            ("files", ("hormones.csv", (self.FIXTURES_DIR / "invalid_bad_numeric.csv").read_bytes(), "text/csv")),
+            ("files", ("athletes.csv", (GOOD_BUNDLE_DIR / "athletes.csv").read_bytes(), "text/csv")),
+            ("files", ("hormones.csv", (self.FIXTURES_DIR / "ingest_import_analyse" / "bad_invalid_hormone_measurement" / "hormones.csv").read_bytes(), "text/csv")),
         ]
 
         response = self.client.post(
@@ -70,10 +72,11 @@ class TestDatasetUpload(BaseIntegrationTestCase):
         analyst_id = analyst["analyst_id"]
         project = self.create_project(analyst_id)
         project_id = project["project_id"]
+        GOOD_BUNDLE_DIR = self.FIXTURES_DIR / "ingest_import_analyse" / "good_complete_bundle"
 
-        files = [("files", ("athletes.csv", (self.FIXTURES_DIR / "athletes.csv").read_bytes(), "text/csv")),
-                 ("files", ("performance.csv", (self.FIXTURES_DIR / "performance.csv").read_bytes(), "text/csv")),
-                 ("files", ("hormones.csv", (self.FIXTURES_DIR / "hormones.csv").read_bytes(), "text/csv")),
+        files = [("files", ("athletes.csv", (GOOD_BUNDLE_DIR /  "athletes.csv").read_bytes(), "text/csv")),
+                 ("files", ("performances.csv", (GOOD_BUNDLE_DIR / "performances.csv").read_bytes(), "text/csv")),
+                 ("files", ("hormones.csv", (GOOD_BUNDLE_DIR / "hormones.csv").read_bytes(), "text/csv")),
                  ]
 
         response = self.client.post(f"/datasets/upload?project_id={project_id}",
@@ -88,11 +91,11 @@ class TestDatasetUpload(BaseIntegrationTestCase):
 
         uploaded_names = {row["original_file_name"] for row in db_rows}
         self.assertIn("athletes.csv", uploaded_names)
-        self.assertIn("performance.csv", uploaded_names)
+        self.assertIn("performances.csv", uploaded_names)
         self.assertIn("hormones.csv", uploaded_names)
 
         for row in db_rows:
-            if row["original_file_name"] in {"athletes.csv", "performance.csv", "hormones.csv"}:
+            if row["original_file_name"] in {"athletes.csv", "performances.csv", "hormones.csv"}:
                 self.assertEqual(row["uploaded_by_id"], analyst_id)
                 self.assertTrue(row["stored_relative_path"])
                 self.assertIsNotNone(row["content_hash"])
@@ -106,7 +109,7 @@ class TestDatasetUpload(BaseIntegrationTestCase):
         project = self.create_project(analyst_id)
         project_id = project["project_id"]
 
-        files = [("files", ("hormones.csv", (self.FIXTURES_DIR / "invalid_bad_numeric.csv").read_bytes(), "text/csv")),]
+        files = [("files", ("hormones.csv", (self.FIXTURES_DIR / "ingest_import_analyse" / "bad_invalid_hormone_measurement" / "hormones.csv").read_bytes(), "text/csv")),]
 
         response = self.client.post(f"/datasets/upload?project_id={project_id}",
                                     files=files,
@@ -126,6 +129,7 @@ class TestDatasetUpload(BaseIntegrationTestCase):
 
         project = self.create_project(owner_id)
         project_id = project["project_id"]
+        GOOD_BUNDLE_DIR = self.FIXTURES_DIR / "ingest_import_analyse" / "good_complete_bundle"
 
         share_response = self.client.post(
             f"/projects/{project_id}/share",
@@ -135,11 +139,11 @@ class TestDatasetUpload(BaseIntegrationTestCase):
         self.assertEqual(share_response.status_code, 200)
 
         files = [
-            ("files", ("athletes.csv", (self.FIXTURES_DIR / "athletes.csv").read_bytes(), "text/csv")),
-            ("files", ("performances.csv", (self.FIXTURES_DIR / "performances.csv").read_bytes(), "text/csv")),
-            ("files", ("hormones.csv", (self.FIXTURES_DIR / "hormones.csv").read_bytes(), "text/csv")),
-            ("files", ("symptoms.csv", (self.FIXTURES_DIR / "symptoms.csv").read_bytes(), "text/csv")),
-            ("files", ("cycle_phases.csv", (self.FIXTURES_DIR / "cycle_phases.csv").read_bytes(), "text/csv")),
+            ("files", ("athletes.csv", (GOOD_BUNDLE_DIR / "athletes.csv").read_bytes(), "text/csv")),
+            ("files", ("performances.csv", (GOOD_BUNDLE_DIR / "performances.csv").read_bytes(), "text/csv")),
+            ("files", ("hormones.csv", (GOOD_BUNDLE_DIR / "hormones.csv").read_bytes(), "text/csv")),
+            ("files", ("symptoms.csv", (GOOD_BUNDLE_DIR / "symptoms.csv").read_bytes(), "text/csv")),
+            ("files", ("cycle_phases.csv", (GOOD_BUNDLE_DIR / "cycle_phases.csv").read_bytes(), "text/csv")),
         ]
 
         response = self.client.post(

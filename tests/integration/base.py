@@ -12,11 +12,11 @@ from app.db import get_connection
 
 
 class BaseIntegrationTestCase(TestCase):
-    FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
-
+    
     @classmethod
     def setUpClass(cls):
         cls.client = TestClient(app)
+        cls.FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
     def make_unique_analyst_payload(self) -> dict:
         suffix = uuid4().hex[:8]
