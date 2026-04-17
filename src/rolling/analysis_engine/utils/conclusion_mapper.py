@@ -2,11 +2,16 @@ from typing import Optional, Any
 
 class ConclusionMapper:
     """
-    Responsibilities:
-    - interpretation rules
-    - maps stats into conclusions
+    This class maps the conclusion based on statistical values.
+
+    It functions as an interface between the analysis results and the human-readable conclusions.
+
+    Methods
+    -------
+    
     """
     def map_mean_differences(self, group_a_mean, group_b_mean):
+        """Returns a conclusion for the difference between group A's mean and group B's mean."""
         if group_a_mean > group_b_mean:
             return f"Group A's mean is greater than Group B's: {group_a_mean} > {group_b_mean}"
         if group_a_mean < group_b_mean:
@@ -15,9 +20,7 @@ class ConclusionMapper:
 
 
     def map_effect_size_conclusion(self, effect_size: Optional[float | int]):
-        """
-        Hedge's g and Cohen's d are interpreted in the same way
-        """
+        """Returns a conclusion for the effect size value."""
     
         if effect_size is None:
             return "effect size could not be computed"
@@ -30,11 +33,13 @@ class ConclusionMapper:
             return "a small effect"
         return "no meaningful effect"
 
-    def map_difference_conclusion(self, t_value):
+    def map_t_statistic_conclusion(self, t_statistic: Optional[float | int]):
+        """Returns a conclusion for the t-statistic from Welch's Test."""
         # TODO implement independent t-test
         return None
 
     def map_sample_size_conclusion(self, sample_size: int):
+        """Returns a possible warning based on the sample size."""
         if sample_size < 6:
             return "This is a very small sample; interpret cautiously."
         if sample_size <= 20:
@@ -43,19 +48,9 @@ class ConclusionMapper:
 
     def build_group_conclusion(self, stats_summary: dict[str, Any]) -> str:
         """
-        Within group descriptive summaries.
-        Answers questions like:
-        - Sampel size
-        - Particular hormone represented in a subgroup
-        - Variability and distribution within a group (eventually)
-        stats_summary = {
-                        "dysmenorrhea_present": False,
-                        "training_group": "TRAINING_LOAD",
-                        "hormone_name": "ESTRADIOL",
-                        "mean_hormone_value": 142.3,
-                        "median_hormone_value": 118.7,
-                        "standard_deviation": 12,
-                        }
+        DEPRECATED: Builds conclusions based on a grouped statistics.
+
+        It takes the group labels from stats_summary and builds a sentence to summarise the statistical values.
         """
         descriptive_notes = []
         sample_size = stats_summary.get("observation_count", 0)
@@ -78,6 +73,11 @@ class ConclusionMapper:
 
 
     def build_comparison_conclusion(self, stats_summary):
+        """
+        DEPRECATED: Builds conclusions based on a grouped statistics.
+
+        It takes the group labels from stats_summary and builds a sentence to summarise the statistical values.
+        """
         descriptive_notes = []
 
         sample_size_a = stats_summary.get("sample_size_a", 0)
@@ -105,6 +105,7 @@ class ConclusionMapper:
         return " ".join(descriptive_notes)
 
     def build_overall_conclusions(self, analysis_rows):
+        """DEPRECATED: Builds summarising conclusion from an analysis result."""
         if not analysis_rows:
             return ["No comparative conclusions could be generated."]
 
@@ -126,6 +127,7 @@ class ConclusionMapper:
         return conclusions
 
     def build_overall_detailed_conclusions(self, analysis_rows):
+        """DEPRECATED: Builds a summarising conclusion from an analysis result with comparative groups."""
         if not analysis_rows:
             return ["No comparative conclusions could be generated."]
 
