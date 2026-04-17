@@ -3,10 +3,7 @@ from typing import Optional
 
 from rolling.analysis_engine.contracts import HormoneAnalysisInput, HormoneAnalysisResult, HormoneObservation
 from rolling.analysis_engine.exceptions import AnalysisInputError, AnalysisDataError
-from rolling.analysis_engine.group_keys import (GroupKey,
-                                        HormoneDysmenorrheaPerformanceGroupKey, HormoneGroupKey,
-                                        HormonePerformanceGroupKey,
-                                        HormoneDysmenorrheaGroupKey)
+from rolling.analysis_engine.group_keys import GroupKey
 from rolling.analysis_engine.utils.statistics_calculator import StatisticsCalculator
 from rolling.analysis_engine.utils.grouping_engine import GroupingEngine
 from rolling.analysis_engine.utils.conclusion_mapper import ConclusionMapper
@@ -201,11 +198,11 @@ class DescriptiveHormoneAnalysis:
                         compared["median_a"] = self.calculator.median(values_1)
                         compared["median_b"] = self.calculator.median(values_2)
                         compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
-                                                        if len(values_1) > 1
-                                                        else None)
+                                                            if len(values_1) > 1
+                                                            else None)
                         compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
-                                                        if len(values_2) > 1
-                                                        else None)
+                                                            if len(values_2) > 1
+                                                            else None)
                         compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
                         compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                         compared["observation_count"] = len(values_1) + len(values_2)
@@ -241,11 +238,11 @@ class DescriptiveHormoneAnalysis:
                     compared["median_a"] = self.calculator.median(values_1)
                     compared["median_b"] = self.calculator.median(values_2)
                     compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
-                                                    if len(values_1) > 1
-                                                    else None)
+                                                        if len(values_1) > 1
+                                                        else None)
                     compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
-                                                    if len(values_2) > 1
-                                                    else None)
+                                                        if len(values_2) > 1
+                                                        else None)
                     compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
                     compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
@@ -289,11 +286,11 @@ class DescriptiveHormoneAnalysis:
                     compared["median_a"] = self.calculator.median(values_1)
                     compared["median_b"] = self.calculator.median(values_2)
                     compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
-                                                    if len(values_1) > 1
-                                                    else None)
+                                                        if len(values_1) > 1
+                                                        else None)
                     compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
-                                                    if len(values_2) > 1
-                                                    else None)
+                                                        if len(values_2) > 1
+                                                        else None)
                     compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
                     compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
@@ -318,11 +315,11 @@ class DescriptiveHormoneAnalysis:
                     compared["median_a"] = self.calculator.median(values_1)
                     compared["median_b"] = self.calculator.median(values_2)
                     compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
-                                                    if len(values_1) > 1
-                                                    else None)
+                                                        if len(values_1) > 1
+                                                        else None)
                     compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
-                                                    if len(values_2) > 1
-                                                    else None)
+                                                        if len(values_2) > 1
+                                                        else None)
                     compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
                     compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
@@ -345,7 +342,7 @@ class DescriptiveHormoneAnalysis:
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
         "comparative_hormone_dysmenorrhea_performance_row_count": len(statistics["comparative_hormone_dysmenorrhea_performance_statistics"]),
         "total_grouped_row_count": sum(len(rows) for rows in statistics.values()),
-    }
+        }
 
     def build_tables(self, statistics: dict[str, list[dict]]):
         """Returns a list of dictionaries containing a statistics group's name, the characteristics of the group, and the calculated statistics."""
@@ -358,9 +355,7 @@ class DescriptiveHormoneAnalysis:
         "hormone_row_count": len(statistics["hormone_statistics"]),
         "hormone_performance_row_count": len(statistics["hormone_performance_statistics"]),
         "hormone_dysmenorrhea_row_count": len(statistics["hormone_dysmenorrhea_statistics"]),
-        "hormone_dysmenorrhea_performance_row_count": len(
-            statistics["hormone_dysmenorrhea_performance_statistics"]
-        ),
+        "hormone_dysmenorrhea_performance_row_count": len(statistics["hormone_dysmenorrhea_performance_statistics"]),
         "comparative_hormone_performance_row_count": len(statistics["comparative_hormone_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
         "comparative_hormone_dysmenorrhea_performance_row_count": len(statistics["comparative_hormone_dysmenorrhea_performance_statistics"]),
@@ -369,7 +364,7 @@ class DescriptiveHormoneAnalysis:
         "included_symptom_names": payload.include_symptom_names,
         "date_from": payload.date_from.isoformat() if payload.date_from else None,
         "date_to": payload.date_to.isoformat() if payload.date_to else None,
-    }
+        }
 
     def build_conclusions(self, statistics: dict[str, list[dict]]) -> list[str]:
         """Returns a readable summary of a statistics dictionary."""
