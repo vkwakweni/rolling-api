@@ -13,12 +13,58 @@ from rolling.analysis_engine.utils.conclusion_mapper import ConclusionMapper
 
 
 class DescriptiveHormoneAnalysis:
+    """
+    This class performs a descriptive analysis of hormone observations, grouping them by various characteristics and calculating statistics for each group.
+    
+    It functions as an interface between the input data and the analysis results, orchestrating the flow of data through filtering, grouping, statistical calculation, and result generation.
+
+    The main steps of the analysis include:
+    1. Validating the input data to ensure it is not None and contains observations.
+    2. Filtering the observations based on specified criteria (hormone names, symptom names, performance types, date range).
+    3. Grouping the filtered observations by hormone, hormone-performance, hormone-dysmenorrhea, and hormone-dysmenorrhea-performance combinations.
+    4. Calculating descriptive statistics (mean, median, standard deviation) for each group.
+    5. Building comparative statistics for groups with the same hormone name but different performance types or dysmenorrhea experiences, including effect size (Cohen's d) and statistical significance (Welch's t-test).
+    6. Generating a summary of the analysis, tables of statistics, metadata about the analysis, and readable conclusions based on the calculated statistics.
+
+    Attributes
+    ----------
+    calculator : StatisticsCalculator
+        An instance of the StatisticsCalculator class used to perform statistical calculations.
+    grouper : GroupingEngine
+        An instance of the GroupingEngine class used to filter and group observations.
+    conclusion_mapper : ConclusionMapper
+        An instance of the ConclusionMapper class used to generate readable conclusions from statistics.
+
+    Methods
+    -------
+    run(payload: Optional[HormoneAnalysisInput]) -> HormoneAnalysisResult
+        Executes the descriptive hormone analysis on the provided input data and returns the results.
+    validate_input(payload: Optional[HormoneAnalysisInput])
+        Validates that the input payload is not None and contains observations.
+    build_group_statistics(grouped_observations: dict[GroupKey, list[HormoneObservation]]) -> list[dict]
+        Returns a list of dictionaries containing statistics for each group of observations.
+    build_hormone_performance_statistics(group_statistics: list[dict]) -> list[dict]
+        Builds comparative statistics for hormone-performance groups by comparing groups with the same hormone name but different performance types.
+    build_hormone_dysmenorrhea_statistics(group_statistics: list[dict]) -> list[dict]
+        Builds comparative statistics for hormone-dysmenorrhea groups by comparing groups with the same hormone name but different dysmenorrhea experiences.
+    build_hormone_dysmenorrhea_performance_statistics(group_statistics: list[dict]) -> list[dict]
+        Builds comparative statistics for hormone-dysmenorrhea-performance groups by comparing groups with the same hormone name but different dysmenorrhea experiences and different performance types.
+    build_summary(statistics: dict[str, list[dict]]) -> dict[str, int]
+        Builds an observation count summary for grouped statistics.
+    build_tables(statistics: dict[str, list[dict]]) -> list[dict]
+        Returns a list of dictionaries containing a statistics group's name, the characteristics of the group, and the calculated statistics.
+    build_metadata(payload: HormoneAnalysisInput, statistics: dict[str, list[dict]]) -> dict
+        Builds metadata about the analysis, including project ID, input observation count, row counts for each statistics group, included hormone names, performance types, symptom names, and date range.
+    build_conclusions(statistics: dict[str, list[dict]]) -> list[str]
+        Returns a readable summary of a statistics dictionary, generating conclusions based on the calculated statistics for each group and comparative analysis.
+    """
     def __init__(self):
         self.calculator = StatisticsCalculator()
         self.grouper = GroupingEngine()
         self.conclusion_mapper = ConclusionMapper()
 
     def run(self, payload: Optional[HormoneAnalysisInput]) -> HormoneAnalysisResult:
+        """Executes the descriptive hormone analysis on the provided input data."""
         self.validate_input(payload)
 
         filtered = self.grouper.filter_observations(payload.observations,
@@ -88,12 +134,23 @@ class DescriptiveHormoneAnalysis:
                                      conclusions=conclusions)
 
     def validate_input(self, payload: Optional[HormoneAnalysisInput]):
+        """Validates that the input payload is not None and contains observations."""
         if payload is None:
             raise AnalysisInputError("Analysis input payload must not be None.")
         if not payload.observations:
             raise AnalysisInputError("Analysis input must include observations.")
     
     def build_group_statistics(self, grouped_observations: dict[GroupKey, list[HormoneObservation]]) -> list[dict]:
+        """
+        Returns a list of dictionaries containing statistics for each group of observations.
+
+        Each dictionary includes:
+        - Group labels (e.g., hormone_name, performance_type, dysmenorrhea_present)
+        - List of measured values- Count of observations
+        - Mean of measured values
+        - Median of measured values
+        - Standard deviation of measured values (if more than 1 observation, else None)
+        """
         group_statistics = []
 
         for group_key, observations in grouped_observations.items():
@@ -116,6 +173,14 @@ class DescriptiveHormoneAnalysis:
         return group_statistics
     
     def build_hormone_performance_statistics(self, group_statistics: list[dict]) -> list[dict]:
+        """
+        Builds comparative statistics for hormone-performance groups by comparing groups with the same hormone name but different performance types.
+        
+        For each pair of groups with the same hormone name and different performance types, calculates:
+        - Mean, median, and standard deviation for each group
+        - Cohen's d for effect size
+        - Independent t-test (Welch's t-test) for statistical significance
+        """
         comparative_hormone_performance_statistics = []
         for stat1 in group_statistics:
             compared = dict()
@@ -149,6 +214,14 @@ class DescriptiveHormoneAnalysis:
         return comparative_hormone_performance_statistics
 
     def build_hormone_dysmenorrhea_statistics(self, group_statistics: list[dict]) -> list[dict]:
+        """
+        Builds comparative statistics for hormone-dysmenorrhea groups by comparing groups with the same hormone name but different dysmenorrhea experiences.
+        
+        For each pair of groups with the same hormone name and different dysmenorrhea experiences, calculates:
+        - Mean, median, and standard deviation for each group
+        - Cohen's d for effect size
+        - Independent t-test (Welch's t-test) for statistical significance
+        """
         comparative_hormone_dysmenorrhea_statistics = []
         for stat1 in group_statistics:
             compared = dict()
@@ -182,6 +255,18 @@ class DescriptiveHormoneAnalysis:
         return comparative_hormone_dysmenorrhea_statistics
 
     def build_hormone_dysmenorrhea_performance_statistics(self, group_statistics: list[dict]) -> list[dict]:
+        """
+        Builds comparative statistics for hormone-dysmenorrhea groups by comparing groups with the same hormone name but different dysmenorrhea experiences and different performance types.
+
+        Each combination will have the same hormone name, and can then be grouped in two ways:
+        - same dysmenorrhea experience and different performance types
+        - different dysmenorrhea experiences and the same performance type.
+        
+        For each combination, it calculates:
+        - Mean, median, and standard deviation for each group
+        - Cohen's d for effect size
+        - Independent t-test (Welch's t-test) for statistical significance
+        """
         comparative_hormone_dysmenorrhea_performance_statistics = []
         for k, stat1 in enumerate(group_statistics):
             for stat2 in group_statistics[k:]:
@@ -247,7 +332,8 @@ class DescriptiveHormoneAnalysis:
         return comparative_hormone_dysmenorrhea_performance_statistics
     
     # HELPER METHODS FOR BUILDING RESULT COMPONENTS
-    def build_summary(self, statistics: dict[str, list[dict]]):
+    def build_summary(self, statistics: dict[str, list[dict]]) -> dict[str, int]:
+        """Builds an observation count summary for grouped statistics."""
         return {
         "hormone_row_count": len(statistics["hormone_statistics"]),
         "hormone_performance_row_count": len(statistics["hormone_performance_statistics"]),
@@ -262,6 +348,7 @@ class DescriptiveHormoneAnalysis:
     }
 
     def build_tables(self, statistics: dict[str, list[dict]]):
+        """Returns a list of dictionaries containing a statistics group's name, the characteristics of the group, and the calculated statistics."""
         return [{"name": name, "rows": rows} for name, rows in statistics.items()]
 
     def build_metadata(self, payload: HormoneAnalysisInput, statistics: dict[str, list[dict]]):
@@ -285,6 +372,7 @@ class DescriptiveHormoneAnalysis:
     }
 
     def build_conclusions(self, statistics: dict[str, list[dict]]) -> list[str]:
+        """Returns a readable summary of a statistics dictionary."""
         conclusions = []
 
         for row in statistics["hormone_statistics"]:
@@ -351,4 +439,3 @@ class DescriptiveHormoneAnalysis:
                 )
 
         return conclusions
-
