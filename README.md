@@ -2,6 +2,19 @@
 ## Description
 `Rolling API` is a repository for the deployment of an analysis of cyclists' menstruation experience, performance, and hormone profile. It serves supplement for a Bachelor degree thesis.
 
+## Installation as a package
+If you would simply like to use this API in your own project, you will just need to use pip to install it from GitHub. It still requires setting up the database and the .env file.
+
+* Before installing the package, first set up the database. You can do this following the steps in [`Database Bootstrap`](###database-bootstrap)
+* Then, proceed with the environment variables. You can do this following the instructions in [`Environment`](###environment)
+* With the database set up and the environment variables configured, you can then install the package using pip
+    * `python3 -m pip install git+https://github.com/vkwakweni/rolling-api.git`
+    * It will install its dependencies as well
+* To uninstall it:
+    * `pip uninstall rolling`
+* For using the API, you can proceed to the documentation and use case outlines:
+    * TKTK
+
 ## Application
 * Application name: **Rolling**
 * Domain: small-cohort cyclists + menstrual + hormone analysis
