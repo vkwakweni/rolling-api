@@ -3,6 +3,7 @@ from typing import Optional
 from rolling.analysis_engine.contracts import HormoneAnalysisResult
 
 def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str, Optional[str]]:
+    """Builds a traditional descriptive hormone report based on the provided analysis result."""
     summary = result.summary or {}
     tables_by_name = {table["name"]: table["rows"] for table in result.tables} 
 
@@ -118,12 +119,14 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
 
 # HELPERS
 def create_single_parameter_summary_stats_lines(row) -> list:
+    """Creates lines for a single parameter summary statistics report."""
     lines = []
     lines.append(f"\t- n={row['observation_count']} ")
     lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
     return lines
 
 def create_multiple_parameter_summary_states_lines(row) -> list:
+    """Creates lines for a multiple parameter summary statistics report."""
     lines = []
     lines.append(f"\t- n={row['observation_count']} ")
     lines.append(f"\t- cohen's d={row['cohens_d']}, independent t={row['independent_t']}")
@@ -132,6 +135,7 @@ def create_multiple_parameter_summary_states_lines(row) -> list:
     return lines
 
 def create_dysmenorrhea_label(row) -> str:
+    """Creates a dysmenorrhea label based on the boolean value of dysmenorrhea_present."""
     if "dysmenorrhea_present" in row.keys():
         return "dysmenorrhea present" if row["dysmenorrhea_present"] else "dysmenorrhea absent"
     if "dysmenorrhea_present_a" in row.keys() and "dysmenorrhea_present_b" in row.keys():
@@ -139,6 +143,7 @@ def create_dysmenorrhea_label(row) -> str:
             "dysmenorrhea present" if row["dysmenorrhea_present_b"] else "dysmenorrhea absent"
     
 def interpret_cohen(value: Optional[float]) -> Optional[str]:
+    """Returns an interpretation of a Cohen's d."""
     if value is None:
         return None
     if abs(value) < 0.2:
@@ -151,6 +156,7 @@ def interpret_cohen(value: Optional[float]) -> Optional[str]:
         return "large"
     
 def interpret_t_statistic(value: Optional[float]) -> Optional[str]:
+    """Returns an interpretation of the t-statistic from Welch's test."""
     if value is None:
         return None
     if abs(value) < 2:
