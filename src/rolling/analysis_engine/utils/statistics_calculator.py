@@ -98,10 +98,26 @@ class StatisticsCalculator:
 
         Source: https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/hedgeg.htm
         TODO throw warning for length
-        TODO look at the actual difference between this and Hedge's g
         """
-        mean_diff = float(abs(self.mean(group_a) - self.mean(group_b)))
+        mean_diff = float(self.mean(group_a) - self.mean(group_b))
         pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
+        return mean_diff / pooled_stdev
+    
+    def hedges_g(self, group_a, group_b):
+        """
+        Returns Hedge's g, a measure of effect size that quantifies the difference between two groups in terms of standard deviations, adjusted for small sample sizes.
+
+        Hedge's g is similar to Cohen's d but includes a correction factor for small sample sizes. It is calculated as the difference between the means of the two groups
+        divided by the pooled standard deviation, multiplied by a correction factor.
+
+        Source: https://www.statisticshowto.com/hedges-g/; https://en.wikipedia.org/wiki/Effect_size
+        TODO throw warning for length
+        """
+        mean_diff = float(self.mean(group_a) - self.mean(group_b))
+        pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
+        correction_factor = 1 - (3 / (4 * (len(group_a) + len(group_b)) - 9))
+        if len(group_a) < 50 and len(group_b) < 50:
+            return (mean_diff / pooled_stdev) * correction_factor
         return mean_diff / pooled_stdev
 
     def welch_test(self, group_a, group_b):

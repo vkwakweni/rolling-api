@@ -203,7 +203,7 @@ class DescriptiveHormoneAnalysis:
                         compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
                                                             if len(values_2) > 1
                                                             else None)
-                        compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
+                        compared["hedges_g"] = self.calculator.hedges_g(values_1, values_2)
                         compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                         compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_performance_statistics and compared:
@@ -243,7 +243,7 @@ class DescriptiveHormoneAnalysis:
                     compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
                                                         if len(values_2) > 1
                                                         else None)
-                    compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
+                    compared["hedges_g"] = self.calculator.hedges_g(values_1, values_2)
                     compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_dysmenorrhea_statistics and compared:
@@ -291,7 +291,7 @@ class DescriptiveHormoneAnalysis:
                     compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
                                                         if len(values_2) > 1
                                                         else None)
-                    compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
+                    compared["hedges_g"] = self.calculator.hedges_g(values_1, values_2)
                     compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_dysmenorrhea_performance_statistics and compared:
@@ -320,7 +320,7 @@ class DescriptiveHormoneAnalysis:
                     compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
                                                         if len(values_2) > 1
                                                         else None)
-                    compared["cohens_d"] = self.calculator.cohens_d(values_1, values_2)
+                    compared["hedges_g"] = self.calculator.hedges_g(values_1, values_2)
                     compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
                     compared["observation_count"] = len(values_1) + len(values_2)
                     if compared not in comparative_hormone_dysmenorrhea_performance_statistics and compared:
@@ -403,7 +403,7 @@ class DescriptiveHormoneAnalysis:
             conclusions.append(
                 f"Comparative [Hormone + Performance] "
                 f"{row['hormone_name']} in ['{performance_type_a}' and '{performance_type_b}']: "
-                f"{row['observation_count']}, cohen's d={row['cohens_d']}, independent t={row['independent_t']}."
+                f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
             )
 
         for row in statistics["comparative_hormone_dysmenorrhea_statistics"]:
@@ -411,7 +411,7 @@ class DescriptiveHormoneAnalysis:
             dys_label_b = "dysmenorrhea present" if str(row["dysmenorrhea_present_b"]).lower() == "true" else "dysmenorrhea absent"
             conclusions.append(
                 f"Comparative [Hormone + Dysmenorrhea] {row['hormone_name']} with {dys_label_a} and {dys_label_b}: "
-                f"{row['observation_count']}, cohen's d={row['cohens_d']}, independent t={row['independent_t']}."
+                f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
             )
         
         for row in statistics["comparative_hormone_dysmenorrhea_performance_statistics"]:
@@ -421,7 +421,7 @@ class DescriptiveHormoneAnalysis:
                 conclusions.append(
                     f"Comparative [Hormone + Dysmenorrhea + Performance] "
                     f"{row['hormone_name']} in '{row['performance_type']}' with {dys_label_a} and {dys_label_b}: "
-                    f"{row['observation_count']}, cohen's d={row['cohens_d']}, independent t={row['independent_t']}."
+                    f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
                 )
             else:
                 dys_label = "dysmenorrhea present" if str(row["dysmenorrhea_present"]).lower() == "true" else "dysmenorrhea absent"
@@ -430,7 +430,7 @@ class DescriptiveHormoneAnalysis:
                 conclusions.append(
                     f"Comparative [Hormone + Dysmenorrhea + Performance] "
                     f"{row['hormone_name']} with {dys_label} for performance types {performance_type_a} and {performance_type_b}: "
-                    f"{row['observation_count']}, cohen's d={row['cohens_d']}, independent t={row['independent_t']}."
+                    f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
                 )
 
         return conclusions

@@ -1,6 +1,9 @@
 import unittest
+import sys
 
-from rolling.analysis_engine.utils.statistics_calculator import (StatisticsCalculator,
+sys.path.append("../src")
+
+from src.rolling.analysis_engine.utils.statistics_calculator import (StatisticsCalculator,
                                                          EmptySampleError,
                                                          NonNumericError,
                                                          InsufficientSampleSizeError)
@@ -12,6 +15,8 @@ class TestStatisticsCalculator(unittest.TestCase):
 
     correct_input_a = [1, 2, 3, 4, 5]
     correct_input_b = [2, 4, 6, 8, 10]
+    larger_input_a = [1, 2, 3, 4, 5] * 10
+    larger_input_b = [2, 4, 6, 8, 10] * 10
     
     # calculated manually
     mean_a = 3.0
@@ -21,7 +26,9 @@ class TestStatisticsCalculator(unittest.TestCase):
     pooled_stdev_ab = 2.50
     cohen_pooled_stdev_ab = 2.50
     cohen_pooled_stderror_ab = 1.58
-    cohens_d_ab = 1.20
+    cohens_d_ab = -1.20
+    hedges_g_ab = -1.08
+    larger_hedges_g_ab = -1.33
     independent_t_ab = round(-1.89, 1)
 
     # MAIN METHODS
@@ -94,6 +101,22 @@ class TestStatisticsCalculator(unittest.TestCase):
 
         self.assertEqual(round(self.calculator.cohens_d(self.correct_input_a, self.correct_input_b), 2),
                          self.cohens_d_ab)
+        
+    def test_hedges_g(self):
+        with self.assertRaises(NonNumericError):
+            self.calculator.hedges_g(self.invalid_input, self.correct_input_a)
+
+        with self.assertRaises(EmptySampleError):
+            self.calculator.hedges_g(self.empty_input, self.correct_input_a)
+
+        self.assertEqual(round(self.calculator.hedges_g(self.correct_input_a, self.correct_input_b), 2),
+                         self.hedges_g_ab)
+        
+        self.assertEqual(round(self.calculator.hedges_g(self.larger_input_a, self.larger_input_b), 2),
+                         self.larger_hedges_g_ab)
+        
+        self.assertEqual(round(self.calculator.hedges_g(self.larger_input_a, self.larger_input_b), 2),
+                         round(self.calculator.cohens_d(self.larger_input_a, self.larger_input_b), 2))
 
     def test_independent_t_test(self):
         with self.assertRaises(NonNumericError):

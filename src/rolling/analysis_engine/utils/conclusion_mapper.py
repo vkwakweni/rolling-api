@@ -94,7 +94,7 @@ class ConclusionMapper:
         
 
         descriptive_notes.append(
-            self.map_effect_size_conclusion(stats_summary.get("effect_size"))
+            self.map_effect_size_conclusion(stats_summary.get("hedges_g"))
         )
 
         if group_a_mean is not None and group_b_mean is not None:
