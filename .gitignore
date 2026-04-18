@@ -2,6 +2,7 @@
 .idea/
 .codex
 .env
+.vscode/
 
 __pycache__/
 .pytest_cache/
