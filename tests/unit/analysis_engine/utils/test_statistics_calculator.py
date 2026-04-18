@@ -1,7 +1,4 @@
 import unittest
-import sys
-
-sys.path.append("../src")
 
 from src.rolling.analysis_engine.utils.statistics_calculator import (StatisticsCalculator,
                                                          EmptySampleError,
