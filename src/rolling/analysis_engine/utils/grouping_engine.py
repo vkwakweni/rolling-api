@@ -2,9 +2,9 @@ from collections import defaultdict
 
 from rolling.analysis_engine.contracts import HormoneObservation
 from rolling.analysis_engine.group_keys import (HormoneDysmenorrheaPerformanceGroupKey,
-                                        HormonePerformanceGroupKey,
-                                        HormoneDysmenorrheaGroupKey,
-                                        HormoneGroupKey)
+                                                HormonePerformanceGroupKey,
+                                                HormoneDysmenorrheaGroupKey,
+                                                HormoneGroupKey)
 
 
 class GroupingEngine:
