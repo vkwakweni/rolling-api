@@ -157,18 +157,22 @@ class StatisticsCalculator:
     
 
 class CalculatorError(Exception):
+    """Base class for exceptions in the StatisticsCalculator."""
     def __init__(self, message: str = ""):
         self.message = message
         super().__init__(message)
 
 class NonNumericError(CalculatorError):
+    """Exception raised for non-numeric values in the input sample."""
     def __init__(self, value):
         super().__init__(f"Encountered invalid value: {value} is of type {type(value)}. All values must be numeric.")
 
 class EmptySampleError(CalculatorError):
+    """Exception raised for empty input samples."""
     def __init__(self):
         super().__init__("Empty sample submitted cannot be used for statistical calculation.")
 
 class InsufficientSampleSizeError(CalculatorError):
+    """Exception raised when the sample size is below the minimum required for a specific calculation."""
     def __init__(self, sample_size, minimum_size): # TODO write a better message
         super().__init__(f"Sample size {sample_size} is below the minimum required size of {minimum_size}.")
