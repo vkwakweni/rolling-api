@@ -3,7 +3,17 @@ from typing import Optional
 from rolling.analysis_engine.contracts import HormoneAnalysisResult
 
 def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str, Optional[str]]:
-    """Builds a traditional descriptive hormone report based on the provided analysis result."""
+    """
+    Builds a traditional descriptive hormone report based on the provided analysis result.
+
+    Args:
+        result (HormoneAnalysisResult): An analysis result containing summary statistics, tables of statistics, and conclusions from a descriptive hormone analysis.
+
+    Returns:
+        dict[str, Optional[str]]: A dictionary containing the report content.
+            - "report_text": A string containing the formatted report text.
+            - "summary_text": A string containing a summary of the analysis results.
+    """
     summary = result.summary or {}
     tables_by_name = {table["name"]: table["rows"] for table in result.tables} 
 
@@ -118,15 +128,30 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             "summary_text": summary_text,}
 
 # HELPERS
-def create_single_parameter_summary_stats_lines(row) -> list:
-    """Creates lines for a single parameter summary statistics report."""
+def create_single_parameter_summary_stats_lines(row: dict) -> list:
+    """
+    Creates lines for a single parameter summary statistics report.
+    
+    Args:
+        row (dict): A dictionary containing the observation count and statistical values for a particular statistic summary.
+        
+    Returns:
+        list: A list of strings containing a more readable summary of the statistics."""
     lines = []
     lines.append(f"\t- n={row['observation_count']} ")
     lines.append(f"\t- mean={row['mean']}, median={row['median']}, sd={row['standard_deviation']}")
     return lines
 
 def create_multiple_parameter_summary_states_lines(row) -> list:
-    """Creates lines for a multiple parameter summary statistics report."""
+    """
+    Creates lines for a multiple parameter summary statistics report.
+    
+    Args:
+        row (dict): A dictionary containing the observation count and statistical values for a particular statistic summary.
+        
+    Returns:
+        list: A list of strings containing a more readable summary of the statistics.
+    """
     lines = []
     lines.append(f"\t- n={row['observation_count']} ")
     lines.append(f"\t- cohen's d={row['cohens_d']}, independent t={row['independent_t']}")
@@ -135,7 +160,15 @@ def create_multiple_parameter_summary_states_lines(row) -> list:
     return lines
 
 def create_dysmenorrhea_label(row) -> str:
-    """Creates a dysmenorrhea label based on the boolean value of dysmenorrhea_present."""
+    """
+    Creates a dysmenorrhea label based on the boolean value of dysmenorrhea_present.
+
+    Args:
+        row (dict): A dictionary containing the observation count and statistical values for a particular statistic summary.
+
+    Returns:
+        str: "dysmenorrhea present" if dysmenorrhea was present in the group. "dysmenorrhea absent" otherwise.
+    """
     if "dysmenorrhea_present" in row.keys():
         return "dysmenorrhea present" if row["dysmenorrhea_present"] else "dysmenorrhea absent"
     if "dysmenorrhea_present_a" in row.keys() and "dysmenorrhea_present_b" in row.keys():
@@ -143,7 +176,15 @@ def create_dysmenorrhea_label(row) -> str:
             "dysmenorrhea present" if row["dysmenorrhea_present_b"] else "dysmenorrhea absent"
     
 def interpret_cohen(value: Optional[float]) -> Optional[str]:
-    """Returns an interpretation of a Cohen's d."""
+    """
+    Returns an interpretation of a Cohen's d.
+    
+    Args:
+        value (:obj:float, optional): Cohen's d for effect size.
+        
+    Returns:
+        Optional[str]: An interpretation of the effect-size value, if value is not None. Otherwise, returns None.
+    """
     if value is None:
         return None
     if abs(value) < 0.2:
@@ -156,7 +197,15 @@ def interpret_cohen(value: Optional[float]) -> Optional[str]:
         return "large"
     
 def interpret_t_statistic(value: Optional[float]) -> Optional[str]:
-    """Returns an interpretation of the t-statistic from Welch's test."""
+    """
+    Returns an interpretation of the t-statistic from Welch's test.
+
+    Args:
+        value (:obj:float, optional): T-statistic from Welch's test.
+        
+    Returns:
+        Optinoal[str]: An interpretation of the value, if value is not None. Otherwise, returns None.
+    """
     if value is None:
         return None
     if abs(value) < 2:

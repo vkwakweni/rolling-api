@@ -34,17 +34,41 @@ class StatisticsCalculator:
         Returns the t-statistic from Welch's t-test, which is used to determine if there is a significant difference between the means of two groups.
     """
     def mean(self, values):
-        """Returns the arithmetic mean of a set of values."""
+        """
+        Calculates the arithmetic mean of a set of values.
+        
+        Args:
+            values (list): A list of numeric values.
+
+        Returns:
+            float: The arithmetic mean of the values.
+        """
         self.validate_numeric_sample(values)
         return statistics.mean(values)
 
     def median(self, values):
-        """Returns the median of a set of values."""
+        """
+        Calculates the median of a set of values.
+
+        Args:
+            values (list): A list of numeric values.
+
+        Returns:
+            float: The median of the values.
+        """
         self.validate_numeric_sample(values)
         return statistics.median(values)
         
     def standard_deviation(self, values):
-        """Returns the standard deviation of a set of values."""
+        """
+        Calculates the standard deviation of a set of values.
+
+        Args:
+            values (list): A list of numeric values.
+
+        Returns:
+            float: The standard deviation of the values.
+        """
         self.validate_numeric_sample(values)
         if len(values) <= 1:
             return None
@@ -52,9 +76,16 @@ class StatisticsCalculator:
     
     def pooled_standard_deviation(self, group_a, group_b):
         """
-        Returns the pooled standard deviation of two groups, assuming equal variances and sample sizes.
+        Calculates the pooled standard deviation of two groups, assuming equal variances and sample sizes.
 
         Source: https://www.statisticshowto.com/pooled-standard-deviation/
+
+        Args:
+            group_a (list): A list of numeric values for group A.
+            group_b (list): A list of numeric values for group B.
+
+        Returns:
+            float: The pooled standard deviation of the two groups.
         """
         self.validate_numeric_sample(group_a)
         self.validate_numeric_sample(group_b)
@@ -65,9 +96,16 @@ class StatisticsCalculator:
     
     def cohen_pooled_standard_deviation(self, group_a, group_b):
         """
-        Returns the pooled standard deviation of two groups, assuming equal variances but potentially unequal sample sizes.
+        Calculates the pooled standard deviation of two groups, assuming equal variances but potentially unequal sample sizes.
         
         Source: https://resources.nu.edu/statsresources/cohensd
+
+        Args:
+            group_a (list): A list of numeric values for group A.
+            group_b (list): A list of numeric values for group B.
+
+        Returns:
+            float: The pooled standard deviation of the two groups.
         """
         stdev_a = self.standard_deviation(group_a)
         stdev_b = self.standard_deviation(group_b)
@@ -78,9 +116,16 @@ class StatisticsCalculator:
     
     def cohen_pooled_standard_error(self, group_a, group_b): # TODO double check if pooled stdev should be here
         """
-        Returns the pooled standard error of two groups, assuming equal variances but potentially unequal sample sizes.
+        Calculates the pooled standard error of two groups, assuming equal variances but potentially unequal sample sizes.
 
         Source: https://stats.libretexts.org/Bookshelves/Introductory_Statistics/Statistics%3A_Open_for_Everyone_(Peter)/08%3A_Independent_Samples_t-Tests/8.03%3A_The_Independent_Samples_t-Test_Formula
+
+        Args:
+            group_a (list): A list of numeric values for group A.
+            group_b (list): A list of numeric values for group B.
+
+        Returns:
+            float: The pooled standard error of the two groups.
         """
         pooled_std_error = self.cohen_pooled_standard_deviation(group_a, group_b) * \
                                 (math.sqrt(
@@ -98,6 +143,13 @@ class StatisticsCalculator:
 
         Source: https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/hedgeg.htm
         TODO throw warning for length
+
+        Args:
+            group_a (list): A list of numeric values for group A.
+            group_b (list): A list of numeric values for group B.
+
+        Returns:
+            float: Cohen's d effect size for the difference between the two groups.
         """
         mean_diff = float(self.mean(group_a) - self.mean(group_b))
         pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
@@ -112,6 +164,13 @@ class StatisticsCalculator:
 
         Source: https://www.statisticshowto.com/hedges-g/; https://en.wikipedia.org/wiki/Effect_size
         TODO throw warning for length
+
+        Args:
+            group_a (list): A list of numeric values for group A.
+            group_b (list): A list of numeric values for group B.
+
+        Returns:
+            float: Hedge's g effect size for the difference between the two groups.
         """
         mean_diff = float(self.mean(group_a) - self.mean(group_b))
         pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
@@ -126,6 +185,13 @@ class StatisticsCalculator:
 
         It assumes that group_a and group_b are normally distributed, independent samples with unequal variances
         Source: https://en.wikipedia.org/wiki/Welch%27s_t-test
+
+        Args:
+            group_a (list): A list of numeric values for group A.
+            group_b (list): A list of numeric values for group B.
+
+        Returns:
+            float: The t-statistic from Welch's t-test for the difference between the two groups.
         """
         self.validate_numeric_sample(group_a)
         self.validate_numeric_sample(group_b)
@@ -134,7 +200,16 @@ class StatisticsCalculator:
 
     @staticmethod
     def validate_numeric_sample(values):
-        """Validates that the input is a non-empty list of numeric values."""
+        """
+        Validates that the input is a non-empty list of numeric values.
+        
+        Args:
+            values (list): A list of values to validate.
+            
+        Raises:
+            EmptySampleError: If the input list is empty.
+            NonNumericError: If any value in the list is not numeric.
+        """
         if len(values) == 0:
             raise EmptySampleError()
         for value in values:
@@ -149,6 +224,15 @@ class StatisticsCalculator:
         Safely divides two numbers, handling division by zero.
 
         TODO this is should replace division in this logic, and handle 0's
+
+        Args:
+            denominator (float): The denominator to divide by.
+
+        Returns:
+            float: The result of the division, or a default value if division by zero occurs.
+
+        Raises:
+            ZeroDivisionError: If the denominator is zero.
         """
         if denominator == 0:
             raise ZeroDivisionError
@@ -165,6 +249,12 @@ class CalculatorError(Exception):
 class NonNumericError(CalculatorError):
     """Exception raised for non-numeric values in the input sample."""
     def __init__(self, value):
+        """
+        Initializes the NonNumericError with a message indicating the invalid value and its type.
+        
+        Args:
+            value: The non-numeric value that caused the error.
+        """
         super().__init__(f"Encountered invalid value: {value} is of type {type(value)}. All values must be numeric.")
 
 class EmptySampleError(CalculatorError):
@@ -174,5 +264,12 @@ class EmptySampleError(CalculatorError):
 
 class InsufficientSampleSizeError(CalculatorError):
     """Exception raised when the sample size is below the minimum required for a specific calculation."""
-    def __init__(self, sample_size, minimum_size): # TODO write a better message
+    def __init__(self, sample_size, minimum_size):
+        """
+        Initializes the InsufficientSampleSizeError with a message indicating the sample size and the minimum required size.
+
+        Args:
+            sample_size (int): The size of the input sample.
+            minimum_size (int): The minimum required size.
+        """
         super().__init__(f"Sample size {sample_size} is below the minimum required size of {minimum_size}.")

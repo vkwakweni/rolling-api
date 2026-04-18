@@ -44,7 +44,20 @@ class GroupingEngine:
                             hormone_names=None, symptom_names=None,
                             performance_types=None, date_from=None, date_to=None,
                             ) -> list[HormoneObservation]:
-        """Filters the given observations based on the provided criteria."""
+        """
+        Filters the given observations based on the provided criteria.
+        
+        Args:
+            observations (list[HormoneObservation]): The list of hormone observations to filter.
+            hormone_names (list[str], optional): A list of hormone names to include. If None, all hormone names are included.
+            symptom_names (list[str], optional): A list of symptom names to include. If None, all symptom names are included.
+            performance_types (list[str], optional): A list of performance types to include. If None, all performance types are included.
+            date_from (datetime, optional): The start date to include observations from. If None, there is no lower date limit.
+            date_to (datetime, optional): The end date to include observations up to. If None, there is no upper date limit.
+        
+        Returns:
+            list[HormoneObservation]: A list of hormone observations that match the provided filtering criteria.
+        """
         filtered = observations
 
         if hormone_names is not None:
@@ -73,13 +86,29 @@ class GroupingEngine:
         return filtered
             
     def assign_dysmenorrhea_group(self, observation: HormoneObservation) -> bool:
-        """Determines if the observation is associated with dysmenorrhea based on the symptom name."""
+        """
+        Determines if the observation is associated with dysmenorrhea based on the symptom name.
+        
+        Args:
+            observation (HormoneObservation): The hormone observation to evaluate.
+
+        Returns:
+            bool: True if the observation is associated with dysmenorrhea, False otherwise.
+        """
         if observation.symptom_name is None:
             return False
         return observation.symptom_name.strip().upper() == "DYSMENORRHEA"
 
     def assign_performance_type_group(self, observation: HormoneObservation) -> str:
-        """Determines the performance type group for the observation based on the performance type."""
+        """
+        Determines the performance type group for the observation based on the performance type.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to evaluate.
+
+        Returns:
+            str: The performance type group for the observation.
+        """
         if observation.performance_type is None:
             return "UNSPECIFIED"
         if observation.performance_type.strip().upper() != "OFF SEASON":
@@ -90,36 +119,76 @@ class GroupingEngine:
     def build_hormone_dysmenorrhea_performance_group_key(self,
                                                          observation: HormoneObservation
                                                          ) -> HormoneDysmenorrheaPerformanceGroupKey:
-        """Builds a group key for the observation based on a hormone name, dysmenorrhea presence, and performance type."""
+        """
+        Builds a group key for the observation based on a hormone name, dysmenorrhea presence, and performance type.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            HormoneDysmenorrheaPerformanceGroupKey: The group key for the observation.
+        """
         return HormoneDysmenorrheaPerformanceGroupKey(hormone_name=observation.hormone_name,
                                                       dysmenorrhea_present=self.assign_dysmenorrhea_group(observation),
                                                       performance_type=self.assign_performance_type_group(observation))
     
     def build_hormone_dysmenorrhea_group_key(self,
                                              observation: HormoneObservation
-                                             ) -> HormoneDysmenorrheaPerformanceGroupKey:
-        """Buiilds a group key for the observation based on a hormone name and dysmenorrhea presence."""
+                                             ) -> HormoneDysmenorrheaGroupKey:
+        """
+        Buiilds a group key for the observation based on a hormone name and dysmenorrhea presence.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            HormoneDysmenorrheaGroupKey: The group key for the observation.
+        """
         return HormoneDysmenorrheaGroupKey(hormone_name=observation.hormone_name,
                                            dysmenorrhea_present=self.assign_dysmenorrhea_group(observation))
     
     def build_hormone_performance_group_key(self,
                                             observation: HormoneObservation
-                                            ) -> HormoneDysmenorrheaPerformanceGroupKey:
-        """Builds a group key for the observation based on a hormone name and performance type."""
+                                            ) -> HormonePerformanceGroupKey:
+        """
+        Builds a group key for the observation based on a hormone name and performance type.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            HormonePerformanceGroupKey: The group key for the observation.
+        """
         return HormonePerformanceGroupKey(hormone_name=observation.hormone_name,
                                           performance_type=self.assign_performance_type_group(observation))
     
     def build_hormone_group_key(self,
                                 observation: HormoneObservation
-                                ) -> HormoneDysmenorrheaPerformanceGroupKey:
-        """Builds a group key for the observation based on a hormone name."""
+                                ) -> HormoneGroupKey:
+        """
+        Builds a group key for the observation based on a hormone name.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            HormoneGroupKey: The group key for the observation.
+        """
         return HormoneGroupKey(hormone_name=observation.hormone_name)
     
     # GROUP BUILDERS
     def group_hormone_dysmenorrhea_performance_observations(self,
                                                             observations: list[HormoneObservation],
                                                             ) -> dict[HormoneDysmenorrheaPerformanceGroupKey, list]:
-        """Groups observations into a dictionary indexed by hormone name, dysmenorrhea presence, and performance type."""        
+        """
+        Groups observations into a dictionary indexed by hormone name, dysmenorrhea presence, and performance type.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            dict[HormoneGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
+        """        
         grouped = defaultdict(list)
         
         for observation in observations:
@@ -130,8 +199,16 @@ class GroupingEngine:
 
     def group_hormone_dysmenorrhea_observations(self,
                                                 observations: list[HormoneObservation],
-                                                ) -> dict[HormoneDysmenorrheaPerformanceGroupKey, list]:
-        """Groups observations into a dictionary indexed by hormone name and dysmenorrhea presence."""
+                                                ) -> dict[HormoneDysmenorrheaGroupKey, list]:
+        """
+        Groups observations into a dictionary indexed by hormone name and dysmenorrhea presence.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            dict[HormoneDysmenorrheaGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
+        """
         grouped = defaultdict(list)
         
         for observation in observations:
@@ -142,8 +219,16 @@ class GroupingEngine:
 
     def group_hormone_performance_observations(self,
                                                observations: list[HormoneObservation],
-                                               ) -> dict[HormoneDysmenorrheaPerformanceGroupKey, list]:
-        """Groups observations into a dictionary indexed by hormone name and performance type."""        
+                                               ) -> dict[HormonePerformanceGroupKey, list]:
+        """
+        Groups observations into a dictionary indexed by hormone name and performance type.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            dict[HormonePerformanceGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
+        """        
         grouped = defaultdict(list)
         
         for observation in observations:
@@ -154,8 +239,17 @@ class GroupingEngine:
 
     def group_hormone_observations(self,
                                    observations: list[HormoneObservation],
-                                   ) -> dict[HormoneDysmenorrheaPerformanceGroupKey, list]:
-        """Groups observations into a dictionary indexed by hormone name."""        
+                                   ) -> dict[HormoneGroupKey, list]:
+        """
+        Groups observations into a dictionary indexed by hormone name.
+        
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            dict[HormoneGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
+        """        
         grouped = defaultdict(list)
         
         for observation in observations:

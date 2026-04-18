@@ -8,10 +8,27 @@ class ConclusionMapper:
 
     Methods
     -------
+    - map_mean_differences: Returns a conclusion for the difference between group A's mean and group B's mean.
+    - map_effect_size_conclusion: Returns a conclusion for the effect size value.
+    - map_t_statistic_conclusion: Returns a conclusion for the t-statistic from Welch's Test.
+    - map_sample_size_conclusion: Returns a possible warning based on the sample size.
+    - build_group_conclusion: Builds conclusions based on a grouped statistics.
+    - build_comparison_conclusion: Builds conclusions based on a grouped statistics.
+    - build_overall_conclusions: Builds summarising conclusion from an analysis result.
+    - build_overall_detailed_conclusions: Builds a summarising conclusion from an analysis result with comparative groups.
     
     """
-    def map_mean_differences(self, group_a_mean, group_b_mean):
-        """Returns a conclusion for the difference between group A's mean and group B's mean."""
+    def map_mean_differences(self, group_a_mean, group_b_mean) -> str:
+        """
+        Returns a conclusion for the difference between group A's mean and group B's mean.
+        
+        Args:
+            group_a_mean (float | int): The mean value for group A.
+            group_b_mean (float | int): The mean value for group B.
+
+        Returns:
+            str: A conclusion string describing the relationship between group A's mean and group B's mean.
+        """
         if group_a_mean > group_b_mean:
             return f"Group A's mean is greater than Group B's: {group_a_mean} > {group_b_mean}"
         if group_a_mean < group_b_mean:
@@ -19,9 +36,16 @@ class ConclusionMapper:
         return f"Group A's mean is equivalent to Group B's: {group_a_mean} = {group_b_mean}"
 
 
-    def map_effect_size_conclusion(self, effect_size: Optional[float | int]):
-        """Returns a conclusion for the effect size value."""
-    
+    def map_effect_size_conclusion(self, effect_size: Optional[float | int]) -> str:
+        """
+        Returns a conclusion for the effect size value.
+
+        Args:
+            effect_size (float | int | None): The effect size value.
+
+        Returns:
+            str: A conclusion string describing the effect size.
+        """
         if effect_size is None:
             return "effect size could not be computed"
         effect_size = abs(effect_size) # TODO later handle negative number interpretations
@@ -33,13 +57,29 @@ class ConclusionMapper:
             return "a small effect"
         return "no meaningful effect"
 
-    def map_t_statistic_conclusion(self, t_statistic: Optional[float | int]):
-        """Returns a conclusion for the t-statistic from Welch's Test."""
-        # TODO implement independent t-test
-        return None
+    def map_t_statistic_conclusion(self, t_statistic: Optional[float | int]) -> str:
+        """
+        Returns a conclusion for the t-statistic from Welch's Test.
 
-    def map_sample_size_conclusion(self, sample_size: int):
-        """Returns a possible warning based on the sample size."""
+        Args:
+            t_statistic (float | int | None): The t-statistic from Welch's Test.
+
+        Returns:
+            str: A conclusion string describing the t-statistic.
+        """
+        # TODO implement independent t-test
+        return "t-statistic could not be computed"
+
+    def map_sample_size_conclusion(self, sample_size: int) -> str:
+        """
+        Returns a possible warning based on the sample size.
+
+        Args:
+            sample_size (int): The number of observations in the sample.
+
+        Returns:
+            str: A warning string based on the sample size.
+        """
         if sample_size < 6:
             return "This is a very small sample; interpret cautiously."
         if sample_size <= 20:
