@@ -11,6 +11,30 @@ def create_athlete(external_code: str,
                    age_at_observation: Optional[int] = None,
                    age_logged_at: Optional[date] = None,
                    notes: Optional[str] = None) -> dict:
+    """
+    Create a new athlete.
+
+    Args:
+        external_code (str): The athlete's external code from the dataset.
+        dataset_id (UUID): The dataset ID from which the athlete was obtained.
+        birth_date (Optional[date]): The birth date of the athlete.
+        birth_year (Optional[int]): The birth year of the athlete.
+        age_at_observation (Optional[int]): The age of the athlete at the time of observation.
+        age_logged_at (Optional[date]): The date when the athlete's age was logged.
+        notes (Optional[str]): Any additional notes about the athlete.
+
+    Returns:
+        dict: A dictionary with the athlete data.
+            - "athlete_id" (UUID): The ID of the created athlete.
+            - "external_code" (str): The athlete's external code from the dataset.
+            - "dataset_id" (UUID): The dataset ID from which the athlete was obtained.
+            - "birth_date" (Optional[date]): The birth date of the athlete.
+            - "birth_year" (Optional[int]): The birth year of the athlete.
+            - "age_at_observation" (Optional[int]): The age of the athlete at the time of observation.
+            - "age_logged_at (Optional[date]): The date when the athlete's age was logged.
+            - "notes" (Optional[str]): Any additional notes about the athlete.
+
+    """
     query = """
             INSERT INTO research.athletes (
                 external_code,
@@ -35,9 +59,19 @@ def create_athlete(external_code: str,
         
 def create_athlete_batch(rows: list[dict]) -> list[dict]:
     """
-    TODO rename the parameter better
-    TODO is there a way to better name the expected fields?
+    Create several athletes.
+
+    It takes a list of dictionaries containing data to create a new athlete. If any error occurs, the transaction is
+    rolled back and none of the athletes are created.
+
+    Args:
+        rows (list[dict]): A list of dictionaries containing data to create a new athlete.
+
+    Return:
+        list[dict]: A list of dictionaries of the created athletes.
     """
+    # TODO rename the parameter better
+    # TODO is there a way to better name the expected fields?
     query = """
             INSERT INTO research.athletes (
                 external_code,
@@ -79,6 +113,26 @@ def create_athlete_batch(rows: list[dict]) -> list[dict]:
             raise e 
 
 def get_athlete_by_id(athlete_id: UUID) -> Optional[dict]:
+    """
+    Get athlete by athlete ID.
+
+    Args:
+        athlete_id (UUID): The ID of the athlete.
+
+    Returns:
+        Optional[dict]: The athlete record.
+            - "athlete_id" (UUID): The ID of the created athlete.
+            - "external_code" (str): The athlete's external code from the dataset.
+            - "dataset_id" (UUID): The dataset ID from which the athlete was obtained.
+            - "birth_date" (Optional[date]): The birth date of the athlete.
+            - "birth_year" (Optional[int]): The birth year of the athlete.
+            - "age_at_observation" (Optional[int]): The age of the athlete at the time of observation.
+            - "age_logged_at (Optional[date]): The date when the athlete's age was logged.
+            - "notes" (Optional[str]): Any additional notes about the athlete.
+            - "created_at" (Optional[str]): The date and time the athlete was created.
+            - "updated_at" (Optional[str]): The date and time the athlete was updated.
+
+    """
     query = """
             SELECT athlete_id, external_code, dataset_id, birth_date, birth_year,
                     age_at_observation, age_logged_at, notes,
@@ -94,6 +148,28 @@ def get_athlete_by_id(athlete_id: UUID) -> Optional[dict]:
             return dict(row) if row else None
 
 def get_athlete_by_external_code(external_code: str) -> Optional[dict]:
+    """
+        Get athlete by external code.
+
+        External codes are unique to a project, so when retrieving by external code within a project, at most one result will be returned.
+
+        Args:
+            external_code (UUID): The external_code of the athlete.
+
+        Returns:
+            Optional[dict]: The athlete record.
+                - "athlete_id" (UUID): The ID of the created athlete.
+                - "external_code" (str): The athlete's external code from the dataset.
+                - "dataset_id" (UUID): The dataset ID from which the athlete was obtained.
+                - "birth_date" (Optional[date]): The birth date of the athlete.
+                - "birth_year" (Optional[int]): The birth year of the athlete.
+                - "age_at_observation" (Optional[int]): The age of the athlete at the time of observation.
+                - "age_logged_at (Optional[date]): The date when the athlete's age was logged.
+                - "notes" (Optional[str]): Any additional notes about the athlete.
+                - "created_at" (Optional[str]): The date and time the athlete was created.
+                - "updated_at" (Optional[str]): The date and time the athlete was updated.
+
+        """
     query = """
             SELECT athlete_id, external_code, dataset_id, birth_date, birth_year,
                     age_at_observation, age_logged_at, notes,

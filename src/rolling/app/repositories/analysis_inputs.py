@@ -11,6 +11,36 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
                                                      include_symptom_names: Optional[list[str]]=None,
                                                      include_performance_types: Optional[list[str]]=None,
                                                      ) -> list[dict]:
+    """
+    Lists the observations used for analyses of hormone, dysmenorrhea, and performance.
+
+    The parameters are used to filter the datasets for observations that satisfy them.
+
+    Args:
+        - project_id (UUID): The project ID from which to get the associated observations.
+        - date_from (Optional[date]): Filter for observations from this data inclusively.
+        - date_to (Optional[date]): Filter for observations to this data inclusively.
+        - inlucde_hormone_names (Optional[list[str]]): An optional collection of hormone names to inclusively filter for. By default, all hormones are included.
+        - include_symptom_names (Optional[list[str]]): An optional collection of menstrual symptom names to inclusively filter for. By default, all menstrual symptoms are included.
+        - include_performance_types (Optional[list[str]]): An optional collection of performance types to inclusively filter for. By default, all performance types are included.
+
+    Returns:
+        list[dict]: A list of dictionaries which represent the observations used in the analysis.
+
+        Each dictionary contains the following data:
+            - "athlete_id" (UUID): The ID of the athlete.
+            - "observed_on" (date): The day the observation was made.
+            - "hormone_name" (str): The name of the hormone.
+            - "measured_value" (float | int): The measured value of the hormone.
+            - "measurement_unit" (str): The measurement unit of the hormone.
+            - "symptom_name" (str): The name of the menstrual symptom.
+            - "symptom_severity" (str): The severity of the menstrual symptom.
+            - relative_day_to_cycle: (Optional[int]): The number of days since the first menstrual bleeding (the beginning of a new menstrual cycle).
+            - performance_type (Optional[str]): The type of performance performed on the observed day, which represents the intensity of the performance.
+            - metric_name (Optional[str]): A name of a performance metric (e.g. 'BPM' for heart rate)
+            - metric_value (Optional[str]): The value of the performance metric.
+            - metric_unit (Optional[str]): The unit of measurement for the performance metric.
+    """
     query = """
             SELECT
                 hm.athlete_id AS athlete_id,
@@ -83,6 +113,7 @@ def list_pain_performance_analysis_rows(project_id: UUID,
                                         metric_names: Optional[list[str]]=None,
                                         symptom_names: Optional[list[str]]=None,
                                         ) -> list[dict]:
+    """TODO delete"""
     query = """
             SELECT sr.athlete_id,
                    sr.observed_on,
