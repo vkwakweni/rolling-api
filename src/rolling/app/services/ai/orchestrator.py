@@ -42,7 +42,7 @@ class AIReportOrchestrator:
     """
 
     def __init__(self, model_name: str, provider: AIProvider):
-        """initialises the AIReportOrchestrator class by creating instances of AIInputBuilder, AIPromptBuilder, AIModelClient, and AIValidator."""
+        """Initialises the AIReportOrchestrator class by creating instances of AIInputBuilder, AIPromptBuilder, AIModelClient, and AIValidator."""
         self.input_builder = input_builder.AIInputBuilder()
         self.prompt_builder = prompt_builder.AIReportPromptBuilder()
         self.model_client = model_client.AIModelClient(model_name=model_name, provider=provider)

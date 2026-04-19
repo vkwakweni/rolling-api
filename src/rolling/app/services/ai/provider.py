@@ -104,6 +104,9 @@ class OpenAIProvider(AIProvider):
                 "summary_text": summary_text}
     
 class OllamaProvider(AIProvider):
+    """
+    A child class of AIProvider that interfaces with the Ollama API for AI analysis report generation.
+    """
     def __init__(self, client: Any):
         """Initialise an Ollama provider."""
         self.client = client
@@ -115,15 +118,15 @@ class OllamaProvider(AIProvider):
         normalised raw response shape for the application to process.
 
         The structure of the response from the Ollama provider is:
-        {
-            "model": "codellama:python",
-            "created_at": "...",
-            "message": {
-                "role": "assistant",
-                "content": "{\"report_text\":\"...\",\"summary_text\":\"...\"}"
-            },
-            "done": true
-        }
+            {
+                "model": "codellama:python",
+                "created_at": "...",
+                "message": {
+                    "role": "assistant",
+                    "content": "{\"report_text\":\"...\",\"summary_text\":\"...\"}"
+                    },
+                "done": true
+            }
 
         Args:
             request (dict[str, Any]): A request to an AI service to generate an analysis report.

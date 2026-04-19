@@ -13,6 +13,18 @@ class AIReportValidator:
     def validate_generated_report(self,
                                   generated_output: AIModelOutput
                                   ) -> AIModelOutput:
+        """
+        Validates the generated AI-generated report.
+
+        Args:
+            generated_output (AIModelOutput): The generated AI-generated analysis report.
+
+        Returns:
+            AIModelOutput: If validated, the AI-generated analysis report.
+
+        Raises:
+            ValueError: If the model name is empty; if the report text is empty.
+        """
         model_name = generated_output.model_name.strip() if generated_output.model_name is not None else None
         report_text = generated_output.report_text.strip() if generated_output.report_text is not None else None
         summary_text = generated_output.summary_text.strip() if generated_output.summary_text is not None else None
