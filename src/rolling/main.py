@@ -14,7 +14,17 @@ app.include_router(datasets_router)
 app.include_router(analyses_router)
 
 @app.get("/")
-def root():
+def root(): # TODO add return type
+    """
+    Returns the application name and environment.
+
+    This endpoint serves as the landing page for the API, confirming that the service is reachable via web browser or client.
+
+    Returns:
+        dict: A dictionary describing the landing page.
+            - "name" (str) : The application name.
+            - "environment" (str) : The application environment.
+    """
     return {
         "name": dbSettings.app_name,
         "environment": dbSettings.app_env
@@ -22,6 +32,18 @@ def root():
 
 @app.get("/health")
 def health() -> dict[str, str | bool]:
+    """
+    Performs a basic health check of the application.
+
+    This endpoint verifies that the application instance is healthy and ready to serve
+
+    Returns:
+        dict: A dictionary describing the health of the application.
+            - "ok" (bool): True if the application can connect to the database.
+            - "app_name" (str): Name of the application.
+            - "enivornment" (str) : Enviroment of the application.
+            - "database" (str) : connection status of the database
+    """
     try:
         with get_connection() as conn:
             with conn.cursor() as cur:
@@ -29,7 +51,7 @@ def health() -> dict[str, str | bool]:
                 cur.fetchone()
         return {"ok": True,
                 "app_name": dbSettings.app_name,
-                "environement": dbSettings.app_env,
+                "environement": dbSettings.app_env, # TODO fix typo
                 "database": "connected",
                 }
     except Exception as e:
