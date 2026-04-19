@@ -18,6 +18,36 @@ def run_descriptive_hormone_analysis(project_id: UUID,
                                      date_from: Optional[date]=None,
                                      date_to: Optional[date]=None,
                                      ) -> dict: # TODO change to Optional
+    """
+    Execute descriptive hormone analysis using the analysis engine. It is main function used in API routing to run an analysis.
+
+    The main steps of execution are:
+    1. Verifying that the given analyst can access the project.
+    2. Fetching the input for the analysis from the database, filtering based on the given parameters.
+    3. Converting the fetched analysis inputs into structured objects, namely a HormoneObservation
+    4. Building input for the analysis engine.
+    5. Instantiating the analysis engine.
+    6. Run the analysis
+    7. Persist the analysis run with the parameters.
+    8. Persist the analysis result.
+    9. Create and persist the traditional analysis report.
+
+    Args:
+        project_id (UUID): The ID of the project from which to get data.
+        analyst_id (UUID): The ID of the analysis running the analysis.
+        include_hormone_names (Optional[list[str]]): List of hormone names to include in the analysis run. By default, all hormones are considered.
+        include_performance_types (Optional[list[str]]): List of performance types to include in the run. By default, all performance types are considered.
+        include_symptom_names (Optional[list[str]])): List of menstrual symptoms to include in the run. By default, all menstrual symptoms are considers.
+        date_from (Optional[date]): Used to filter for observations from this date inclusively. By default, all dates are considered.
+        date_to (Optional[date]): Used to filter for observations until this date inclusively. By default, all dates are considered.
+
+    Returns:
+        Optional[dict]: The persisted records for the analysis run.
+            - "analysis_run" (dict): The persisted analysis run record.
+            - "analysis_result" (dict): The persisted analysis result record.
+            - "analysis_report" (dict): The persisted analysis report record.
+            - "engine_result" (dict): The analysis result payload.
+    """
     # verify project access
     if not analyst_can_access_project(analyst_id, project_id):
         return None
@@ -93,6 +123,15 @@ def run_descriptive_hormone_analysis(project_id: UUID,
             "engine_result": result_payload}
 
 def build_hormone_observations(rows: list[dict]) -> list[HormoneObservation]:
+    """
+    Converts a list of data obtained from the database to structured objects.
+
+    Args:
+        rows (list[dict]): A list of dictionaries containing hormone observation data.
+
+    Returns:
+        list[HormoneObservation]: A list of structured objects containing hormone observation data. If rows is empty, an empty list is returned.
+    """
     observations = []
     for row in rows:
         obs = HormoneObservation(athlete_id=row.get("athlete_id"),
@@ -113,11 +152,26 @@ def build_hormone_observations(rows: list[dict]) -> list[HormoneObservation]:
 
 def build_hormone_analysis_input(project_id: UUID,
                                  hormone_observations: list[HormoneObservation],
-                                 include_hormone_names,
+                                 include_hormone_names, # TODO add types
                                  include_performance_types,
                                  include_symptom_names,
                                  date_from,
                                  date_to) -> HormoneAnalysisInput:
+    """
+    Constructs input for the hormone analysis.
+
+    Args:
+        project_id (UUID): The ID of the project from which to get data.
+        hormone_observations (list[HormoneObservation]): A list of HormoneObservation objects.
+        include_hormone_names (Optional[list[str]]): An optional collection of hormone names to inclusively filter for in `observations`.
+        include_performance_types (Optional[list[str]]): An optional collection of hormone names to inclusively filter for in `observations`.
+        include_symptom_names (Optional[list[str]]): An optional collection of symptom names to inclusively filter for in `observations`.
+        date_from (Optional[date]): Used to filter for observations from this date inclusively.
+        date_to (Optional[date]): Used to filter for observations until this date inclusively.
+
+    Returns:
+        HormoneAnalysisInput: The input for the hormone analysis.
+    """
     analysis_input = HormoneAnalysisInput(project_id=project_id,
                                           observations=hormone_observations,
                                           include_hormone_names=include_hormone_names,
@@ -133,13 +187,21 @@ def build_analysis_parameters(include_hormone_names: Optional[list[str]]=None,
                               include_symptom_names: Optional[list[str]]=None,
                               date_from: Optional[date]=None,
                               date_to: Optional[date]=None) -> dict:
+    """Puts the analysis parameters in the form of a dictionary."""
     return {"include_hormone_names": include_hormone_names,
             "include_performance_types": include_performance_types,
             "include_symptom_names": include_symptom_names,
             "date_from": date_from.isoformat() if date_from else None,
             "date_to": date_to.isoformat() if date_to else None}
 
-def make_json_safe(value):
+def make_json_safe(value): # TODO add return type
+    """
+    If applicable, converts value to safe types.
+
+    For example:
+        - If value is type Decimal, it converts it to a float.
+        - If value is a collection type, it ensures that all values are safe types.
+    """
     if isinstance(value, Decimal):
         return float(value)
 
