@@ -11,6 +11,31 @@ def create_symptom_record(athlete_id: UUID,
                           symptom_severity: Optional[str] = None,
                           notes: Optional[str] = None,
                           relative_day_to_cycle: Optional[int] = None) -> dict:
+    """
+    Create a menstrual symptom record.
+
+    Args:
+        - athlete_id (UUID): The ID of the athlete.
+        - dataset_id (UUID): The ID of the dataset from which the observation was obtained.
+        - symptom_id (UUID): The ID of the menstrual symptom.
+        - observed_on (date): The date the menstrual symptom was observed.
+        - symptom_severity (Optional[str]): The severity of the menstrual symptom.
+        - notes (Optional[str]): The notes of the menstrual symptom.
+        - relative_day_to_cycle (Optional[int]): An optional field representing the number of days since the first menstrual bleeding (the beginning of a new menstrual cycle) on which the symptom was observed.
+
+    Returns:
+        dict: A dictionary of the created menstrual symptom record.
+            - "symptom_record_id" (UUID): The ID of the menstrual symptom record.
+            - "athlete_id" (UUID): The ID of the athlete.
+            - "dataset_id" (UUID): The ID of the dataset.
+            - "symptom_id" (UUID): The ID of the menstrual symptom.
+            - "observed_on" (date): The date the menstrual symptom was observed.
+            - "symptom_severity" (str): The severity of the menstrual symptom.
+            - "notes" (str): The notes of the menstrual symptom.
+            - "created_at" (date): The date the menstrual symptom was created.
+            - "updated_at" (date): The date the menstrual symptom was updated.
+            - "relative_day_to_cycle" (int): The number of days since the first menstrual symptom was observed.
+    """
     query = """
             INSERT INTO research.symptom_records (
                 athlete_id,
@@ -35,6 +60,15 @@ def create_symptom_record(athlete_id: UUID,
             return dict(row)
         
 def create_symptom_record_batch(rows: list[dict]) -> list[dict]:
+    """
+    Create several menstrual symptom records.
+
+    Args:
+        rows (list[dict]): A list of dictionaries containing data to create a menstrual symptom record.
+
+    Returns:
+        list[dict]: A list of dictionaries containing the data of the created menstrual symptom records.
+    """
     query = """
             INSERT INTO research.symptom_records (
                 athlete_id,
@@ -77,6 +111,25 @@ def create_symptom_record_batch(rows: list[dict]) -> list[dict]:
             raise e 
 
 def get_symptom_record_by_id(symptom_record_id: UUID) -> Optional[dict]:
+    """
+    Gets a menstrual symptom record by its ID.
+
+    Args:
+        symptom_record_id (UUID): The ID of the symptom record.
+
+    Returns:
+        Optional[dict]: A dictionary containing the data of the symptom record.
+            - "symptom_record_id" (UUID): The ID of the menstrual symptom record.
+            - "athlete_id" (UUID): The ID of the athlete.
+            - "dataset_id" (UUID): The ID of the dataset.
+            - "symptom_id" (UUID): The ID of the menstrual symptom.
+            - "observed_on" (date): The date the menstrual symptom was observed.
+            - "symptom_severity" (str): The severity of the menstrual symptom.
+            - "notes" (str): The notes of the menstrual symptom.
+            - "created_at" (date): The date the menstrual symptom was created.
+            - "updated_at" (date): The date the menstrual symptom was updated.
+            - "relative_day_to_cycle" (int): The number of days since the first menstrual symptom was observed.
+    """
     query = """
             SELECT symptom_record_id, athlete_id, dataset_id, symptom_id,
                     observed_on, symptom_severity, notes,
@@ -92,6 +145,15 @@ def get_symptom_record_by_id(symptom_record_id: UUID) -> Optional[dict]:
             return dict(row) if row else None
 
 def get_symptom_records_for_athlete(athlete_id: UUID) -> list[dict]:
+    """
+    Gets the menstrual symptom records for a given athlete.
+
+    Args:
+        athlete_id (UUID): The athlete ID.
+
+    Returns:
+        list[dict]: A list of dictionaries containing the data of the menstrual symptom records. If no records are found, an empty list is returned.
+    """
     query = """
             SELECT symptom_record_id, athlete_id, dataset_id, symptom_id,
                     observed_on, symptom_severity, notes,
@@ -108,6 +170,19 @@ def get_symptom_records_for_athlete(athlete_id: UUID) -> list[dict]:
             return [dict(row) for row in rows]
 
 def get_symptom_by_name(name: str) -> Optional[dict]:
+    """
+    Gets the menstrual symptom by its name.
+
+    This is used for mapping the menstrual symptom name ID and name.
+
+    Args:
+        name (str): The name of the menstrual symptom.
+
+    Returns:
+        Optional[dict]: A dictionary containing the ID a menstrual symptom.
+            - "menstrual_symptom_id" (UUID): The ID of the menstrual symptom.
+    """
+    # TODO add name to returned dictionary
     query = """
             SELECT menstrual_symptom_id
             FROM research.menstrual_symptoms

@@ -9,6 +9,29 @@ def create_dataset(uploaded_by_id: UUID,
                    stored_relative_path: str,
                    content_hash: Optional[str] = None,
                    notes: Optional[str] = None) -> dict:
+    """
+    Create a dataset record.
+
+    This records a successful dataset upload.
+
+    Args:
+        uploaded_by_id (UUID): The ID of the created dataset.
+        original_file_name (str): The original file name of the created dataset.
+        stored_relative_path (str): The stored file path of the created dataset.
+        content_hash (str): The content hash of the created dataset. This is used to check for duplicate file uploads.
+        notes (str): Any additional notes about the created dataset.
+
+    Returns:
+        dict: A dictionary of the created dataset.
+            - "dataset_id" (UUID): The ID of the created dataset.
+            - "uploaded_by_id" (UUID): The ID of the analyst who created the dataset.
+            - "original_file_name" (str): The original file name of the created dataset.
+            - "stored_relative_path" (str): The stored file path of the created dataset.
+            - "content_hash" (str): The content hash of the created dataset.
+            - "uploaded_at" (datetime): The date when the created dataset was uploaded.
+            - "import_status" (str): The status of the created dataset (e.g. "successful")
+            - "notes" (str): Any additional notes about the created dataset.
+    """
     query = """
             INSERT INTO research.datasets (
                 uploaded_by_id,
@@ -31,6 +54,23 @@ def create_dataset(uploaded_by_id: UUID,
             return dict(row)
 
 def get_dataset_by_id(dataset_id: UUID) -> Optional[dict]:
+    """
+    Get a dataset record by its ID.
+
+    Args:
+        dataset_id (UUID): The ID of the dataset.
+
+    Returns:
+        dict: A dictionary of the dataset record, if it exists. None otherwise.
+            - "dataset_id" (UUID): The ID of the created dataset.
+            - "uploaded_by_id" (UUID): The ID of the analyst who created the dataset.
+            - "original_file_name" (str): The original file name of the created dataset.
+            - "stored_relative_path" (str): The stored file path of the created dataset.
+            - "content_hash" (str): The content hash of the created dataset.
+            - "uploaded_at" (datetime): The date when the created dataset was uploaded.
+            - "import_status" (str): The status of the created dataset (e.g. "successful")
+            - "notes" (str): Any additional notes about the created dataset.
+    """
     query = """
             SELECT dataset_id, uploaded_by_id, original_file_name,
                    stored_relative_path, content_hash, uploaded_at,
@@ -46,6 +86,15 @@ def get_dataset_by_id(dataset_id: UUID) -> Optional[dict]:
             return dict(row) if row else None
 
 def list_datasets_for_analyst(uploaded_by_id: UUID) -> list[dict]:
+    """
+    List all datasets associated with a given analyst.
+
+    Args:
+        uploaded_by_id (UUID): The ID of the analyst who created the dataset.
+
+    Returns:
+        list[dict]: A list of dictionaries of dataset records. If there are no records, an empty list is returned.
+    """
     query = """
             SELECT dataset_id, uploaded_by_id, original_file_name,
                    stored_relative_path, content_hash, uploaded_at,

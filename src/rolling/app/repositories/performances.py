@@ -11,6 +11,31 @@ def create_performance(athlete_id: UUID,
                        metric_value: float,
                        metric_unit: Optional[str],
                        observed_on: date) -> dict:
+    """
+    Creates a performance record.
+
+    Args:
+        athlete_id (UUID): The athlete ID.
+        dataset_id (UUID): The dataset ID.
+        performance_type (UUID): The performance type, e.g. "OFF SEASON", "RACE".
+        metric_type (int): The performance metric type.
+        metric_value (float): The performance metric value.
+        metric_unit (Optional[str]): The performance metric unit.
+        observed_on (Optional[date]): The observed date of the performance record.
+
+    Returns:
+        dict: A dictionary of the created performance record:
+            - "performance_record_id" (UUID): The ID of the created performance record.
+            - "athlete_id" (UUID): The athlete ID.
+            - "dataset_id" (UUID): The dataset ID.
+            - "performance_type" (int): The performance type.
+            - "metric_type" (int): The performance metric type.
+            - "metric_value" (float): The performance metric value.
+            - "metric_unit" (str): The performance metric unit.
+            - "observed_on" (date): The observed date of the performance record.
+            - "created_at" (datetime): A timestamp of when the performance record was created.
+            - "updated_at" (datetime): A timestamp of when the performance record was last updated.
+    """
     query = """
             INSERT INTO research.performance_records (
                 athlete_id,
@@ -35,6 +60,15 @@ def create_performance(athlete_id: UUID,
             return dict(row)
 
 def create_performance_batch(rows: list[dict]) -> list[dict]: # TODO rename to create_performance_record_batch
+    """
+    Creates several performance records.
+
+    Args:
+        rows (list[dict]): A list of performance records.
+
+    Returns:
+        list[dict]: A list of dictionaries of the creates performance records.
+    """
     query = """
             INSERT INTO research.performance_records (
                 athlete_id,
@@ -78,6 +112,25 @@ def create_performance_batch(rows: list[dict]) -> list[dict]: # TODO rename to c
 
 
 def get_performance_by_id(performance_record_id: UUID) -> Optional[dict]:
+    """
+    Get a performance record by ID.
+
+    Args:
+        performance_record_id (UUID): The performance record ID.
+
+    Returns:
+        Optional[dict]: A dictionary of the retrieved performance record, if it exists. None otherwise.
+            - "performance_record_id" (UUID): The ID of the created performance record.
+            - "athlete_id" (UUID): The athlete ID.
+            - "dataset_id" (UUID): The dataset ID.
+            - "performance_type" (int): The performance type.
+            - "metric_type" (int): The performance metric type.
+            - "metric_value" (float): The performance metric value.
+            - "metric_unit" (str): The performance metric unit.
+            - "observed_on" (date): The observed date of the performance record.
+            - "created_at" (datetime): A timestamp of when the performance record was created.
+            - "updated_at" (datetime): A timestamp of when the performance record was last updated.
+    """
     query = """
             SELECT performance_record_id, athlete_id, dataset_id, performance_type,
                     metric_type, metric_value, metric_unit,
@@ -92,7 +145,16 @@ def get_performance_by_id(performance_record_id: UUID) -> Optional[dict]:
             row = cur.fetchone()
             return dict(row) if row else None
 
-def get_performances_for_athlete(athlete_id: UUID) -> Optional[list[dict]]:
+def get_performances_for_athlete(athlete_id: UUID) -> Optional[list[dict]]: # TODO change return type
+    """
+    Lists the performance records associated with an athlete.
+
+    Args:
+        athlete_id (UUID): The ID of the athlete.
+
+    Returns:
+        list[dict]: A list of dictionaries containing performance records associated with an athlete. If no records are found, an empty list is returned.
+    """
     query = """
             SELECT performance_record_id, athlete_id, dataset_id, performance_type,
                     metric_type, metric_value, metric_unit,
@@ -108,6 +170,17 @@ def get_performances_for_athlete(athlete_id: UUID) -> Optional[list[dict]]:
             return [dict(row) for row in rows]
         
 def get_performance_by_name(name: str) -> Optional[dict]:
+    """
+    Gets the performance type by its name.
+
+    This is used for mapping performance type ID and name.
+
+    Args:
+        name (str): The performance type name.
+
+    Returns:
+        Optional[dict]: The performance type record, if it exists. None otherwise.
+    """
     query = """
             SELECT performance_type_id
             FROM research.performance_types
@@ -120,6 +193,17 @@ def get_performance_by_name(name: str) -> Optional[dict]:
             return dict(row) if row else None
 
 def get_metric_by_name(name: str) -> Optional[dict]:
+    """
+    Gets the performance metric by its name.
+
+    This is used for mapping performance metric ID and name.
+
+    Args:
+        name (str): The performance metric name.
+
+    Returns:
+        Optional[dict]: The performance metric record, if it exists. None otherwise.
+    """
     query = """
             SELECT metric_type_id
             FROM research.performance_metric_types
