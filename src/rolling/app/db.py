@@ -5,6 +5,7 @@ from psycopg2.extras import RealDictCursor
 from rolling.app.config import dbSettings
 
 def get_connection() -> PgConnection:
+    """Creates a new database connection to an existing PostgreSQL database."""
     return psycopg2.connect(host=dbSettings.db_host,
                             port=dbSettings.db_port,
                             dbname=dbSettings.db_name,
