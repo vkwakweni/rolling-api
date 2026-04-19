@@ -1,6 +1,14 @@
 from rolling.app.models.ai import AIModelOutput
 
 class AIReportValidator:
+    """
+    A class that validates the AI-generated analysis report.
+
+    The main steps of validation include:
+    1. Checking that the model exists and is non-empty.
+    2. Checking that the report text is valid and non-empty.
+    3. Returns the AI-generated analysis report as a structured object.
+    """
 
     def validate_generated_report(self,
                                   generated_output: AIModelOutput

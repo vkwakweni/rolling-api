@@ -9,6 +9,12 @@ from rolling.app.exceptions import AIProviderModelError
 
 
 class AIProvider(ABC):
+    """
+    A base class for interfacing with the AI service.
+
+    To work with a specific AI service, there must be a class that inherits from this base class. The child classes will
+    structure the payloads for the AI services.
+    """
     @abstractmethod
     def generate(self, request: dict[str, Any]) -> dict[str, Any]:
         """
@@ -19,16 +25,40 @@ class AIProvider(ABC):
     
 
 class MockAIProvider(AIProvider):
+    """
+    A mock provider class for testing the AI provider interface.
+    """
+
     def generate(self) -> dict[str, Any]:
+        """
+        Send a provider-specific request to the model backend and return a
+        normalised raw response shape for the application to process.
+        """
         return {"report_text": "This is a mock AI-generated report.",
                 "summary_text": "This is a mock AI-generated summary."}
     
 
 class OpenAIProvider(AIProvider):
+    """
+    A child class of AIProvider that interfaces with the OpenAI API for AI analysis report generation.
+    """
     def __init__(self, client: Any):
+        """Initialise an OpenAI provider."""
         self.client = client
 
     def generate(self, request: dict[str, Any]) -> dict[str, Any]:
+        """
+        Send a provider-specific request to the OpenAI API backend and return a
+        normalised raw response shape for the application to process.
+
+        Args:
+            request (dict[str, Any]): A request to an AI service to generate an analysis report.
+
+        Returns:
+            dict[str, Any]: A normalised response from the AI service.
+                - "report_text": the raw report text of the AI-generated report.
+                - "summary_text": the raw summary text of the AI-generated report.
+        """
         response = self.client.responses.create(model=request["model_name"],
                                                 input=[
                                                     {"role": "system",
@@ -40,6 +70,20 @@ class OpenAIProvider(AIProvider):
         return self._normalise_response(response)
     
     def _normalise_response(self, response: Any) -> dict[str, Any]:
+        """
+        Normalises the output from the AI service so that other components can use the response.
+
+        Args:
+            response (Any): Output from the AI service.
+
+        Returns:
+            dict[str, Any]: A dictionary of normalised output from the AI service.
+                - "report_text": the raw report text of the AI-generated report.
+                - "summary_text": the raw summary text of the AI-generated report.
+
+        Raises:
+            ValueError: If the raw text is empty; if the response was not valid JSON; if the raw report text was empty.
+        """
         raw_text = getattr(response, "output_text", None)
 
         if not raw_text:
@@ -61,12 +105,16 @@ class OpenAIProvider(AIProvider):
     
 class OllamaProvider(AIProvider):
     def __init__(self, client: Any):
+        """Initialise an Ollama provider."""
         self.client = client
         self.settings = get_ollama_api_settings()
 
     def generate(self, request: dict[str, Any]) -> dict[str, Any]:
         """
-        Response will look like:
+        Send a provider-specific request to the OpenAI API backend and return a
+        normalised raw response shape for the application to process.
+
+        The structure of the response from the Ollama provider is:
         {
             "model": "codellama:python",
             "created_at": "...",
@@ -76,6 +124,18 @@ class OllamaProvider(AIProvider):
             },
             "done": true
         }
+
+        Args:
+            request (dict[str, Any]): A request to an AI service to generate an analysis report.
+
+        Returns:
+            dict[str, Any]: A normalised response from the AI service.
+                - "report_text": the raw report text of the AI-generated report.
+                - "summary_text": the raw summary text of the AI-generated report.
+
+        Raises:
+            ollama._types.ResponseError: If the request to the Ollama API failed.
+            ConnectionError: If the service is not accessible.
         """
         try:
             # response is of type ChatResponse
@@ -94,6 +154,20 @@ class OllamaProvider(AIProvider):
         return self._normalise_response(response)
     
     def _normalise_response(self, response) -> dict[str, Any]:
+        """
+        Normalises the output from the AI service so that other components can use the response.
+
+        Args:
+            response (Any): Output from the AI service.
+
+        Returns:
+            dict[str, Any]: A dictionary of normalised output from the AI service.
+                - "report_text": the raw report text of the AI-generated report.
+                - "summary_text": the raw summary text of the AI-generated report.
+
+        Raises:
+            ValueError: If the raw text is empty; if the response was not valid JSON; if the raw report text was empty.
+        """
         raw_text = response.message.content
         if not raw_text:
             raise ValueError("Ollama API response did not contain message content.")

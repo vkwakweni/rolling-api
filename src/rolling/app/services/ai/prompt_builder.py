@@ -4,6 +4,18 @@ import json
 from rolling.app.models.ai import AIAnalysisReportInput, AIPrompt
 
 class AIReportPromptBuilder:
+    """
+    A class that constructs the prompt for the AI service based on input for the AI analysis report.
+
+    The main steps for building a prompt include:
+    1. Building a summary section.
+    2. Building a tables section.
+    3. Building a user prompt.
+    4. Constructing an AIPrompt object.
+
+    Attributes:
+        SYSTEM_PROMPT (str): The system prompt for the AI model. This includes high-level standing instructions for the model.
+    """
     SYSTEM_PROMPT = ("You are assisting with descriptive research reporting for a hormone "
                      "analysis of cyclists. Rewrite the provided traditional report into a "
                      "clearer, more cohesive narrative and provide a concise summary of the "
@@ -48,13 +60,31 @@ class AIReportPromptBuilder:
                         user_prompt=user_prompt)
 
     # HELPERS
-    def _build_summary_section(self, ai_input: AIAnalysisReportInput) -> str:
+    def _build_summary_section(self, ai_input: AIAnalysisReportInput) -> str: # TODO make a static method
+        """
+        Builds the summary section for the AI service output.
+
+        Args:
+            ai_input (AIAnalysisReportInput): The input for the AI model.
+
+        Returns:
+            str: The summary section for the AI model.
+        """
         summary_payload = ai_input.summary
         result_summaries = summary_payload.get("results", [])
         return ("Result summaries:\n"
                 f"{json.dumps(result_summaries, indent=2)}")
     
-    def _build_tables_section(self, ai_input: AIAnalysisReportInput) -> str:
+    def _build_tables_section(self, ai_input: AIAnalysisReportInput) -> str: # TODO make a static method
+        """
+        Builds the tables section for the AI service output.
+
+        Args:
+            ai_input (AIAnalysisReportInput): The input for the AI model.
+
+        Returns:
+            str: The tables section for the AI model.
+        """
         return ("Approved tables:\n"
                 f"{json.dumps(ai_input.tables, indent=2)}")
 
