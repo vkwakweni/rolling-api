@@ -62,8 +62,11 @@ class BaseContentMapper(ABC):
                     "errors": [str(e)]
                     }
         try:
-            payloads = self.build_payloads(rows, dataset_id)
-            records = self.persist_payloads(payloads)
+            if self.validate_athlete_codes_exists(rows):
+                payloads = self.build_payloads(rows, dataset_id)
+                records = self.persist_payloads(payloads)
+            else:
+                raise RecordNotFoundException
         except (IntegrityError, ValueError, RecordNotFoundException) as e:
             return {"file_name": self.filename,
                     "import_successful": False,
@@ -91,6 +94,14 @@ class BaseContentMapper(ABC):
                          payloads: list[dict]) -> list[dict]:
         """An abstract method for persisted payloads to the database."""
         ...
+
+    def validate_athlete_codes_exists(self, rows: list[dict[str, str]]) -> bool:
+        for row in rows:
+            try:
+                self.get_athlete_id_from_athlete_code(row["athlete_code"])
+            except RecordNotFoundException:
+                return False
+        return True
 
     def validate_filename(self, file_name: str):
         """
@@ -297,6 +308,9 @@ class AthleteContentMapper(BaseContentMapper):
     def persist_payloads(self, payloads: list[dict]) -> list[dict]:
         """Persists the provided athlete payloads into the database."""
         return create_athlete_batch(payloads)
+
+    def validate_athlete_codes_exists(self, rows: list[dict[str, str]]) -> bool:
+        return True
 
     
 class PerformanceContentMapper(BaseContentMapper):
