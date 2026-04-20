@@ -39,7 +39,7 @@ def create_analyst_route(payload: AnalystCreate) -> AnalystResponse:
     return AnalystResponse(**row)
 
 @router.get("/{analyst_id}", response_model=AnalystResponse)
-def get_analyst_route(analyst_id: UUID) -> AnalystResponse:
+def get_analyst_by_username_route(analyst_id: UUID) -> AnalystResponse:
     """
     Retrieve the details for an existing analyst by its ID.
 
@@ -62,5 +62,27 @@ def get_analyst_route(analyst_id: UUID) -> AnalystResponse:
     # TODO if it gets a value that's not a UUID, its gets 422 Unprocessable Entity response
     return AnalystResponse(**row)
 
-# TODO get analyst by username in url (should redirect?)
+@router.get("/{username}", response_model=AnalystResponse)
+def get_analyst_by_username_route(username: str) -> AnalystResponse:
+    """
+    Retrieve the details for an existing analyst by its username.
+
+    This endpoint queries the database for an existing analyst record, and returns a structured analyst object.
+
+    Args:
+        username (str): The analyst username to retrieve.
+
+    Returns:
+        AnalystResponse: The retrieved analyst, if it exists.
+
+    Raises:
+        HTTPException: The analyst does not exist (404 Not Found).
+    """
+    row = get_analyst_by_username(username)
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Analyst not found",
+                            )
+    return AnalystResponse(**row)
+
 # TODO get all analysts
