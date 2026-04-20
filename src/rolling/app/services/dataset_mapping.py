@@ -317,7 +317,7 @@ class PerformanceContentMapper(BaseContentMapper):
                 "dataset_id": dataset_id,
                 "performance_type": self.get_performance_type_from_label(row["session_label"]),
                 "metric_type": self.get_metric_type_id(row.get("metric_name")),
-                "metric_value": float(row.get("metric_value")),
+                "metric_value": float(row.get("metric_value")) if row.get("metric_value") else None,
                 "metric_unit": row.get("metric_unit"),
                 "observed_on": self.parse_date(row["date"])
             }
