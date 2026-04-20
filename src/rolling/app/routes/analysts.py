@@ -38,7 +38,7 @@ def create_analyst_route(payload: AnalystCreate) -> AnalystResponse:
                          )
     return AnalystResponse(**row)
 
-@router.get("/{analyst_id}", response_model=AnalystResponse)
+@router.get("/id/{analyst_id}", response_model=AnalystResponse)
 def get_analyst_by_id_route(analyst_id: UUID) -> AnalystResponse:
     """
     Retrieve the details for an existing analyst by its ID.
@@ -62,7 +62,7 @@ def get_analyst_by_id_route(analyst_id: UUID) -> AnalystResponse:
     # TODO if it gets a value that's not a UUID, its gets 422 Unprocessable Entity response
     return AnalystResponse(**row)
 
-@router.get("/{username}", response_model=AnalystResponse)
+@router.get("/username/{username}", response_model=AnalystResponse)
 def get_analyst_by_username_route(username: str) -> AnalystResponse:
     """
     Retrieve the details for an existing analyst by its username.

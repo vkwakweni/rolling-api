@@ -75,6 +75,38 @@ def get_project_route(project_id: UUID,
                             detail="Not allowed to access this project",)
     return ProjectResponse(**row)
 
+@router.get("/user/{project_name}", response_model=ProjectResponse)
+def get_project_route_by_name(project_name: str,
+                              current_analyst_id: UUID = Depends(get_current_analyst_id)) -> ProjectResponse:
+    """
+    Retrieves the details of a given project.
+
+    This endpoint queries the database to find a project by its ID. It first verifies if the project exists, then if the
+    current analyst can access the project.
+
+    Args:
+        project_name (UUID): The name of the project to be retrieved.
+        current_analyst_id (UUID): The current analyst accessing the project.
+
+    Returns:
+        ProjectResponse: The retrieved project.
+
+    Raises:
+        HTTPException:
+            - If the project does not exist (404 Not Found).
+            - If the analyst cannot access the project (403 Forbidden).
+    """
+    row = get_project_by_name(name=project_name, owner_analyst_id=current_analyst_id)
+
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Project not found",)
+    
+    if not analyst_can_access_project(current_analyst_id, row["project_id"]):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not allowed to access this project",)
+    return ProjectResponse(**row)
+
 @router.get("", response_model=list[ProjectResponse])
 def list_projects_route(current_analyst_id: UUID = Depends(get_current_analyst_id),
                         ) -> list[ProjectResponse]:
