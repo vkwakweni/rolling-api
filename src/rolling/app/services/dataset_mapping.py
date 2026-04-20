@@ -162,7 +162,7 @@ class BaseContentMapper(ABC):
             return UUID(str(performance_type["performance_type_id"]))
         raise RecordNotFoundException(name, self.filename)
 
-    def get_metric_type_id(self, name: str) -> int:
+    def get_metric_type_id(self, name: Optional[str]) -> Optional[int]:
         """
         Returns the ID of the performance metric type based on the name.
 
@@ -175,6 +175,8 @@ class BaseContentMapper(ABC):
         Raises:
             RecordNotFoundException: If the performance metric type does not exist.
         """
+        if name is None:
+            return None
         metric_type = get_metric_by_name(name)
         if metric_type:
             return int(metric_type["metric_type_id"])
@@ -314,8 +316,8 @@ class PerformanceContentMapper(BaseContentMapper):
                 "athlete_id": self.get_athlete_id_from_athlete_code(row["athlete_code"]),
                 "dataset_id": dataset_id,
                 "performance_type": self.get_performance_type_from_label(row["session_label"]),
-                "metric_type": self.get_metric_type_id(row["metric_name"]),
-                "metric_value": float(row["metric_value"]),
+                "metric_type": self.get_metric_type_id(row.get("metric_name")),
+                "metric_value": float(row.get("metric_value")),
                 "metric_unit": row.get("metric_unit"),
                 "observed_on": self.parse_date(row["date"])
             }
