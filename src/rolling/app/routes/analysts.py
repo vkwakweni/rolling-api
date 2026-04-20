@@ -39,7 +39,7 @@ def create_analyst_route(payload: AnalystCreate) -> AnalystResponse:
     return AnalystResponse(**row)
 
 @router.get("/{analyst_id}", response_model=AnalystResponse)
-def get_analyst_by_username_route(analyst_id: UUID) -> AnalystResponse:
+def get_analyst_by_id_route(analyst_id: UUID) -> AnalystResponse:
     """
     Retrieve the details for an existing analyst by its ID.
 
