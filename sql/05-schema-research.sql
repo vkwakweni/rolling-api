@@ -145,7 +145,7 @@ CREATE TABLE research.hormone_relations (
 CREATE TABLE research.performance_records (
     -- typical performance record
     performance_record_id    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    athlete_id               UUID NOT NULL,
+    athlete_id               UUID NOT NULL REFERENCES research.athletes(athlete_id) ON DELETE CASCADE,
     dataset_id               UUID REFERENCES research.datasets(dataset_id) ON DELETE CASCADE,
     performance_type         UUID NOT NULL,
     metric_type              BIGINT REFERENCES research.performance_metric_types(metric_type_id) ON DELETE RESTRICT,
