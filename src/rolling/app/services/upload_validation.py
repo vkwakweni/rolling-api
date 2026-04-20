@@ -453,8 +453,8 @@ class AthletesCSVValidator(BaseCSVValidator):
 class PerformanceCSVValidator(BaseCSVValidator):
     """A child class of BaseCSVValidator that validates performance data files."""
     filename = "performances.csv"
-    required_columns = {"athlete_code", "date", "session_label", "metric_name", "metric_value"}
-    optional_columns = {"metric_unit"}
+    required_columns = {"athlete_code", "date", "session_label"}
+    optional_columns = {"metric_name", "metric_value", "metric_unit"}
     numeric_columns = {"metric_value"}
     date_columns = {"date"}
     
@@ -484,7 +484,7 @@ class CyclePhasesCSVValidator(BaseCSVValidator):
     required_columns = {"athlete_code", "date", "phase"}
     optional_columns = {"relative_day_to_cycle"}
     integer_columns = {"relative_day_to_cycle"}
-    allowed_values = {"phase": ["MENSTRUAL", "FOLLICULAR", "OVULATORY", "LUTEAL"]}
+    allowed_values = {"phase": ["MENSTRUAL", "FOLLICULAR", "OVULATION", "LUTEAL"]}
     date_columns = {"date"}
 
 

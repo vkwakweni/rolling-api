@@ -35,10 +35,10 @@
             * `athlete_code`
             * `date`
             * `session_label`
+        * Optional columns:
             * `metric_name`
             * `metric_value`
                 * Must be numeric
-        * Optional columns:
             * `metric_unit`
     * `hormones.csv`
         * Required columns:
@@ -64,7 +64,7 @@
             * `athlete_code`
             * `date`
             * `phase`
-                * Allowed values: `MENSTRUAL`, `FOLLICULAR`, `OVULATORY`, `LUTEAL`
+                * Allowed values: `MENSTRUAL`, `FOLLICULAR`, `OVULATION`, `LUTEAL`
         * Optional columns:
             * `relative_day_to_cycle`
                 * Must be an integer if provided
