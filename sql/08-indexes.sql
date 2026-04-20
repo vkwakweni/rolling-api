@@ -5,7 +5,7 @@ CREATE INDEX cycle_phase_records_athlete_time_idx
 ON research.cycle_phase_records (athlete_id, observed_on);
 
 CREATE INDEX symptom_records_athlete_time_idx
-ON research.symptom_record (athlete_id, observed_on);
+ON research.symptom_recordS (athlete_id, observed_on);
 
 CREATE INDEX hormone_measurements_athlete_time_idx
 ON research.hormone_measurements (athlete_id, observed_on);

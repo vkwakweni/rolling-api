@@ -17,7 +17,7 @@ VALUES ('TRAINING-RECOVERY'), ('TRAINING-TAPERING'), ('TRAINING-PREPARATION'),
 INSERT INTO research.cycle_phase_types(name)
 VALUES ('FOLLICULAR'),
        ('MENSTRUAL'),
-       ('OVULATORY'),
+       ('OVULATION'),
        ('LUTEAL');
 
 -- research.menstrual_symptoms
@@ -53,7 +53,7 @@ VALUES ('PINEAL'),
        ('PANCREAS'),
        ('OVARY'),
        ('UTERUS'),
-	('ADRENAL'),
+	   ('ADRENAL'),
        ('TESTES');
 
 -- research.chemical_classes
@@ -73,26 +73,26 @@ VALUES ('CORTISOL', 'ADRENAL', 'LIPID'),
        ('FT3', 'THYROID', 'AMINO ACID-DERIVED'),
        ('FT4', 'THYROID', 'AMINO ACID-DERIVED'),
        ('RT3', 'THYROID', 'AMINO ACID-DERIVED'),
-       ('TSH', 'PITUITARY', 'PEPTIDE'),
+       ('HTSH', 'PITUITARY', 'PEPTIDE'),
        ('PROLACTIN', 'PITUITARY', 'PEPTIDE');
 
 -- research.hormone_relations
 INSERT INTO research.hormone_relations(source_hormone, target_hormone, relation, notes)
-VALUES ('FSH', 'OESTROGEN', 'STIMULATES', 'Follicular development increases oestrogen production'),
-       ('LH', 'PROGESTERONE', 'STIMULATES', 'Ovulation/luteal function supports progesterone production'),
-       ('OESTROGEN', 'LH', 'POSITIVE_FEEDBACK_ON', 'High estradiol can contribute to LH surge'),
-       ('OESTROGEN', 'FSH', 'NEGATIVE_FEEDBACK_ON', 'Typical follicular negative feedback'),
-       ('PROGESTERONE', 'LH', 'NEGATIVE_FEEDBACK_ON', 'Luteal-phase feedback'),
-       ('PROGESTERONE', 'FSH', 'NEGATIVE_FEEDBACK_ON', 'Luteal-phase feedback'),
-       ('PROLACTIN', 'FSH', 'INHIBITS', 'Hyperprolactinemia can suppress gonadotropin axis'),
-       ('PROLACTIN', 'LH', 'INHIBITS', 'Hyperprolactinemia can suppress gonadotropin axis'),
-       ('CORTISOL', 'LH', 'INHIBITS', 'Stress-axis effects can suppress reproductive axis'),
-       ('CORTISOL', 'FSH', 'INHIBITS', 'Stress-axis effects can suppress reproductive axis'),
-       ('TSH', 'FT4', 'STIMULATES', 'TSH stimulates thyroid hormone production'),
-       ('TSH', 'FT3', 'STIMULATES', 'TSH stimulates thyroid hormone production');
+VALUES (6, 2, 'STIMULATES', 'Follicular development increases oestrogen production'),
+       (5, 4, 'STIMULATES', 'Ovulation/luteal function supports progesterone production'),
+       (2, 5, 'POSITIVE_FEEDBACK_ON', 'High estradiol can contribute to LH surge'),
+       (2, 6, 'NEGATIVE_FEEDBACK_ON', 'Typical follicular negative feedback'),
+       (4, 5, 'NEGATIVE_FEEDBACK_ON', 'Luteal-phase feedback'),
+       (4, 6, 'NEGATIVE_FEEDBACK_ON', 'Luteal-phase feedback'),
+       (11, 6, 'INHIBITS', 'Hyperprolactinemia can suppress gonadotropin axis'),
+       (11, 5, 'INHIBITS', 'Hyperprolactinemia can suppress gonadotropin axis'),
+       (1, 5, 'INHIBITS', 'Stress-axis effects can suppress reproductive axis'),
+       (1, 6, 'INHIBITS', 'Stress-axis effects can suppress reproductive axis'),
+       (10, 8, 'STIMULATES', 'TSH stimulates thyroid hormone production'),
+       (10, 7, 'STIMULATES', 'TSH stimulates thyroid hormone production');
 
--- INSERT INTO research.sexes (sex)
--- VALUES ('F'), ('M'), ('I');
+INSERT INTO research.sexes (sex)
+VALUES ('F'), ('M'), ('I');
 
--- INSERT INTO research.symptom_severity (symptom_severity)
--- VALUES ('MILD'), ('MODERATE'), ('SEVERE');
+INSERT INTO research.symptom_severity (symptom_severity)
+VALUES ('MILD'), ('MODERATE'), ('SEVERE');
