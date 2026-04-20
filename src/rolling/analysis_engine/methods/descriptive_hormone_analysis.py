@@ -221,8 +221,8 @@ class DescriptiveHormoneAnalysis:
                 if stat1["hormone_name"] == stat2["hormone_name"] and stat1["performance_type"] != stat2["performance_type"]:
                     if stat1["performance_type"] == "HIGH INTENSITY" and stat2["performance_type"] == "OFF SEASON":
                         compared["hormone_name"] = stat1["hormone_name"]
-                        values_1 = stat1["measured_values"]
-                        values_2 = stat2["measured_values"]
+                        values_1 = self.calculator.convert_to_float(stat1["measured_values"])
+                        values_2 = self.calculator.convert_to_float(stat2["measured_values"])
                         compared["performance_type_a"] = stat1["performance_type"]
                         compared["performance_type_b"] = stat2["performance_type"]
                         compared["measured_values_a"] = values_1
@@ -267,8 +267,8 @@ class DescriptiveHormoneAnalysis:
             for stat2 in group_statistics:
                 if stat1["hormone_name"] == stat2["hormone_name"] and (stat1["dysmenorrhea_present"] != stat2["dysmenorrhea_present"]):
                     compared["hormone_name"] = stat1["hormone_name"]
-                    values_1 = stat1["measured_values"]
-                    values_2 = stat2["measured_values"]
+                    values_1 = self.calculator.convert_to_float(stat1["measured_values"])
+                    values_2 = self.calculator.convert_to_float(stat2["measured_values"])
                     compared["dysmenorrhea_present_a"] = stat1["dysmenorrhea_present"]
                     compared["dysmenorrhea_present_b"] = stat2["dysmenorrhea_present"]
                     compared["measured_values_a"] = values_1
@@ -317,8 +317,8 @@ class DescriptiveHormoneAnalysis:
                         (stat1["performance_type"] != stat2["performance_type"]):
                     compared["hormone_name"] = stat1["hormone_name"]
                     compared["dysmenorrhea_present"] = stat1["dysmenorrhea_present"]
-                    values_1 = stat1["measured_values"]
-                    values_2 = stat2["measured_values"]
+                    values_1 = self.calculator.convert_to_float(stat1["measured_values"])
+                    values_2 = self.calculator.convert_to_float(stat2["measured_values"])
                     compared["performance_type_a"] = stat1["performance_type"]
                     compared["performance_type_b"] = stat2["performance_type"]
                     compared["measured_values_a"] = values_1
@@ -346,8 +346,8 @@ class DescriptiveHormoneAnalysis:
                         (stat1["performance_type"] == stat2["performance_type"]):
                     compared["hormone_name"] = stat1["hormone_name"]
                     compared["performance_type"] = stat1["performance_type"]
-                    values_1 = stat1["measured_values"]
-                    values_2 = stat2["measured_values"]
+                    values_1 = self.calculator.convert_to_float(stat1["measured_values"])
+                    values_2 = self.calculator.convert_to_float(stat2["measured_values"])
                     compared["dysmenorrhea_present_a"] = stat1["dysmenorrhea_present"]
                     compared["dysmenorrhea_present_b"] = stat2["dysmenorrhea_present"]
                     compared["measured_values_a"] = values_1

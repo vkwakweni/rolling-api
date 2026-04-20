@@ -154,8 +154,8 @@ def create_multiple_parameter_summary_states_lines(row) -> list:
     """
     lines = []
     lines.append(f"\t- n={row['observation_count']} ")
-    lines.append(f"\t- cohen's d={row['cohens_d']}, independent t={row['independent_t']}")
-    lines.append(f"\t- cohen's d interpretation: {interpret_cohen(row['cohens_d'])}"
+    lines.append(f"\t- hedges' g={row['hedges_g']}, independent t={row['independent_t']}")
+    lines.append(f"\t- hedges' g interpretation: {interpret_cohen(row['hedges_g'])}"
                  f"\t- independent t interpretation: {interpret_t_statistic(row['independent_t'])}")
     return lines
 

@@ -1,5 +1,7 @@
 import math
 import statistics
+from decimal import Decimal
+
 from scipy.stats import ttest_ind
 
 class StatisticsCalculator:
@@ -237,6 +239,26 @@ class StatisticsCalculator:
         if denominator == 0:
             raise ZeroDivisionError
         return denominator
+    
+    @staticmethod
+    def convert_to_float(value): # TODO add return type
+        """
+        If applicable, converts value to safe types.
+
+        For example:
+            - If value is type Decimal, it converts it to a float.
+            - If value is a collection type, it ensures that all values are safe types.
+        """
+        if isinstance(value, Decimal):
+            return float(value)
+
+        if isinstance(value, dict):
+            return {key: StatisticsCalculator.convert_to_float(val) for key, val in value.items()}
+
+        if isinstance(value, list):
+            return [StatisticsCalculator.convert_to_float(item) for item in value]
+
+        return value
     
     
 
