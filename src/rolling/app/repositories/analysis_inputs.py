@@ -104,7 +104,7 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
         params.append(include_performance_types)
 
     query += """
-             ORDER BY hm.athlete_id, hm.observed_on, h.name, mt.name;
+             ORDER BY hm.athlete_id, hm.observed_on, h.name, ms.name, pt.name;
              """
     
     with get_connection() as conn:
