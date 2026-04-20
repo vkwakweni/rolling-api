@@ -42,7 +42,13 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
             - metric_unit (Optional[str]): The unit of measurement for the performance metric.
     """
     query = """
-            SELECT
+            SELECT DISTINCT ON (
+                                    hm.athlete_id,
+                                    hm.observed_on,
+                                    h.name,
+                                    ms.name,
+                                    pt.name
+                                )
                 hm.athlete_id AS athlete_id,
                 hm.observed_on AS observed_on,
                 h.name AS hormone_name,
