@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from uuid import uuid4, UUID
 from pathlib import Path
 
-from main import app
+from rolling.main import app
 from rolling.app.db import get_connection
 
 

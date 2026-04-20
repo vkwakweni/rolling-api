@@ -2,7 +2,7 @@
 # TODO fix formating
 from pathlib import Path
 
-from tests.integration.base import BaseIntegrationTestCase
+from integration.base import BaseIntegrationTestCase
 
 
 class TestDatasetUpload(BaseIntegrationTestCase):
@@ -156,7 +156,7 @@ class TestDatasetUpload(BaseIntegrationTestCase):
 
         share_response = self.client.post(
             f"/projects/{project_id}/share",
-            json=[{"analyst_id": shared_analyst_id}],
+            json=[{"analyst_id": shared_analyst_id, "project_id": project_id},],
             headers=self.get_auth_headers(owner_id),
         )
         self.assertEqual(share_response.status_code, 200)
