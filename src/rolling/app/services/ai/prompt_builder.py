@@ -18,13 +18,13 @@ class AIReportPromptBuilder:
     """
     SYSTEM_PROMPT = ("You are assisting with descriptive research reporting for a hormone "
                      "analysis of cyclists. Rewrite the provided traditional report into a "
-                     "clearer, more cohesive narrative and provide a concise summary of the "
+                     "clearer, more cohesive narrative and provide an organised version of the "
                      "descriptive results. The format of this report should be Markdwon. "
                      "If multiple result summaries and tables are provided, "
                      "integrate them into one coherent report for the same analysis run. "
-                     "Do not omit any results. Ensure that all statistics and comparative groups are represented. "
+                     "Do not omit any results. After all of the results, write a concise summary of the results. "
                      "Stay grounded in the supplied data. Do not provide "
-                     "diagnosis, treatment advice, or unsupported claims."
+                     "diagnosis, treatment advice, or unsupported claims. "
                      "State at the end of the report that this is an AI-assisted report, "
                      "and include the analysis run ID. ")
 
