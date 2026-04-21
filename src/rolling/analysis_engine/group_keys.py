@@ -88,6 +88,47 @@ class HormoneDysmenorrheaPhaseGroupKey(GroupKey):
         return "\{'hormone_name': " + self.hormone_name + \
             ", 'dysmenorrhea_present': " + str(self.dysmenorrhea_present) + \
                 ", 'cycle_phase: " + self.cycle_phase + "}"
+    
+@dataclass(frozen=True)
+class HormonePerformancePhaseGroupKey(GroupKey):
+    """
+    Group key that includes hormone name, performance type, and cycle phase.
+    
+    This group key is used to analyze the relationship between hormone levels, performance types, and cycle phases.
+    
+    Attributes:
+        hormone_name (str): The name of the hormone being analyzed.
+        performance_type (bool): The name of the performance type.
+        cycle_phase (str): The cycle phase the athlete was in.
+    """
+    hormone_name: str
+    performance_type: bool
+    cycle_phase: str
+
+    def as_dict(self) -> dict[str, object]:
+        """Convert the group key to a dictionary representation."""
+        return {"hormone_name": self.hormone_name,
+                "performance_type": self.performance_type,
+                "cycle_phase": self.cycle_phase}
+    
+    def as_tuple(self) -> tuple:
+        """Convert the group key to a tuple representation."""
+        return (self.hormone_name, self.performance_type, self.cycle_phase)
+    
+    def __eq__(self, other):
+        """Check for equality between two group keys.
+        
+        Two group keys are considered equal if they have the same hormone name, performance type, and cycle phase.
+        """
+        return self.hormone_name == other.hormone_name and \
+                self.performance_type == other.performance_type and \
+                self.cycle_phase == other.cycle_phase
+    
+    def __str__(self):
+        """Return a string representation of the group key."""
+        return "\{'hormone_name': " + self.hormone_name + \
+            ", 'performance_type': " + str(self.performance_type) + \
+                ", 'cycle_phase: " + self.cycle_phase + "}"
 
 
 @dataclass(frozen=True)

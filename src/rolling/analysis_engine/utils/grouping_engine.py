@@ -6,7 +6,8 @@ from rolling.analysis_engine.group_keys import (HormoneDysmenorrheaPerformanceGr
                                                 HormoneDysmenorrheaGroupKey,
                                                 HormoneGroupKey,
                                                 HormonePhaseGroupKey,
-                                                HormoneDysmenorrheaPhaseGroupKey)
+                                                HormoneDysmenorrheaPhaseGroupKey,
+                                                HormonePerformancePhaseGroupKey)
 
 
 class GroupingEngine:
@@ -149,11 +150,27 @@ class GroupingEngine:
             observation (HormoneObservation): The hormone observation to build the group key for.
 
         Returns:
-            HormoneDysmenorrheaPerformanceGroupKey: The group key for the observation.
+            HormoneDysmenorrheaPhaseGroupKey: The group key for the observation.
         """
         return HormoneDysmenorrheaPhaseGroupKey(hormone_name=observation.hormone_name,
-                                                      dysmenorrhea_present=self.assign_dysmenorrhea_group(observation),
-                                                      cycle_phase=observation.cycle_phase)
+                                                dysmenorrhea_present=self.assign_dysmenorrhea_group(observation),
+                                                cycle_phase=observation.cycle_phase)
+    
+    def build_hormone_performance_phase_group_key(self,
+                                                  observation: HormoneObservation
+                                                  ) -> HormonePerformancePhaseGroupKey:
+        """
+        Builds a group key for the observation based on a hormone name, performance type and cycle phase.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            HormonePerformancePhaseGroupKey: The group key for the observation.
+        """
+        return HormonePerformancePhaseGroupKey(hormone_name=observation.hormone_name,
+                                               performance_type=self.assign_performance_type_group(observation),
+                                               cycle_phase=observation.cycle_phase)
         
 
     def build_hormone_dysmenorrhea_performance_group_key(self,
@@ -239,7 +256,7 @@ class GroupingEngine:
     
     def group_hormone_dysmenorrhea_phase_observations(self,
                                                       observations: list[HormoneObservation],
-                                                      ) -> dict[HormoneDysmenorrheaPhaseGroupKey]:
+                                                      ) -> dict[HormoneDysmenorrheaPhaseGroupKey, list]:
         """
         Groups observations into a dictionary indexed by hormone name, dysmenorrhea presence, and cycle phase.
 
@@ -253,6 +270,26 @@ class GroupingEngine:
         
         for observation in observations:
             key = self.build_hormone_dysmenorrhea_phase_group_key(observation)
+            grouped[key].append(observation)
+
+        return dict(grouped)
+    
+    def group_hormone_perfromance_phase_observations(self,
+                                                     observations: list[HormoneObservation],
+                                                     ) -> dict[HormonePerformancePhaseGroupKey, list]:
+        """
+        Groups observations into a dictionary indexed by hormone name, performance type, and cycle phase.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            dict[HormoneGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
+        """
+        grouped = defaultdict(list)
+        
+        for observation in observations:
+            key = self.build_hormone_performance_phase_group_key(observation)
             grouped[key].append(observation)
 
         return dict(grouped)

@@ -22,6 +22,7 @@ class AIReportPromptBuilder:
                      "descriptive results. The format of this report should be Markdwon. "
                      "If multiple result summaries and tables are provided, "
                      "integrate them into one coherent report for the same analysis run. "
+                     "Ensure that all tables are represented in their own section. "
                      "Do not omit any results. After all of the results, write a concise summary of the results. "
                      "Stay grounded in the supplied data. Do not provide "
                      "diagnosis, treatment advice, or unsupported claims. "
