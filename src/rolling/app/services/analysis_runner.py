@@ -15,6 +15,7 @@ def run_descriptive_hormone_analysis(project_id: UUID,
                                      include_hormone_names: Optional[list[str]]=None,
                                      include_performance_types: Optional[list[str]]=None,
                                      include_symptom_names: Optional[list[str]]=None,
+                                     include_cycle_phases: Optional[list[str]]=None,
                                      date_from: Optional[date]=None,
                                      date_to: Optional[date]=None,
                                      ) -> dict: # TODO change to Optional
@@ -37,7 +38,8 @@ def run_descriptive_hormone_analysis(project_id: UUID,
         analyst_id (UUID): The ID of the analysis running the analysis.
         include_hormone_names (Optional[list[str]]): List of hormone names to include in the analysis run. By default, all hormones are considered.
         include_performance_types (Optional[list[str]]): List of performance types to include in the run. By default, all performance types are considered.
-        include_symptom_names (Optional[list[str]])): List of menstrual symptoms to include in the run. By default, all menstrual symptoms are considers.
+        include_symptom_names (Optional[list[str]])): List of menstrual symptoms to include in the run. By default, all menstrual symptoms are considered.
+        include_cycle_phases (Optional[list[str]]): List of cycle phases to include in the run. By default, all cycle phases are considered.
         date_from (Optional[date]): Used to filter for observations from this date inclusively. By default, all dates are considered.
         date_to (Optional[date]): Used to filter for observations until this date inclusively. By default, all dates are considered.
 
@@ -60,6 +62,7 @@ def run_descriptive_hormone_analysis(project_id: UUID,
         include_hormone_names=include_hormone_names,
         include_performance_types=include_performance_types,
         include_symptom_names=include_symptom_names,
+        include_cycle_phases=include_cycle_phases
     ) 
     
     # call the engine
@@ -72,6 +75,7 @@ def run_descriptive_hormone_analysis(project_id: UUID,
                                                   include_hormone_names=include_hormone_names,
                                                   include_performance_types=include_performance_types,
                                                   include_symptom_names=include_symptom_names,
+                                                  include_cycle_phases=include_cycle_phases,
                                                   date_from=date_from,
                                                   date_to=date_to)
    
@@ -84,6 +88,7 @@ def run_descriptive_hormone_analysis(project_id: UUID,
     parameters = build_analysis_parameters(include_hormone_names=include_hormone_names,
                                            include_performance_types=include_performance_types,
                                            include_symptom_names=include_symptom_names,
+                                           include_cycle_phases=include_cycle_phases,
                                            date_from=date_from,
                                            date_to=date_to,
                                            )
@@ -141,7 +146,7 @@ def build_hormone_observations(rows: list[dict]) -> list[HormoneObservation]:
                                  measurement_unit=row.get("measurement_unit"),
                                  symptom_name=row.get("symptom_name"),
                                  symptom_severity=row.get("symptom_severity"),
-                                 relative_day_to_cycle=row.get("relative_day_to_cycle"),
+                                 cycle_phase=row.get("cycle_phase"),
                                  performance_type=row.get("performance_type"),
                                  metric_name=row.get("metric_name"),
                                  metric_value=row.get("metric_value"),
@@ -155,6 +160,7 @@ def build_hormone_analysis_input(project_id: UUID,
                                  include_hormone_names, # TODO add types
                                  include_performance_types,
                                  include_symptom_names,
+                                 include_cycle_phases,
                                  date_from,
                                  date_to) -> HormoneAnalysisInput:
     """
@@ -185,12 +191,14 @@ def build_hormone_analysis_input(project_id: UUID,
 def build_analysis_parameters(include_hormone_names: Optional[list[str]]=None,
                               include_performance_types: Optional[list[str]]=None,
                               include_symptom_names: Optional[list[str]]=None,
+                              include_cycle_phases: Optional[list[str]]=None,
                               date_from: Optional[date]=None,
                               date_to: Optional[date]=None) -> dict:
     """Puts the analysis parameters in the form of a dictionary."""
     return {"include_hormone_names": include_hormone_names,
             "include_performance_types": include_performance_types,
             "include_symptom_names": include_symptom_names,
+            "include_cycle_phases": include_cycle_phases,
             "date_from": date_from.isoformat() if date_from else None,
             "date_to": date_to.isoformat() if date_to else None}
 

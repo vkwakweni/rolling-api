@@ -10,6 +10,7 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
                                                      include_hormone_names: Optional[list[str]]=None,
                                                      include_symptom_names: Optional[list[str]]=None,
                                                      include_performance_types: Optional[list[str]]=None,
+                                                     include_cycle_phases: Optional[list[str]]=None
                                                      ) -> list[dict]:
     """
     Lists the observations used for analyses of hormone, dysmenorrhea, and performance.
@@ -35,7 +36,7 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
             - "measurement_unit" (str): The measurement unit of the hormone.
             - "symptom_name" (str): The name of the menstrual symptom.
             - "symptom_severity" (str): The severity of the menstrual symptom.
-            - relative_day_to_cycle: (Optional[int]): The number of days since the first menstrual bleeding (the beginning of a new menstrual cycle).
+            - cycle_phase: (Optional[str]): The cycle phase the athlete was in.
             - performance_type (Optional[str]): The type of performance performed on the observed day, which represents the intensity of the performance.
             - metric_name (Optional[str]): A name of a performance metric (e.g. 'BPM' for heart rate)
             - metric_value (Optional[str]): The value of the performance metric.
@@ -47,7 +48,8 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
                                     hm.observed_on,
                                     h.name,
                                     ms.name,
-                                    pt.name
+                                    pt.name,
+                                    cpt.name
                                 )
                 hm.athlete_id AS athlete_id,
                 hm.observed_on AS observed_on,
@@ -56,6 +58,7 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
                 hm.unit AS measurement_unit,
                 ms.name AS symptom_name,
                 sr.symptom_severity AS symptom_severity,
+                cpt.name as cycle_phase,
                 sr.relative_day_to_cycle AS relative_day_to_cycle,
                 pt.name AS performance_type,
                 mt.name AS metric_name,
@@ -72,10 +75,15 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
             LEFT JOIN research.performance_records pr
                 ON hm.athlete_id = pr.athlete_id
             AND hm.observed_on = pr.observed_on
+            LEFT JOIN research.cycle_phase_records cp
+                ON hm.athlete_id = cp.athlete_id
+            AND hm.observed_on = cp.observed_on
             LEFT JOIN research.performance_types pt
                 ON pr.performance_type = pt.performance_type_id
             LEFT JOIN research.performance_metric_types mt
                 ON pr.metric_type = mt.metric_type_id
+            LEFT JOIN research.cycle_phase_types cpt
+                ON cp.cycle_phase_type = cpt.cycle_phase_type_id
             JOIN projects.project_datasets pd
                 ON hm.dataset_id = pd.dataset_id
             WHERE pd.project_id = %s
@@ -103,8 +111,12 @@ def list_hormone_dysmenorrhea_performance_analysis_rows(project_id: UUID,
         query += " AND pt.name = ANY(%s)"
         params.append(include_performance_types)
 
+    if include_cycle_phases:
+        query += " AND cpt.name = ANY(%s)"
+        params.append(include_cycle_phases)
+
     query += """
-             ORDER BY hm.athlete_id, hm.observed_on, h.name, ms.name, pt.name;
+             ORDER BY hm.athlete_id, hm.observed_on, h.name, ms.name, pt.name, cpt.name;
              """
     
     with get_connection() as conn:

@@ -76,6 +76,22 @@ class StatisticsCalculator:
             return None
         return statistics.stdev(values)
     
+    def mean_diff_pct(self, group_a, group_b):
+        """
+        Compares the mean for group A to group B's mean.
+
+        Args:
+            group_a (list): A list of numeric values for group A.
+            group_b (list): A list of numeric values for group B.
+
+        Returns:
+            float: The percentage of the difference between the means.
+        """
+        new = self.mean(group_a)
+        reference = self.mean(group_b)
+        if reference != 0:
+            return ((new - reference) / reference) * 100
+    
     def pooled_standard_deviation(self, group_a, group_b):
         """
         Calculates the pooled standard deviation of two groups, assuming equal variances and sample sizes.

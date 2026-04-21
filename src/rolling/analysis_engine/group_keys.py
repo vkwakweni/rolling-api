@@ -8,7 +8,7 @@ class GroupKey(ABC):
     
     Each group key represents a unique combination of attributes that define a group for analysis.
     """
-    __slots__ = ("hormone_name", "dysmenorrhea_present", "performance_type")
+    __slots__ = ("hormone_name", "dysmenorrhea_present", "performance_type", "cycle_phase")
 
     @abstractmethod
     def as_dict(self) -> dict[str, object]:
@@ -17,6 +17,77 @@ class GroupKey(ABC):
     @abstractmethod
     def as_tuple(self) -> tuple:
         raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class HormonePhaseGroupKey(GroupKey):
+    hormone_name: str
+    cycle_phase: str
+
+    def as_dict(self) -> dict[str, object]:
+        """Convert the group key to a dictionary representation."""
+        return {"hormone_name": self.hormone_name,
+                "cycle_phase": self.cycle_phase}
+    
+    def as_tuple(self):
+        """Convert the group key as a tuple representation."""
+        return (self.hormone_name, self.cycle_phase)
+    
+    def __eq__(self, other):
+        """
+        Check for equality between two group keys.
+        
+        Two group keys are considered equal if they have the same hormone name and cycle phase.
+        """
+        return self.hormone_name == other.hormone_name and \
+                self.cycle_phase == other.cycle_phase
+    
+    def __str__(self):
+        """Return a string representation of the group key."""
+        return "\{'hormone_name': }" + self.hormone_name + \
+            ", 'cycle_phase': " + self.cycle_phase
+
+
+@dataclass(frozen=True)
+class HormoneDysmenorrheaPhaseGroupKey(GroupKey):
+    """
+    Group key that includes hormone name, dysmenorrhea presence, and cycle phase.
+    
+    This group key is used to analyze the relationship between hormone levels, dysmenorrhea symptoms, and cycle phases.
+    
+    Attributes:
+        hormone_name (str): The name of the hormone being analyzed.
+        dysmenorrhea_present (bool): Whether dysmenorrhea symptoms are present.
+        cycle_phase (str): The cycle phase the athlete was in.
+    """
+    hormone_name: str
+    dysmenorrhea_present: bool
+    cycle_phase: str
+
+    def as_dict(self) -> dict[str, object]:
+        """Convert the group key to a dictionary representation."""
+        return {"hormone_name": self.hormone_name,
+                "dysmenorrhea_present": self.dysmenorrhea_present,
+                "cycle_phase": self.cycle_phase}
+    
+    def as_tuple(self) -> tuple:
+        """Convert the group key to a tuple representation."""
+        return (self.hormone_name, self.dysmenorrhea_present, self.cycle_phase)
+    
+    def __eq__(self, other):
+        """Check for equality between two group keys.
+        
+        Two group keys are considered equal if they have the same hormone name, dysmenorrhea presence, and performance type.
+        """
+        return self.hormone_name == other.hormone_name and \
+                self.dysmenorrhea_present == other.dysmenorrhea_present and \
+                self.cycle_phase == other.cycle_phase
+    
+    def __str__(self):
+        """Return a string representation of the group key."""
+        return "\{'hormone_name': " + self.hormone_name + \
+            ", 'dysmenorrhea_present': " + str(self.dysmenorrhea_present) + \
+                ", 'cycle_phase: " + self.cycle_phase + "}"
 
 
 @dataclass(frozen=True)

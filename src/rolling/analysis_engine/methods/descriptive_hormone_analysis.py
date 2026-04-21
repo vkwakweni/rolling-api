@@ -31,29 +31,6 @@ class DescriptiveHormoneAnalysis:
         An instance of the GroupingEngine class used to filter and group observations.
     conclusion_mapper : ConclusionMapper
         An instance of the ConclusionMapper class used to generate readable conclusions from statistics.
-
-    Methods
-    -------
-    run(payload: Optional[HormoneAnalysisInput]) -> HormoneAnalysisResult
-        Executes the descriptive hormone analysis on the provided input data and returns the results.
-    validate_input(payload: Optional[HormoneAnalysisInput])
-        Validates that the input payload is not None and contains observations.
-    build_group_statistics(grouped_observations: dict[GroupKey, list[HormoneObservation]]) -> list[dict]
-        Returns a list of dictionaries containing statistics for each group of observations.
-    build_hormone_performance_statistics(group_statistics: list[dict]) -> list[dict]
-        Builds comparative statistics for hormone-performance groups by comparing groups with the same hormone name but different performance types.
-    build_hormone_dysmenorrhea_statistics(group_statistics: list[dict]) -> list[dict]
-        Builds comparative statistics for hormone-dysmenorrhea groups by comparing groups with the same hormone name but different dysmenorrhea experiences.
-    build_hormone_dysmenorrhea_performance_statistics(group_statistics: list[dict]) -> list[dict]
-        Builds comparative statistics for hormone-dysmenorrhea-performance groups by comparing groups with the same hormone name but different dysmenorrhea experiences and different performance types.
-    build_summary(statistics: dict[str, list[dict]]) -> dict[str, int]
-        Builds an observation count summary for grouped statistics.
-    build_tables(statistics: dict[str, list[dict]]) -> list[dict]
-        Returns a list of dictionaries containing a statistics group's name, the characteristics of the group, and the calculated statistics.
-    build_metadata(payload: HormoneAnalysisInput, statistics: dict[str, list[dict]]) -> dict
-        Builds metadata about the analysis, including project ID, input observation count, row counts for each statistics group, included hormone names, performance types, symptom names, and date range.
-    build_conclusions(statistics: dict[str, list[dict]]) -> list[str]
-        Returns a readable summary of a statistics dictionary, generating conclusions based on the calculated statistics for each group and comparative analysis.
     """
     def __init__(self):
         """Initializes the DescriptiveHormoneAnalysis class by creating instances of the StatisticsCalculator, GroupingEngine, and ConclusionMapper classes."""
@@ -66,7 +43,7 @@ class DescriptiveHormoneAnalysis:
         Executes the descriptive hormone analysis on the provided input data.
         
         Args:
-            payload (:obj:`str`, optional): The input for the analysis that was prepared by the application. The application may pass a None object.
+            payload (Optional[HormoneAnalysisInput]): The input for the analysis that was prepared by the application. The application may pass a None object.
 
         Returns:
             HormoneAnalysisResult: A result object containing the name of the analysis executed, whether the analysis was `'traditional'` or AI-assisted, analysis results, and metadata.
@@ -80,6 +57,7 @@ class DescriptiveHormoneAnalysis:
                                                     hormone_names=payload.include_hormone_names,
                                                     symptom_names=payload.include_symptom_names,
                                                     performance_types=payload.include_performance_types,
+                                                    cycle_phases=payload.include_cycle_phases,
                                                     date_from=payload.date_from,
                                                     date_to=payload.date_to)
         
@@ -89,6 +67,9 @@ class DescriptiveHormoneAnalysis:
         # group by hormone
         hormone_group = self.grouper.group_hormone_observations(filtered)
 
+        # group by hormone-phase
+        hormone_phase_group = self.grouper.group_hormone_phase_observations(filtered)
+
         # group by hormone-performance
         hormone_performance_group = self.grouper.group_hormone_performance_observations(filtered)
 
@@ -96,29 +77,39 @@ class DescriptiveHormoneAnalysis:
         hormone_dysmenorrhea_group = self.grouper.group_hormone_dysmenorrhea_observations(filtered)
 
         # group by hormone-dysmenorrhea-performance
-        comparative_group = self.grouper.group_hormone_dysmenorrhea_performance_observations(filtered)
+        hormone_dysmenorrhea_performance_group = self.grouper.group_hormone_dysmenorrhea_performance_observations(filtered)
+
+        # group by hormone-dysmenorrhea-phase
+        hormone_dysmenorrhea_phase_group = self.grouper.group_hormone_dysmenorrhea_phase_observations(filtered)
 
         # get statistics
-        hormone_statistics, hormone_performance_statistics, \
-            hormone_dysmenorrhea_statistics, hormone_dysmenorrhea_performance_statistics \
+        hormone_statistics, hormone_performance_statistics, hormone_phase_statistics, \
+            hormone_dysmenorrhea_statistics, hormone_dysmenorrhea_performance_statistics, hormone_dysmenorrhea_phase_statistics \
                 = [self.build_group_statistics(group)
                    for group in [hormone_group,
                                  hormone_performance_group,
+                                 hormone_phase_group,
                                  hormone_dysmenorrhea_group,
-                                 comparative_group]]
+                                 hormone_dysmenorrhea_performance_group,
+                                 hormone_dysmenorrhea_phase_group]]
         
         # comparative statistics
+        comparative_hormone_phase_statistics = self.build_hormone_phase_statistics(hormone_phase_statistics)
         comparative_hormone_performance_statistics = self.build_hormone_performance_statistics(hormone_performance_statistics)
         comparative_hormone_dysmenorrhea_statistics = self.build_hormone_dysmenorrhea_statistics(hormone_dysmenorrhea_statistics)
         comparative_hormone_dysmenorrhea_performance_statistics = self.build_hormone_dysmenorrhea_performance_statistics(hormone_dysmenorrhea_performance_statistics)
+        comparative_hormone_dysmenorrhea_phase_statistics = self.build_hormone_dysmenorrhea_phase_statistics(hormone_dysmenorrhea_phase_statistics)
         
         statistics = {"hormone_statistics": hormone_statistics,
                       "hormone_performance_statistics": hormone_performance_statistics,
+                      "hormone_phase_statistics": hormone_phase_statistics,
                       "hormone_dysmenorrhea_statistics": hormone_dysmenorrhea_statistics,
                       "hormone_dysmenorrhea_performance_statistics": hormone_dysmenorrhea_performance_statistics,
+                      "comparative_hormone_phase_statistics": comparative_hormone_phase_statistics,
                       "comparative_hormone_performance_statistics": comparative_hormone_performance_statistics,
                       "comparative_hormone_dysmenorrhea_statistics": comparative_hormone_dysmenorrhea_statistics,
-                      "comparative_hormone_dysmenorrhea_performance_statistics": comparative_hormone_dysmenorrhea_performance_statistics
+                      "comparative_hormone_dysmenorrhea_performance_statistics": comparative_hormone_dysmenorrhea_performance_statistics,
+                      "comparative_hormone_dysmenorrhea_phase_statistics": comparative_hormone_dysmenorrhea_phase_statistics
         }
         
         # generate summary
@@ -166,8 +157,9 @@ class DescriptiveHormoneAnalysis:
         Returns a list of dictionaries containing statistics for each group of observations.
 
         Each dictionary includes:
-        - Group labels (e.g., hormone_name, performance_type, dysmenorrhea_present)
-        - List of measured values- Count of observations
+        - Group labels (e.g., hormone_name, performance_type, dysmenorrhea_present, cycle_phase)
+        - List of measured values
+        - Count of observations
         - Mean of measured values
         - Median of measured values
         - Standard deviation of measured values (if more than 1 observation, else None)
@@ -198,6 +190,55 @@ class DescriptiveHormoneAnalysis:
             group_statistics.append(stats_summary)
 
         return group_statistics
+    
+    def build_hormone_phase_statistics(self, group_statistics: list[dict]) -> list[dict]:
+        """
+        Builds comparative statistics for hormone-cycle phase groups by compariing groups with the same hormone name but different cycle phases.
+        
+        For each pair of groups witht the same hormone name and different cycle phases, calculates:
+        - Mean, median, and standard deviation for each group
+        - Hedges' g for effect size
+        - Independent t-test (Welch's t-test) for statistical significance
+
+        Args:
+            group_statistics (list[dict]): A list of dictionaries indexed by group keys (containing hormone name and cycle phase).
+        
+        Returns:
+            list[dict]: A list of dictionaries including group labels (with hormone_name being shared and differentiated by cycle_phase), list of measured values, and calculated statistics.
+        
+        """
+        comparative_hormone_phase_statistics = []
+        for stat1 in group_statistics:
+            compared = dict()
+            for stat2 in group_statistics:
+                if stat1["hormone_name"] == stat2["hormone_name"] and stat1["cycle_phase"] != stat2["cycle_phase"]:
+                    if stat1["cycle_phase"]  != stat2["cycle_phase"]:
+                        compared["hormone_name"] = stat1["hormone_name"]
+                        values_1 = self.calculator.convert_to_float(stat1["measured_values"])
+                        values_2 = self.calculator.convert_to_float(stat2["measured_values"])
+                        compared["cycle_phase_a"] = stat1["cycle_phase"]
+                        compared["cycle_phase_b"] = stat2["cycle_phase"]
+                        compared["measured_values_a"] = values_1
+                        compared["measured_values_b"] = values_2
+                        compared["observation_count_a"] = len(values_1)
+                        compared["observation_count_b"] = len(values_2)
+                        compared["mean_a"] = self.calculator.mean(values_1)
+                        compared["mean_b"] = self.calculator.mean(values_2)
+                        compared["mean_diff_pct"] = self.calculator.mean_diff_pct(values_1, values_2)
+                        compared["median_a"] = self.calculator.median(values_1)
+                        compared["median_b"] = self.calculator.median(values_2)
+                        compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
+                                                            if len(values_1) > 1
+                                                            else None)
+                        compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
+                                                            if len(values_2) > 1
+                                                            else None)
+                        compared["hedges_g"] = self.calculator.hedges_g(values_1, values_2)
+                        compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
+                        compared["observation_count"] = len(values_1) + len(values_2)
+                    if compared not in comparative_hormone_phase_statistics and compared:
+                            comparative_hormone_phase_statistics.append(compared)
+        return comparative_hormone_phase_statistics
     
     def build_hormone_performance_statistics(self, group_statistics: list[dict]) -> list[dict]:
         """
@@ -231,6 +272,7 @@ class DescriptiveHormoneAnalysis:
                         compared["observation_count_b"] = len(values_2)
                         compared["mean_a"] = self.calculator.mean(values_1)
                         compared["mean_b"] = self.calculator.mean(values_2)
+                        compared["mean_diff_pct"] = self.calculator.mean_diff_pct(values_1, values_2)
                         compared["median_a"] = self.calculator.median(values_1)
                         compared["median_b"] = self.calculator.median(values_2)
                         compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
@@ -277,6 +319,7 @@ class DescriptiveHormoneAnalysis:
                     compared["observation_count_b"] = len(values_2)
                     compared["mean_a"] = self.calculator.mean(values_1)
                     compared["mean_b"] = self.calculator.mean(values_2)
+                    compared["mean_diff_pct"] = self.calculator.mean_diff_pct(values_1, values_2)
                     compared["median_a"] = self.calculator.median(values_1)
                     compared["median_b"] = self.calculator.median(values_2)
                     compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
@@ -306,7 +349,7 @@ class DescriptiveHormoneAnalysis:
             group_statistics (list[dict]): A list of dictionaries indexed by group keys (containing hormone name, dysmenorrhea experience and performance type).
         
         Returns:
-            list[dict]: A list of dictionaries including group labels (with hormone_name being shared and differentiated by dysmenorrhea_present and performannce_type), list of measured values, and calculated statistics.
+            list[dict]: A list of dictionaries including group labels (with hormone_name being shared and differentiated by dysmenorrhea_present and performance_type), list of measured values, and calculated statistics.
         """
         comparative_hormone_dysmenorrhea_performance_statistics = []
         for k, stat1 in enumerate(group_statistics):
@@ -327,6 +370,7 @@ class DescriptiveHormoneAnalysis:
                     compared["observation_count_b"] = len(values_2)
                     compared["mean_a"] = self.calculator.mean(values_1)
                     compared["mean_b"] = self.calculator.mean(values_2)
+                    compared["mean_diff_pct"] = self.calculator.mean_diff_pct(values_1, values_2)
                     compared["median_a"] = self.calculator.median(values_1)
                     compared["median_b"] = self.calculator.median(values_2)
                     compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
@@ -356,6 +400,7 @@ class DescriptiveHormoneAnalysis:
                     compared["observation_count_b"] = len(values_2)
                     compared["mean_a"] = self.calculator.mean(values_1)
                     compared["mean_b"] = self.calculator.mean(values_2)
+                    compared["mean_diff_pct"] = self.calculator.mean_diff_pct(values_1, values_2)
                     compared["median_a"] = self.calculator.median(values_1)
                     compared["median_b"] = self.calculator.median(values_2)
                     compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
@@ -372,6 +417,87 @@ class DescriptiveHormoneAnalysis:
                     continue
         return comparative_hormone_dysmenorrhea_performance_statistics
     
+    def build_hormone_dysmenorrhea_phase_statistics(self, group_statistics: list[dict]) -> list[dict]:
+        """
+        Builds comparative statistics for hormone-performance groups by comparing groups with the same hormone name but different dysmenorrhea experiences and cycle phases.
+        
+        For each pair of groups with the same hormone name and different dysmenorrhea experiences and cycle phases, calculates:
+        - Mean, median, and standard deviation for each group
+        - Hedges' g for effect size
+        - Independent t-test (Welch's t-test) for statistical significance
+
+        Args:
+            group_statistics (list[dict]): A list of dictionaries indexed by group keys (containing hormone name, dysmenorrhea experience and performance type).
+        
+        Returns:
+            list[dict]: A list of dictionaries including group labels (with hormone_name being shared and differentiated by dysmenorrhea_present and cycle_phase), list of measured values, and calculated statistics.
+        """
+        comparative_hormone_dysmenorrhea_phase_statistics = []
+        for k, stat1 in enumerate(group_statistics):
+            for stat2 in group_statistics[k:]:
+                compared = dict()
+                if (stat1["hormone_name"] == stat2["hormone_name"]) and \
+                        (stat1["dysmenorrhea_present"] == stat2["dysmenorrhea_present"]) and \
+                        (stat1["cycle_phase"] != stat2["cycle_phase"]):
+                    compared["hormone_name"] = stat1["hormone_name"]
+                    compared["dysmenorrhea_present"] = stat1["dysmenorrhea_present"]
+                    values_1 = self.calculator.convert_to_float(stat1["measured_values"])
+                    values_2 = self.calculator.convert_to_float(stat2["measured_values"])
+                    compared["cycle_phase_a"] = stat1["cycle_phase"]
+                    compared["cycle_phase_b"] = stat2["cycle_phase"]
+                    compared["measured_values_a"] = values_1
+                    compared["measured_values_b"] = values_2
+                    compared["observation_count_a"] = len(values_1)
+                    compared["observation_count_b"] = len(values_2)
+                    compared["mean_a"] = self.calculator.mean(values_1)
+                    compared["mean_b"] = self.calculator.mean(values_2)
+                    compared["mean_diff_pct"] = self.calculator.mean_diff_pct(values_1, values_2)
+                    compared["median_a"] = self.calculator.median(values_1)
+                    compared["median_b"] = self.calculator.median(values_2)
+                    compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
+                                                        if len(values_1) > 1
+                                                        else None)
+                    compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
+                                                        if len(values_2) > 1
+                                                        else None)
+                    compared["hedges_g"] = self.calculator.hedges_g(values_1, values_2)
+                    compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
+                    compared["observation_count"] = len(values_1) + len(values_2)
+                    if compared not in comparative_hormone_dysmenorrhea_phase_statistics and compared:
+                            comparative_hormone_dysmenorrhea_phase_statistics.append(compared)
+                    continue
+                if (stat1["hormone_name"] == stat2["hormone_name"]) and \
+                        (stat1["dysmenorrhea_present"] != stat2["dysmenorrhea_present"]) and \
+                        (stat1["cycle_phase"] == stat2["cycle_phase"]):
+                    compared["hormone_name"] = stat1["hormone_name"]
+                    compared["cycle_phase"] = stat1["cycle_phase"]
+                    values_1 = self.calculator.convert_to_float(stat1["measured_values"])
+                    values_2 = self.calculator.convert_to_float(stat2["measured_values"])
+                    compared["dysmenorrhea_present_a"] = stat1["dysmenorrhea_present"]
+                    compared["dysmenorrhea_present_b"] = stat2["dysmenorrhea_present"]
+                    compared["measured_values_a"] = values_1
+                    compared["measured_values_b"] = values_2
+                    compared["observation_count_a"] = len(values_1)
+                    compared["observation_count_b"] = len(values_2)
+                    compared["mean_a"] = self.calculator.mean(values_1)
+                    compared["mean_b"] = self.calculator.mean(values_2)
+                    compared["mean_diff_pct"] = self.calculator.mean_diff_pct(values_1, values_2)
+                    compared["median_a"] = self.calculator.median(values_1)
+                    compared["median_b"] = self.calculator.median(values_2)
+                    compared["standard_deviation_a"] = (self.calculator.standard_deviation(values_1)
+                                                        if len(values_1) > 1
+                                                        else None)
+                    compared["standard_deviation_b"] = (self.calculator.standard_deviation(values_2)
+                                                        if len(values_2) > 1
+                                                        else None)
+                    compared["hedges_g"] = self.calculator.hedges_g(values_1, values_2)
+                    compared["independent_t"] = self.calculator.welch_test(values_1, values_2)
+                    compared["observation_count"] = len(values_1) + len(values_2)
+                    if compared not in comparative_hormone_dysmenorrhea_phase_statistics and compared:
+                            comparative_hormone_dysmenorrhea_phase_statistics.append(compared)
+                    continue
+        return comparative_hormone_dysmenorrhea_phase_statistics
+    
     # HELPER METHODS FOR BUILDING RESULT COMPONENTS
     def build_summary(self, statistics: dict[str, list[dict]]) -> dict[str, int]:
         """
@@ -385,14 +511,17 @@ class DescriptiveHormoneAnalysis:
         """
         return {
         "hormone_row_count": len(statistics["hormone_statistics"]),
+        "hormone_phase_row_count": len(statistics["hormone_phase_statistics"]),
         "hormone_performance_row_count": len(statistics["hormone_performance_statistics"]),
         "hormone_dysmenorrhea_row_count": len(statistics["hormone_dysmenorrhea_statistics"]),
         "hormone_dysmenorrhea_performance_row_count": len(
             statistics["hormone_dysmenorrhea_performance_statistics"]
         ),
+        "comparative_hormone_phase_row_count": len(statistics["comparative_hormone_phase_statistics"]),
         "comparative_hormone_performance_row_count": len(statistics["comparative_hormone_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
         "comparative_hormone_dysmenorrhea_performance_row_count": len(statistics["comparative_hormone_dysmenorrhea_performance_statistics"]),
+        "comparative_hormone_dysmenorrhea_phase_row_count": len(statistics["comparative_hormone_dysmenorrhea_phase_statistics"]),
         "total_grouped_row_count": sum(len(rows) for rows in statistics.values()),
         }
 
@@ -423,15 +552,19 @@ class DescriptiveHormoneAnalysis:
         "project_id": str(payload.project_id),
         "input_observation_count": len(payload.observations),
         "hormone_row_count": len(statistics["hormone_statistics"]),
+        "hormone_phase_row_count": len(statistics["hormone_phase_statistics"]),
         "hormone_performance_row_count": len(statistics["hormone_performance_statistics"]),
         "hormone_dysmenorrhea_row_count": len(statistics["hormone_dysmenorrhea_statistics"]),
         "hormone_dysmenorrhea_performance_row_count": len(statistics["hormone_dysmenorrhea_performance_statistics"]),
+        "comparative_hormone_phase_row_count": len(statistics["comparative_hormone_phase_statistics"]),
         "comparative_hormone_performance_row_count": len(statistics["comparative_hormone_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
         "comparative_hormone_dysmenorrhea_performance_row_count": len(statistics["comparative_hormone_dysmenorrhea_performance_statistics"]),
+        "comparative_hormone_dysmenorrhea_phase_row_count": len(statistics["comparative_hormone_phase_statistics"]),
         "included_hormone_names": payload.include_hormone_names,
         "included_performance_types": payload.include_performance_types,
         "included_symptom_names": payload.include_symptom_names,
+        "included_cycle_phases": payload.include_cycle_phases,
         "date_from": payload.date_from.isoformat() if payload.date_from else None,
         "date_to": payload.date_to.isoformat() if payload.date_to else None,
         }
@@ -454,6 +587,12 @@ class DescriptiveHormoneAnalysis:
                 f"n={row['observation_count']}, mean={row['mean']}, median={row['median']}."
             )
 
+        for row in statistics["hormone_phase_statistics"]:
+            conclusions.append(
+                f"[Hormone + Cycle Phase] {row['hormone_name']} in '{row['cycle_phase']}': "
+                f"n={row['observation_count']}, mean={row['mean']}, median={row['median']}."
+            )
+
         for row in statistics["hormone_performance_statistics"]:
             conclusions.append(
                 f"[Hormone + Performance] {row['hormone_name']} in '{row['performance_type']}': "
@@ -473,6 +612,15 @@ class DescriptiveHormoneAnalysis:
                 f"[Hormone + Dysmenorrhea + Performance] "
                 f"{row['hormone_name']} in '{row['performance_type']}' with {dys_label}: "
                 f"n={row['observation_count']}, mean={row['mean']}, median={row['median']}."
+            )
+
+        for row in statistics["comparative_hormone_phase_statistics"]:
+            cycle_phase_a = row.get("cycle_phase_a", "unknown")
+            cycle_phase_b = row.get("cycle_phase_b", "unknown")
+            conclusions.append(
+                f"Comparative [Hormone + Cycle Phase] "
+                f"{row['hormone_name']} in ['{cycle_phase_a}' and {cycle_phase_b}']: "
+                f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
             )
 
         for row in statistics["comparative_hormone_performance_statistics"]:
@@ -508,6 +656,25 @@ class DescriptiveHormoneAnalysis:
                 conclusions.append(
                     f"Comparative [Hormone + Dysmenorrhea + Performance] "
                     f"{row['hormone_name']} with {dys_label} for performance types {performance_type_a} and {performance_type_b}: "
+                    f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
+                )
+
+        for row in statistics["comparative_hormone_dysmenorrhea_phase_statistics"]:
+            if "cycle_phase" in row.keys():
+                dys_label_a = "dysmenorrhea present" if str(row["dysmenorrhea_present_a"]).lower() == "true" else "dysmenorrhea absent"
+                dys_label_b = "dysmenorrhea present" if str(row["dysmenorrhea_present_b"]).lower() == "true" else "dysmenorrhea absent"
+                conclusions.append(
+                    f"Comparative [Hormone + Dysmenorrhea + Cycle Phase] "
+                    f"{row['hormone_name']} in '{row['cycle_phase']}' with {dys_label_a} and {dys_label_b}: "
+                    f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
+                )
+            else:
+                dys_label = "dysmenorrhea present" if str(row["dysmenorrhea_present"]).lower() == "true" else "dysmenorrhea absent"
+                cycle_phase_a = row.get("cycle_phase_a", "unknown")
+                cycle_phase_b = row.get("cycle_phase_a", "unknown")
+                conclusions.append(
+                    f"Comparative [Hormone + Dysmenorrhea + Cycle Phase] "
+                    f"{row['hormone_name']} with {dys_label} for cycle phases {cycle_phase_a} and {cycle_phase_b}: "
                     f"{row['observation_count']}, hedges' g={row['hedges_g']}, independent t={row['independent_t']}."
                 )
 

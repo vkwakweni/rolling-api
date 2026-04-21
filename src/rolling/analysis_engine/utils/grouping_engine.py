@@ -4,7 +4,9 @@ from rolling.analysis_engine.contracts import HormoneObservation
 from rolling.analysis_engine.group_keys import (HormoneDysmenorrheaPerformanceGroupKey,
                                                 HormonePerformanceGroupKey,
                                                 HormoneDysmenorrheaGroupKey,
-                                                HormoneGroupKey)
+                                                HormoneGroupKey,
+                                                HormonePhaseGroupKey,
+                                                HormoneDysmenorrheaPhaseGroupKey)
 
 
 class GroupingEngine:
@@ -42,7 +44,8 @@ class GroupingEngine:
     """
     def filter_observations(self, observations: list[HormoneObservation], *,
                             hormone_names=None, symptom_names=None,
-                            performance_types=None, date_from=None, date_to=None,
+                            performance_types=None, cycle_phases=None,
+                            date_from=None, date_to=None,
                             ) -> list[HormoneObservation]:
         """
         Filters the given observations based on the provided criteria.
@@ -74,6 +77,11 @@ class GroupingEngine:
             performance_types = set(performance_types)
             filtered = [obs for obs in filtered
                         if obs.performance_type in performance_types]
+            
+        if cycle_phases is not None:
+            cycle_phases = set(cycle_phases)
+            filtered = [obs for obs in filtered
+                      if obs.cycle_phase in cycle_phases]
             
         if date_from is not None:
             filtered = [obs for obs in filtered
@@ -116,6 +124,38 @@ class GroupingEngine:
         return observation.performance_type.strip().upper()
     
     # KEY BUILDERS
+    def build_hormone_phase_group_key(self,
+                                      observation: HormoneObservation
+                                      ) -> HormonePhaseGroupKey:
+        """
+        Builds a group key for the observation based on a hormone name and cycle phase.
+        
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+            
+        Returns:
+            HormonePhaseGroupKey: The group key for the observation.
+        """
+        return HormonePhaseGroupKey(hormone_name=observation.hormone_name,
+                                    cycle_phase=observation.cycle_phase)
+    
+    def build_hormone_dysmenorrhea_phase_group_key(self,
+                                                   observation: HormoneObservation
+                                                   ) -> HormoneDysmenorrheaPhaseGroupKey:
+        """
+        Builds a group key for the observation based on a hormone name, dysmenorrhea presence, and cycle phase.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            HormoneDysmenorrheaPerformanceGroupKey: The group key for the observation.
+        """
+        return HormoneDysmenorrheaPhaseGroupKey(hormone_name=observation.hormone_name,
+                                                      dysmenorrhea_present=self.assign_dysmenorrhea_group(observation),
+                                                      cycle_phase=observation.cycle_phase)
+        
+
     def build_hormone_dysmenorrhea_performance_group_key(self,
                                                          observation: HormoneObservation
                                                          ) -> HormoneDysmenorrheaPerformanceGroupKey:
@@ -177,6 +217,47 @@ class GroupingEngine:
         return HormoneGroupKey(hormone_name=observation.hormone_name)
     
     # GROUP BUILDERS
+    def group_hormone_phase_observations(self,
+                                         observations: list[HormoneObservation],
+                                         ) -> dict[HormonePhaseGroupKey, list]:
+        """
+        Groups observations into a dictionary indexed by hormone name and cycle phase.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            dict[HormoneGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
+        """
+        grouped = defaultdict(list)
+        
+        for observation in observations:
+            key = self.build_hormone_phase_group_key(observation)
+            grouped[key].append(observation)
+
+        return dict(grouped)
+    
+    def group_hormone_dysmenorrhea_phase_observations(self,
+                                                      observations: list[HormoneObservation],
+                                                      ) -> dict[HormoneDysmenorrheaPhaseGroupKey]:
+        """
+        Groups observations into a dictionary indexed by hormone name, dysmenorrhea presence, and cycle phase.
+
+        Args:
+            observation (HormoneObservation): The hormone observation to build the group key for.
+
+        Returns:
+            dict[HormoneGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
+        """
+        grouped = defaultdict(list)
+        
+        for observation in observations:
+            key = self.build_hormone_dysmenorrhea_phase_group_key(observation)
+            grouped[key].append(observation)
+
+        return dict(grouped)
+        
+
     def group_hormone_dysmenorrhea_performance_observations(self,
                                                             observations: list[HormoneObservation],
                                                             ) -> dict[HormoneDysmenorrheaPerformanceGroupKey, list]:
@@ -188,7 +269,7 @@ class GroupingEngine:
 
         Returns:
             dict[HormoneGroupKey, list]: A dictionary indexed by the group keys with values being matching observation.
-        """        
+        """
         grouped = defaultdict(list)
         
         for observation in observations:

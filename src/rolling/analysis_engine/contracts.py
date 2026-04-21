@@ -33,7 +33,7 @@ class HormoneObservation:
     measurement_unit: Optional[str] = None
     symptom_name: Optional[str] = None # menstrual data
     symptom_severity: Optional[str] = None
-    relative_day_to_cycle: Optional[int] = None
+    cycle_phase: Optional[str] = None
     performance_type: Optional[str] = None # performance data
     metric_name: Optional[str] = None
     metric_value: Optional[float] = None
@@ -61,6 +61,7 @@ class HormoneAnalysisInput:
     include_hormone_names: Optional[list[str]] = None
     include_performance_types: Optional[list[str]] = None
     include_symptom_names: Optional[list[str]] = None
+    include_cycle_phases: Optional[list[str]] = None
     date_from: Optional[date] = None
     date_to: Optional[date] = None
 

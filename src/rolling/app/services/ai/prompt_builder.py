@@ -22,6 +22,7 @@ class AIReportPromptBuilder:
                      "descriptive results. The format of this report should be Markdwon. "
                      "If multiple result summaries and tables are provided, "
                      "integrate them into one coherent report for the same analysis run. "
+                     "Do not omit any results. Ensure that all statistics and comparative groups are represented. "
                      "Stay grounded in the supplied data. Do not provide "
                      "diagnosis, treatment advice, or unsupported claims."
                      "State at the end of the report that this is an AI-assisted report, "
