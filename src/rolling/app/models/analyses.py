@@ -108,6 +108,7 @@ class RunDescriptiveHormoneAnalysisRequest(BaseModel):
     include_hormone_names: Optional[list[str]] = None
     include_performance_types: Optional[list[str]] = None
     include_symptom_names: Optional[list[str]] = None
+    include_cycle_phases: Optional[list[str]] = None
     date_from: Optional[date] = None
     date_to: Optional[date] = None
     ai_assisted_report: bool = False

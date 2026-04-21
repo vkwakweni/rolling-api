@@ -67,6 +67,7 @@ def execute_descriptive_hormone_analysis(payload: RunDescriptiveHormoneAnalysisR
                                                 include_hormone_names=payload.include_hormone_names,
                                                 include_performance_types=payload.include_performance_types,
                                                 include_symptom_names=payload.include_symptom_names,
+                                                include_cycle_phases=payload.include_cycle_phases,
                                                 date_from=payload.date_from,
                                                 date_to=payload.date_to,
                                                 )
