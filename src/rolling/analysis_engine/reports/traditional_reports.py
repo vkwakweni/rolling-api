@@ -24,6 +24,7 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
     hormone_dysmenorrhea_rows = tables_by_name.get("hormone_dysmenorrhea_statistics", [])
     hormone_dysmenorrhea_performance_rows = tables_by_name.get("hormone_dysmenorrhea_performance_statistics", [])
     hormone_dysmenorrhea_phase_rows = tables_by_name.get("hormone_dysmenorrhea_phase_statistics", [])
+    hormone_performance_phase_rows = tables_by_name.get("hormone_performance_phase_statistics", [])
     comparative_hormone_phase_rows = tables_by_name.get("comparative_hormone_phase_statistics", [])
     comparative_hormone_performance_rows = tables_by_name.get("comparative_hormone_performance_statistics", [])
     comparative_hormone_dysmenorrhea_rows = tables_by_name.get("comparative_hormone_dysmenorrhea_statistics", [])
@@ -124,6 +125,33 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
             lines.append(f"- {row['hormone_name']} in '{row['performance_type']}' with {dys_label}: ")
             lines.extend(create_single_parameter_summary_stats_lines(row))
 
+    if hormone_dysmenorrhea_phase_rows:
+        lines.extend(["", "## Hormone by Dysmenorrhea Presence and Cycle Phase"])
+        for row in sorted(
+            hormone_dysmenorrhea_phase_rows,
+            key=lambda item: (
+                item["cycle_phase"],
+                item["hormone_name"],
+                item["dysmenorrhea_present"],
+            ),
+        ):
+            dys_label = create_dysmenorrhea_label(row)
+            lines.append(f"- {row['hormone_name']} in '{row['cycle_phase']}' with {dys_label}: ")
+            lines.extend(create_single_parameter_summary_stats_lines(row))
+
+    if hormone_performance_phase_rows:
+        lines.extend(["", "## Hormone by Performance Type and Cycle Phase"])
+        for row in sorted(
+            hormone_performance_phase_rows,
+            key=lambda item: (
+                item["cycle_phase"],
+                item["hormone_name"],
+                item["performance_type"],
+            ),
+        ):
+            lines.append(f"- {row['hormone_name']} in '{row['cycle_phase']}' with {row['performance_type']}: ")
+            lines.extend(create_single_parameter_summary_stats_lines(row))
+        
     if comparative_hormone_dysmenorrhea_performance_rows:
         lines.extend(["", "## Hormone by Comparing Dysmenorrhea Presence and Performance Types"])
         for row in sorted(
@@ -162,11 +190,13 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
 
     hormones = sorted({row["hormone_name"] for row in hormone_rows})
     performance_types = sorted({row["performance_type"] for row in hormone_performance_rows})
+    phases = sorted({row["cycle_phase"] for row in hormone_phase_rows})
 
     lines.extend(["",
                   "## Coverage",
                   f"- Hormones covered: {', '.join(hormones) if hormones else 'None'}",
-                  f"- Performance types covered: {', '.join(performance_types) if performance_types else 'None'}"])
+                  f"- Performance types covered: {', '.join(performance_types) if performance_types else 'None'}",
+                  f"- Menstrua cycle phases covered: {', '.join(phases) if phases else 'None'}"])
     
     return {"report_text": "\n".join(lines),
             "summary_text": summary_text,}
@@ -303,7 +333,7 @@ def find_a_and_b(values: Iterable[str]) -> tuple[list[str], list[str]]:
 
     for v in values:
         if not isinstance(v, str):
-            continue                # skip non‑strings safely
+            continue
 
         if PAT_A.search(v):
             a_items.append(v)
