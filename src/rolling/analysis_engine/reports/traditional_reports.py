@@ -23,6 +23,7 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
     hormone_performance_rows = tables_by_name.get("hormone_performance_statistics", [])
     hormone_dysmenorrhea_rows = tables_by_name.get("hormone_dysmenorrhea_statistics", [])
     hormone_dysmenorrhea_performance_rows = tables_by_name.get("hormone_dysmenorrhea_performance_statistics", [])
+    hormone_dysmenorrhea_phase_rows = tables_by_name.get("hormone_dysmenorrhea_phase_statistics", [])
     comparative_hormone_phase_rows = tables_by_name.get("comparative_hormone_phase_statistics", [])
     comparative_hormone_performance_rows = tables_by_name.get("comparative_hormone_performance_statistics", [])
     comparative_hormone_dysmenorrhea_rows = tables_by_name.get("comparative_hormone_dysmenorrhea_statistics", [])
@@ -43,7 +44,7 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
              f"- Hormone + performance observations: {summary.get('hormone_performance_row_count', 0)}",
              f"- Hormone + dysmenorrhea observations: {summary.get('hormone_dysmenorrhea_row_count', 0)}",
              f"- Hormone + dysmenorrhea + performance observations: {summary.get('hormone_dysmenorrhea_performance_row_count', 0)}",
-             f"- Hormone + dysmenorrhea + cycle phase observations {summary.get('comparative_hormone_dysmenorrhea_phase_row_count', 0)}"]
+             f"- Hormone + dysmenorrhea + cycle phase observations {summary.get('hormone_dysmenorrhea_phase_statistics', 0)}"]
     
     if hormone_rows:
         lines.extend(["",

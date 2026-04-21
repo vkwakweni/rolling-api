@@ -111,6 +111,7 @@ class DescriptiveHormoneAnalysis:
                       "hormone_phase_statistics": hormone_phase_statistics,
                       "hormone_dysmenorrhea_statistics": hormone_dysmenorrhea_statistics,
                       "hormone_dysmenorrhea_performance_statistics": hormone_dysmenorrhea_performance_statistics,
+                      "hormone_dysmenorrhea_phase_statistics": hormone_dysmenorrhea_phase_statistics,
                       "comparative_hormone_phase_statistics": comparative_hormone_phase_statistics,
                       "comparative_hormone_performance_statistics": comparative_hormone_performance_statistics,
                       "comparative_hormone_dysmenorrhea_statistics": comparative_hormone_dysmenorrhea_statistics,
@@ -605,6 +606,7 @@ class DescriptiveHormoneAnalysis:
         "hormone_dysmenorrhea_performance_row_count": len(
             statistics["hormone_dysmenorrhea_performance_statistics"]
         ),
+        "hormone_dysmenorrhea_phase_row_count": len(statistics["hormone_dysmenorrhea_phase_statistics"]),
         "comparative_hormone_phase_row_count": len(statistics["comparative_hormone_phase_statistics"]),
         "comparative_hormone_performance_row_count": len(statistics["comparative_hormone_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
@@ -645,6 +647,7 @@ class DescriptiveHormoneAnalysis:
         "hormone_performance_row_count": len(statistics["hormone_performance_statistics"]),
         "hormone_dysmenorrhea_row_count": len(statistics["hormone_dysmenorrhea_statistics"]),
         "hormone_dysmenorrhea_performance_row_count": len(statistics["hormone_dysmenorrhea_performance_statistics"]),
+        "hormone_dysmenorrhea_phase_row_count": len(statistics["hormone_dysmenorrhea_phase_statistics"]),
         "comparative_hormone_phase_row_count": len(statistics["comparative_hormone_phase_statistics"]),
         "comparative_hormone_performance_row_count": len(statistics["comparative_hormone_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
@@ -701,6 +704,14 @@ class DescriptiveHormoneAnalysis:
             conclusions.append(
                 f"[Hormone + Dysmenorrhea + Performance] "
                 f"{row['hormone_name']} in '{row['performance_type']}' with {dys_label}: "
+                f"n={row['observation_count']}, mean={row['mean']}, median={row['median']}."
+            )
+
+        for row in statistics["hormone_dysmenorrhea_phase_statistics"]:
+            dys_label = "dysmenorrhea present" if str(row["dysmenorrhea_present"]).lower() == "true" else "dysmenorrhea absent"
+            conclusions.append(
+                f"[Hormone + Dysmenorrhea + Cycle Phase] "
+                f"{row['hormone_name']} in '{row['cycle_phase']}' with {dys_label}: "
                 f"n={row['observation_count']}, mean={row['mean']}, median={row['median']}."
             )
 
