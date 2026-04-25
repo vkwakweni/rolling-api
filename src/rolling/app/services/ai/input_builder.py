@@ -19,11 +19,17 @@ class AIInputBuilder:
     """
     ALLOWED_TABLE_NAMES = {"hormone_statistics",
                            "hormone_performance_statistics",
+                           "hormone_phase_statistics",
                            "hormone_dysmenorrhea_statistics",
                            "hormone_dysmenorrhea_performance_statistics",
+                           "hormone_dysmenorrhea_phase_statistics",
+                           "hormone_performance_phase_statistics",
+                           "comparative_hormone_phase_statistics",
                            "comparative_hormone_performance_statistics",
                            "comparative_hormone_dysmenorrhea_statistics",
-                           "comparative_hormone_dysmenorrhea_performance_statistics"}
+                           "comparative_hormone_dysmenorrhea_performance_statistics",
+                           "comparative_hormone_dysmenorrhea_phase_statistics",
+                           "comparative_hormone_performance_phase_statistics"}
     
     ALLOWED_KEYS = {"hormone_name",
                     "dysmenorrhea_present",
@@ -44,7 +50,7 @@ class AIInputBuilder:
                     "standard_deviation",
                     "standard_deviation_a",
                     "standard_deviation_b",
-                    "cohens_d", # TODO change to hedges' g
+                    "hedges_g",
                     "independent_t"}
     
     def build_allowed_ai_input(self,
