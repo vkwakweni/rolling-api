@@ -17,5 +17,5 @@ htmlcov/
 *.log
 .DS_Store
 
-data/uploads/
 notes/
+src/data
