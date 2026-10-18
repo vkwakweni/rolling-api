@@ -337,7 +337,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         median_b = 6
         stdev_a = 1.8708286933869707
         stdev_b = 2.943920288775949
-        cohens_d = abs(-0.8784585919193318)
+        hedges_g = abs(-0.8108848540793833)
         independent_t = 1.5215349135496976 # TODO actual function is still wrong
         
         hormone_performance_stats = [
@@ -388,7 +388,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                 "median_b": median_a,
                 "standard_deviation_a": stdev_b,
                 "standard_deviation_b": stdev_a,
-                "cohens_d": cohens_d,
+                "hedges_g": hedges_g,
                 "independent_t": independent_t,
                 "observation_count": 2 * count
             }
@@ -409,7 +409,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         median_b = 6
         stdev_a = 1.8708286933869707
         stdev_b = 2.943920288775949
-        cohens_d = abs(-0.8784585919193318)
+        hedges_g = -0.8108848540793833
         independent_t = -1.5215349135496976
         
         hormone_dysmenorrhea_stats = [
@@ -460,7 +460,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                 "median_b": median_b,
                 "standard_deviation_a": stdev_a,
                 "standard_deviation_b": stdev_b,
-                "cohens_d": cohens_d,
+                "hedges_g": hedges_g,
                 "independent_t": independent_t,
                 "observation_count": 2 * count
             }
@@ -481,7 +481,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         median_b = 6.0
         stdev_a = 1.8708286933869707
         stdev_b = 2.943920288775949
-        cohens_d = abs(-0.8784585919193318)
+        hedges_g = -0.8108848540793833
         independent_t = -1.5215349135496976
         
         hormone_dysmenorrhea_performance_stats = [
@@ -532,11 +532,12 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                 "observation_count_b": count,
                 "mean_a": mean_a,
                 "mean_b": mean_b,
+                "mean_diff_pct": -38.235294117647065,
                 "median_a": median_a,
                 "median_b": median_b,
                 "standard_deviation_a": stdev_a,
                 "standard_deviation_b": stdev_b,
-                "cohens_d": cohens_d,
+                "hedges_g": hedges_g,
                 "independent_t": independent_t,
                 "observation_count": 2 * count
             },
@@ -551,11 +552,12 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                 "observation_count_b": count,
                 "mean_a": mean_a,
                 "mean_b": mean_a,
+                "mean_diff_pct": 0.0,
                 "median_a": median_a,
                 "median_b": median_a,
                 "standard_deviation_a": stdev_a,
                 "standard_deviation_b": stdev_a,
-                "cohens_d": 0,
+                "hedges_g": 0,
                 "independent_t": 0,
                 "observation_count": 2 * count
             }
@@ -563,6 +565,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         self.assertEqual(len(intended_comparative),
                          len(self.engine.build_hormone_dysmenorrhea_performance_statistics(hormone_dysmenorrhea_performance_stats)),
                          msg="Lengths are not equal")
+        self.maxDiff = None
         self.assertEqual(intended_comparative,
                         self.engine.build_hormone_dysmenorrhea_performance_statistics(hormone_dysmenorrhea_performance_stats))
 
@@ -573,6 +576,11 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         median = 1.5
         stdev = 0.7071067811865476
         statistics = {
+            "hormone_phase_statistics": [],
+            "hormone_dysmenorrhea_phase_statistics": [],
+            "comparative_hormone_phase_statistics": [],
+            "comparative_hormone_dysmenorrhea_phase_statistics": [],
+            "comparative_hormone_performance_phase_statistics": [],
             "hormone_statistics": [
                 {
                     "hormone_name": "test_hormone1",
@@ -696,7 +704,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 },
@@ -716,7 +724,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 },
@@ -737,7 +745,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 },
@@ -756,7 +764,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 }
@@ -764,6 +772,11 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         }
 
         intended_summary = {
+            "hormone_phase_row_count": 0,
+            "hormone_dysmenorrhea_phase_row_count": 0,
+            "comparative_hormone_phase_row_count": 0,
+            "comparative_hormone_dysmenorrhea_phase_row_count": 0,
+            "comparative_hormone_performance_phase_row_count": 0,
             "hormone_row_count": 2,
             "hormone_performance_row_count": 3,
             "hormone_dysmenorrhea_row_count": 3,
@@ -906,7 +919,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 },
@@ -926,7 +939,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 },
@@ -947,7 +960,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 },
@@ -966,7 +979,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                     "median_b": median,
                     "standard_deviation_a": stdev,
                     "standard_deviation_b": stdev,
-                    "cohens_d": 0,
+                    "hedges_g": 0,
                     "independent_t": 0,
                     "observation_count": 2 * count
                 }
@@ -1112,7 +1125,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                         "median_b": median,
                         "standard_deviation_a": stdev,
                         "standard_deviation_b": stdev,
-                        "cohens_d": 0,
+                        "hedges_g": 0,
                         "independent_t": 0,
                         "observation_count": 2 * count
                     },
@@ -1135,7 +1148,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                         "median_b": median,
                         "standard_deviation_a": stdev,
                         "standard_deviation_b": stdev,
-                        "cohens_d": 0,
+                        "hedges_g": 0,
                         "independent_t": 0,
                         "observation_count": 2 * count
                     },
@@ -1159,7 +1172,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                         "median_b": median,
                         "standard_deviation_a": stdev,
                         "standard_deviation_b": stdev,
-                        "cohens_d": 0,
+                        "hedges_g": 0,
                         "independent_t": 0,
                         "observation_count": 2 * count
                     },
@@ -1178,7 +1191,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
                         "median_b": median,
                         "standard_deviation_a": stdev,
                         "standard_deviation_b": stdev,
-                        "cohens_d": 0,
+                        "hedges_g": 0,
                         "independent_t": 0,
                         "observation_count": 2 * count
                     }

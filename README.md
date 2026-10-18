@@ -63,8 +63,8 @@ If you would simply like to use this API in your own project, you will just need
 ### Environment
 * The API has certain environment variables that allow for authorised access.
 * When you are first setting up the API:
-    * I have initialised a file called [`dotenv`](./dotenv) which contains all the variables you will need for the API. If you are using version control, make sure you include `.env` in your `.gitignore` file or equivalent.
-    * Then you can execute this: `mv ./dotenv ./.env`. This is so that the Python script reads the environment variables from this file. Once this is done, you can replace the fields, as I explain below.
+    * I have initialised a file called [`.env.example`](./.env.example) which contains all the variables you will need for the API. If you are using version control, make sure you include `.env` in your `.gitignore` file or equivalent.
+    * Then you can execute this: `cp ./.env.example ./.env`. This is so that the Python script reads the environment variables from this file. Once this is done, you can replace the fields, as I explain below. Never commit real values (passwords, keys) to version control.
 * At this stage in development, it is primarily used for PostgreSQL connection.
     * Environment variables `APP_NAME`, `LOG_LEVEL`, `DB_NAME`, and database pool connection already have initial values.
     * For a local set-up you will need to configure:
