@@ -8,31 +8,31 @@ class StatisticsCalculator:
     """
     A utility class for performing various statistical calculations on numeric data samples.
 
-        The StatisticsCalculator class provides methods to calculate the mean, median, standard
+    The StatisticsCalculator class provides methods to calculate the mean, median, standard
     deviation, pooled standard deviation, Cohen's d, and Welch's t-test statistic for given
     numeric samples. It also includes validation to ensure that the input data is appropriate
     for these calculations.
 
-        Each method assumes that the input samples are lists of numeric values and will raise
+    Each method assumes that the input samples are lists of numeric values and will raise
     exceptions if the samples are empty or contain non-numeric values.
 
     Methods
     -------
-    mean(values)
+    * mean(values):
         Returns the arithmetic mean of a set of values.
-    median(values)
+    * median(values):
         Returns the median of a set of values.
-    standard_deviation(values)
+    * standard_deviation(values):
         Returns the standard deviation of a set of values.
-    pooled_standard_deviation(group_a, group_b)
+    * pooled_standard_deviation(group_a, group_b):
         Returns the pooled standard deviation of two groups, assuming equal variances and sample sizes.
-    cohen_pooled_standard_deviation(group_a, group_b)
+    * cohen_pooled_standard_deviation(group_a, group_b):
         Returns the pooled standard deviation of two groups, assuming equal variances but potentially unequal sample sizes.
-    cohen_pooled_standard_error(group_a, group_b)
+    * cohen_pooled_standard_error(group_a, group_b):
         Returns the pooled standard error of two groups, assuming equal variances but potentially unequal sample sizes.
-    cohens_d(group_a, group_b)
+    * cohens_d(group_a, group_b):
         Returns Cohen's d, a measure of effect size that quantifies the difference between two groups in terms of standard deviations.
-    welch_test(group_a, group_b)
+    * welch_test(group_a, group_b):
         Returns the t-statistic from Welch's t-test, which is used to determine if there is a significant difference between the means of two groups.
     """
     def mean(self, values):

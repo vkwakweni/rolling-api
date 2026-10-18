@@ -15,13 +15,13 @@ def create_symptom_record(athlete_id: UUID,
     Create a menstrual symptom record.
 
     Args:
-        - athlete_id (UUID): The ID of the athlete.
-        - dataset_id (UUID): The ID of the dataset from which the observation was obtained.
-        - symptom_id (UUID): The ID of the menstrual symptom.
-        - observed_on (date): The date the menstrual symptom was observed.
-        - symptom_severity (Optional[str]): The severity of the menstrual symptom.
-        - notes (Optional[str]): The notes of the menstrual symptom.
-        - relative_day_to_cycle (Optional[int]): An optional field representing the number of days since the first menstrual bleeding (the beginning of a new menstrual cycle) on which the symptom was observed.
+        athlete_id (UUID): The ID of the athlete.
+        dataset_id (UUID): The ID of the dataset from which the observation was obtained.
+        symptom_id (UUID): The ID of the menstrual symptom.
+        observed_on (date): The date the menstrual symptom was observed.
+        symptom_severity (Optional[str]): The severity of the menstrual symptom.
+        notes (Optional[str]): The notes of the menstrual symptom.
+        relative_day_to_cycle (Optional[int]): An optional field representing the number of days since the first menstrual bleeding (the beginning of a new menstrual cycle) on which the symptom was observed.
 
     Returns:
         dict: A dictionary of the created menstrual symptom record.

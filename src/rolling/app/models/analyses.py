@@ -12,7 +12,7 @@ class AnalysisRunCreate(BaseModel):
     """
     Represents the data required to create a new analysis run.
     
-    Attributes
+    Args:
         project_id (UUID): Unique identifier for a project.
         analysis_kind (str): The kind of analysis to be performed (e.g. "descriptive_hormone_analysis").
         execution_mode (str): The mode of execution for the analysis run (e.g. "traditional").
@@ -29,7 +29,7 @@ class AnalysisRunResponse(BaseModel):
     """
     Represents the data returned for an analysis run, including metadata about the run and its parameters.
     
-    Attributes
+    Args:
         analysis_run_id (UUID): Unique identifier for the analysis run.
         project_id (UUID): Unique identifier for a project.
         created_by_analyst_id (UUID): Unique identifier for the analyst who created the run.
@@ -56,7 +56,7 @@ class AnalysisResultResponse(BaseModel):
     """
     Represents the data returned for an analysis result, including metadata about the result and its payload.
     
-    Attributes
+    Args:
         analysis_result_id (UUID): Unique identifier for the analysis result.
         analysis_run_id (UUID): Unique identifier for the analysis run.
         result_type (str): The type of the analysis result (e.g. "descriptive_hormone_analysis").
@@ -75,7 +75,7 @@ class AnalysisReportResponse(BaseModel):
     """
     Represents the data returned for an analysis report, including metadata about the report and its content.
     
-    Attributes
+    Args:
         analysis_report_id (UUID): Unique identifier for the analysis report.
         analysis_run_id (UUID): Unique identifier for the analysis run.
         report_text (str): The text of the analysis report.
@@ -94,7 +94,7 @@ class RunDescriptiveHormoneAnalysisRequest(BaseModel):
     """
     Represents the data required to run a descriptive hormone analysis, including filters for hormone names, performance types, symptom names, and date range.
     
-    Attributes
+    Args:
          project_id (UUID): Unique identifier for a project.
          include_hormone_names (Optional[list[str]]): An optional collection of hormone names to inclusively filter for in the analysis. By default, all hormone names will be included.
          include_performance_types (Optional[list[str]]): An optional collection of performance types to inclusively filter for in the analysis. By default, all performance types will be included.
@@ -119,7 +119,7 @@ class RunDescriptiveAnalysisResponse(BaseModel):
     """
     Represents the data returned after running a descriptive hormone analysis, including the analysis run metadata, results, and reports.
     
-    Attributes
+    Args:
          analysis_run (AnalysisRunResponse): The metadata of the analysis run that was executed.
          analysis_result (Optional[AnalysisResultResponse]): The result of the analysis run, if available. By default, this is set to None and will only be included if the analysis run produced a result.
          analysis_report (Optional[AnalysisReportResponse]): The traditional analysis report generated from the analysis run, if available. By default, this is set to None and will only be included if a traditional report was generated.
