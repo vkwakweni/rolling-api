@@ -576,6 +576,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         median = 1.5
         stdev = 0.7071067811865476
         statistics = {
+            "hormone_performance_phase_statistics": [],
             "hormone_phase_statistics": [],
             "hormone_dysmenorrhea_phase_statistics": [],
             "comparative_hormone_phase_statistics": [],
@@ -772,6 +773,7 @@ class TestDescriptiveHormoneAnalysis(unittest.TestCase):
         }
 
         intended_summary = {
+            "hormone_performance_phase_row_count": 0,
             "hormone_phase_row_count": 0,
             "hormone_dysmenorrhea_phase_row_count": 0,
             "comparative_hormone_phase_row_count": 0,

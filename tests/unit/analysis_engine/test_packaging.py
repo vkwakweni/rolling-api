@@ -57,3 +57,19 @@ class TestSeededDemo(unittest.TestCase):
         self.assertEqual(len({o.performance_type for o in observations}), 5)
         self.assertIn("DYSMENORRHEA", {o.symptom_name for o in observations})
         self.assertTrue(all(o.metric_name for o in observations))
+
+
+class TestReportOverview(unittest.TestCase):
+    def test_overview_counts_match_the_summary(self):
+        result, report = run_demo(2026)
+        text = report["report_text"]
+        for label, key in [("Hormone + dysmenorrhea + cycle phase observations", "hormone_dysmenorrhea_phase_row_count"),
+                           ("Hormone + performance + cycle phase observations", "hormone_performance_phase_row_count")]:
+            self.assertGreater(result.summary[key], 0)
+            self.assertIn(f"- {label}: {result.summary[key]}", text)
+
+    def test_metadata_counts_match_the_summary(self):
+        result, _ = run_demo(2026)
+        for key, value in result.summary.items():
+            if key.endswith("_row_count") and key in result.metadata:
+                self.assertEqual(result.metadata[key], value, key)

@@ -83,7 +83,7 @@ def get_ai_api_settings(model: str):
         case "openai":
             return OpenAIClientSettings(api_key=os.getenv("OPENAI_API_KEY", ""))
         case "ollama":
-            return OllamaClientSettings()
+            return get_ollama_api_settings()
         
 def get_ollama_api_settings() -> OllamaClientSettings:
     """
@@ -93,11 +93,12 @@ def get_ollama_api_settings() -> OllamaClientSettings:
         OllamaClientSettings: Pydantic model for the Ollama API settings
             - host (str): Ollama host (e.g. "http://localhost:11434")
             - model_name (str): Ollama model_name (e.g. "codellama")
-            - headers (dict): Ollama headers containing an authorization header (e.g. {"Authorization": "Bearer token"})
+            - headers (dict): Ollama headers containing an authorization header (e.g. {"Authorization": "Bearer token"}), or empty when `OLLAMA_API_KEY` is not set
     """
+    api_key = os.getenv("OLLAMA_API_KEY")
     return OllamaClientSettings(host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
                                 model_name=os.getenv("OLLAMA_MODEL_NAME", "codellama"),
-                                headers={"Authorization": "Bearer " + os.getenv("OLLAMA_API_KEY")})
+                                headers={"Authorization": "Bearer " + api_key} if api_key else {})
 
 dbSettings = get_db_settings()
 OpenAISettings = get_ai_api_settings("openai")
