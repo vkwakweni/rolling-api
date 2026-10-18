@@ -190,8 +190,14 @@ class StatisticsCalculator:
         Returns:
             float: Hedge's g effect size for the difference between the two groups.
         """
+        self.validate_numeric_sample(group_a)
+        self.validate_numeric_sample(group_b)
+        if len(group_a) < 2 or len(group_b) < 2:
+            return None  # no standard deviation can be estimated from a single value
         mean_diff = float(self.mean(group_a) - self.mean(group_b))
         pooled_stdev = self.cohen_pooled_standard_deviation(group_a, group_b)
+        if pooled_stdev == 0:
+            return None
         correction_factor = 1 - (3 / (4 * (len(group_a) + len(group_b)) - 9))
         if len(group_a) < 50 and len(group_b) < 50:
             return (mean_diff / pooled_stdev) * correction_factor
@@ -213,6 +219,8 @@ class StatisticsCalculator:
         """
         self.validate_numeric_sample(group_a)
         self.validate_numeric_sample(group_b)
+        if len(group_a) < 2 or len(group_b) < 2:
+            return None
         t_result = ttest_ind(group_a, group_b, equal_var=False)
         return float(t_result.statistic)
 

@@ -2,27 +2,52 @@
 name = "rolling"
 version = "0.1.0"
 description = "A Python package for analysis of hormone data with menstruation cycle tracking."
-authors = [{ name = "Vuyo Kwakweni", email = "vuyo.kwakweni@example.com" }]
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Vuyo Kwakweni", email = "kwakwenivuyo@gmail.com" }]
+# TODO choose a licence before publishing, then add `license = ...` and a LICENSE file
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+]
 
+# the analysis engine needs scipy only
 dependencies = [
+    "scipy",
+]
+
+[project.optional-dependencies]
+api = [
     "fastapi",
     "uvicorn",
     "pydantic",
     "psycopg2-binary",
-    "dotenv",
+    "python-dotenv",
     "email-validator",
     "python-multipart",
+    "pwdlib[argon2]",
+]
+ai = [
     "openai",
-    "requests",
     "ollama",
-    "scipy",
-    "pwdlib[argon2]"
+    "requests",
+]
+dev = [
+    "pytest",
+    "build",
 ]
 
+[project.urls]
+Repository = "https://github.com/vkwakweni/rolling-api"
+
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["rolling*"]
+
+[tool.setuptools.package-data]
+rolling = ["py.typed"]
