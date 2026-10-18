@@ -11,7 +11,7 @@ class AIAnalysisReportInput(BaseModel):
     
     This is created by the input builder for the AI service. It contains only whilelisted values for the AI model.
     
-    Attributes
+    Args:
         summary (dict[str, Any]): A dictionary of containing the group labels, observation count, and statistics for grouped and compared observations.
         tables (list[dict[str, Any]): A list of tables, represented as a dictionary with a key-value pair for the name of the statistic group and another pair for the labels and statistical values.
         report_text (Optional[str]): An analysis report that was constructed traditionally, by default None.
@@ -30,7 +30,7 @@ class AgentTraceMetadata(BaseModel): # TODO rename
     """
     DEPRECATED: Represents metadata for an AI generated analysis report.
     
-    Attributes
+    Args:
         status (Optional[str]): Describes whether the AI analysis report generation was completed.
         operation (Optional[str]): Describes what task was performed. Version 1 only supports `'ai_report_generation'`, by defa.
         notes (Optional[str]): Any notes following the AI analysis report generation, by default None.
@@ -44,7 +44,7 @@ class AgentTraceCreate(BaseModel):
     """
     Represents input for creating an agent trace in the database.
     
-    Attributes
+    Args:
         analysis_run_id (UUID): Unique identifier for the analysis run on which the trace if basing its operations.
         step_name (str): Describes what task is being performed. Version 1 only supports `'ai_report_generation'`.
         model_name (str): The AI model used perform the service.
@@ -60,7 +60,7 @@ class AgentTraceResponse(BaseModel):
     """
     Represents the database object of an agent trace.
     
-    Attributes
+    Args:
         agent_trace_id (UUID): Unique identifier for the agent trace.
         analysis_run_id (UUID): Unique identifier for the analysis run on which the trace if basing its operations.
         step_name (str): Describes what task is being performed. Version 1 only supports `'ai_report_generation'`.
@@ -80,7 +80,7 @@ class AIAnalysisReportCreate(BaseModel):
     """
     Represents input for creating an AI analysis report database object.
     
-    Attributes
+    Args:
         analysis_run_id (UUID): Unique identifier for the analysis run on which the trace if basing its operations.
         agent_trace_id (UUID): Unique identifier for the agent trace.
         model_name (str): The AI model used perform the service.
@@ -100,7 +100,7 @@ class AIAnalysisReportResponse(BaseModel):
     """
     Represents the database object for an AI analysis report.
     
-    Attributes
+    Args:
         ai_analysis_report_id (UUID): Unique identifier for the AI analysis report.
         agent_trace_id (UUID): Unique identifier for the agent trace.
         model_name (str): The AI model used perform the service.
@@ -123,7 +123,7 @@ class GenerateAIAnalysisReportRequest(BaseModel):
     """
     Represents a request to generate an AI analysis report using a specific model.
 
-    Attributes
+    Args:
         model_name (str): The name of the AI model that will provide the service.
     """
     model_name: str
@@ -133,7 +133,7 @@ class GenerateAIAnalysisReportResponse(BaseModel):
     """
     Represents the response after generating an AI analysis report, including the agent trace of the operation and the generated AI analysis report.
     
-    Attributes
+    Args:
         agent_trace (AgentTraceResponse): The agent trace of the operation.
         ai_report (AIAnalysisReportResponse): The generated AI analysis report.
     """
@@ -145,7 +145,7 @@ class AIAnalysisReportRequest(BaseModel):
     """
     Represents a request to generate an AI analysis report for a specific analysis run.
     
-    Attributes
+    Args:
         analysis_run_id (UUID): Unique identifier for the analysis run on which the AI report will be based.
     """
     ai_analysis_report_id: UUID
@@ -155,7 +155,7 @@ class AIPrompt(BaseModel):
     """
     Represents the prompt that will be sent to the AI model, including the system prompt, user prompt, and any tools that the model can use to complete the task.
     
-    Attributes
+    Args:
         system_prompt (str): The system prompt for the AI model. This includes high-level standing instructions for the model.
         user_prompt (str): The user prompt for the AI model. This includes task-specific instructions and content for the model.
         tools (list[dict[str, Any]]): A list of tools that the AI model can use.
@@ -169,7 +169,7 @@ class AIModelOutput(BaseModel):
     """
     Represents the output from the AI model after generating an analysis report, including the model name, the generated report text, and a summary of the report.
     
-    Attributes
+    Args:
         model_name (str): The name of the AI model that generated the output.
         report_text (str): The generated analysis report text.
         summary_text (Optional[str]): A summary of the generated analysis report, by default None.
