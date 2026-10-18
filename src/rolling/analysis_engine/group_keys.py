@@ -44,8 +44,8 @@ class HormonePhaseGroupKey(GroupKey):
     
     def __str__(self):
         """Return a string representation of the group key."""
-        return "\{'hormone_name': }" + self.hormone_name + \
-            ", 'cycle_phase': " + self.cycle_phase
+        return "{'hormone_name': " + self.hormone_name + \
+            ", 'cycle_phase': " + self.cycle_phase + "}"
 
 
 @dataclass(frozen=True)
@@ -85,7 +85,7 @@ class HormoneDysmenorrheaPhaseGroupKey(GroupKey):
     
     def __str__(self):
         """Return a string representation of the group key."""
-        return "\{'hormone_name': " + self.hormone_name + \
+        return "{'hormone_name': " + self.hormone_name + \
             ", 'dysmenorrhea_present': " + str(self.dysmenorrhea_present) + \
                 ", 'cycle_phase: " + self.cycle_phase + "}"
     
@@ -126,7 +126,7 @@ class HormonePerformancePhaseGroupKey(GroupKey):
     
     def __str__(self):
         """Return a string representation of the group key."""
-        return "\{'hormone_name': " + self.hormone_name + \
+        return "{'hormone_name': " + self.hormone_name + \
             ", 'performance_type': " + str(self.performance_type) + \
                 ", 'cycle_phase: " + self.cycle_phase + "}"
 
@@ -169,7 +169,7 @@ class HormoneDysmenorrheaPerformanceGroupKey(GroupKey):
     
     def __str__(self):
         """Return a string representation of the group key."""
-        return "\{'hormone_name': " + self.hormone_name + \
+        return "{'hormone_name': " + self.hormone_name + \
             ", 'dysmenorrhea_present': " + str(self.dysmenorrhea_present) + \
                 ", 'performance_type: " + self.performance_type + "}"
     
@@ -207,7 +207,7 @@ class HormonePerformanceGroupKey(GroupKey):
     
     def __str__(self):
         """Return a string representation of the group key."""
-        return "\{'hormone_name': " + self.hormone_name + \
+        return "{'hormone_name': " + self.hormone_name + \
                 ", 'performance_type: " + self.performance_type + "}"
 
 
@@ -244,7 +244,7 @@ class HormoneDysmenorrheaGroupKey(GroupKey):
     
     def __str__(self):
         """Return a string representation of the group key."""
-        return "\{'hormone_name': " + self.hormone_name + \
+        return "{'hormone_name': " + self.hormone_name + \
                 ", 'performance_type: " + self.performance_type + "}"
     
 
@@ -277,5 +277,5 @@ class HormoneGroupKey(GroupKey):
     
     def __str__(self):
         """Return a string representation of the group key."""
-        return "\{'hormone_name': " + self.hormone_name + "}"
+        return "{'hormone_name': " + self.hormone_name + "}"
     

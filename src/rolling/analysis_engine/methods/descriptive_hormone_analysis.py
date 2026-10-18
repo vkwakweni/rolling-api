@@ -613,7 +613,7 @@ class DescriptiveHormoneAnalysis:
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
         "comparative_hormone_dysmenorrhea_performance_row_count": len(statistics["comparative_hormone_dysmenorrhea_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_phase_row_count": len(statistics["comparative_hormone_dysmenorrhea_phase_statistics"]),
-        "comprative_hormone_performance_phase_row_count": len(statistics["comparative_hormone_performance_phase_statistics"]),
+        "comparative_hormone_performance_phase_row_count": len(statistics["comparative_hormone_performance_phase_statistics"]),
         "total_grouped_row_count": sum(len(rows) for rows in statistics.values()),
         }
 

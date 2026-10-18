@@ -1,0 +1,18 @@
+name: engine tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # scipy and pytest only: the engine must stay independent of the app
+      - run: pip install scipy pytest
+      - run: pip install --no-deps -e .
+      - run: python -m pytest tests/unit/analysis_engine

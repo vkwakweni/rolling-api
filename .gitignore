@@ -19,3 +19,8 @@ htmlcov/
 
 notes/
 src/data
+
+data/
+*.egg-info/
+dist/
+build/

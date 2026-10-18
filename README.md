@@ -3,15 +3,39 @@
 `Rolling API` is a repository for the deployment of an analysis of cyclists' menstruation experience, performance, and hormone profile. It serves supplement for a Bachelor degree thesis.
 
 ## Installation as a package
-If you would simply like to use this API in your own project, you will just need to use pip to install it from GitHub. It still requires setting up the database and the .env file.
+The analysis engine can be used on its own, as a library. It needs only `scipy`.
 
-* Before installing the package, first set up the database. You can do this following the steps in [`Database Bootstrap`](###database-bootstrap)
-* Then, proceed with the environment variables. You can do this following the instructions in [`Environment`](###environment)
-* With the database set up and the environment variables configured, you can then install the package using pip
-    * `python3 -m pip install git+https://github.com/vkwakweni/rolling-api.git`
-    * It will install its dependencies as well
+The engine is built for one study, and says so in its names: hormone levels (oestrogen, progesterone, LH, FSH, testosterone, cortisol) compared across menstrual cycle phases, dysmenorrhea and cycling performance types. It is not a general-purpose statistics package.
+
+* `python3 -m pip install git+https://github.com/vkwakweni/rolling-api.git`
+    * This installs the engine only.
+* The web app and the AI mode are optional extras:
+    * `python3 -m pip install "rolling[api] @ git+https://github.com/vkwakweni/rolling-api.git"` for the API (it still requires setting up the database and the .env file, see [`Database Bootstrap`](###database-bootstrap) and [`Environment`](###environment))
+    * `python3 -m pip install "rolling[ai] @ git+https://github.com/vkwakweni/rolling-api.git"` for the AI assistant
 * To uninstall it:
     * `pip uninstall rolling`
+
+### Using the engine as a library
+The demonstration covers the whole study design with invented data from a fixed random seed: six hormones, four cycle phases, five performance types and the menstrual symptoms. No real participants are involved. Run it with `python -m rolling.demo`.
+
+```python
+from uuid import uuid4
+from datetime import date
+from rolling import (DescriptiveHormoneAnalysis, HormoneAnalysisInput,
+                     HormoneObservation, build_descriptive_hormone_report)
+
+athlete = uuid4()
+observations = [
+    HormoneObservation(athlete_id=athlete, observed_on=date(2025, 1, d),
+                       hormone_name="OESTROGEN", measured_value=value,
+                       measurement_unit="pg/mL", cycle_phase=phase)
+    for d, value, phase in [(1, 40.0, "MENSTRUAL"), (2, 44.0, "MENSTRUAL"), (3, 38.0, "MENSTRUAL"),
+                            (10, 90.0, "FOLLICULAR"), (11, 95.0, "FOLLICULAR"), (12, 88.0, "FOLLICULAR")]
+]
+result = DescriptiveHormoneAnalysis().run(HormoneAnalysisInput(project_id=uuid4(), observations=observations))
+print(build_descriptive_hormone_report(result)["report_text"])
+```
+
 * For using the API, you can proceed to the documentation and use case outlines:
     * TKTK
 
@@ -63,8 +87,8 @@ If you would simply like to use this API in your own project, you will just need
 ### Environment
 * The API has certain environment variables that allow for authorised access.
 * When you are first setting up the API:
-    * I have initialised a file called [`dotenv`](./dotenv) which contains all the variables you will need for the API. If you are using version control, make sure you include `.env` in your `.gitignore` file or equivalent.
-    * Then you can execute this: `mv ./dotenv ./.env`. This is so that the Python script reads the environment variables from this file. Once this is done, you can replace the fields, as I explain below.
+    * I have initialised a file called [`.env.example`](./.env.example) which contains all the variables you will need for the API. If you are using version control, make sure you include `.env` in your `.gitignore` file or equivalent.
+    * Then you can execute this: `cp ./.env.example ./.env`. This is so that the Python script reads the environment variables from this file. Once this is done, you can replace the fields, as I explain below. Never commit real values (passwords, keys) to version control.
 * At this stage in development, it is primarily used for PostgreSQL connection.
     * Environment variables `APP_NAME`, `LOG_LEVEL`, `DB_NAME`, and database pool connection already have initial values.
     * For a local set-up you will need to configure:
