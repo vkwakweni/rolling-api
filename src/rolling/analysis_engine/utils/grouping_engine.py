@@ -274,7 +274,7 @@ class GroupingEngine:
 
         return dict(grouped)
     
-    def group_hormone_perfromance_phase_observations(self,
+    def group_hormone_performance_phase_observations(self,
                                                      observations: list[HormoneObservation],
                                                      ) -> dict[HormonePerformancePhaseGroupKey, list]:
         """

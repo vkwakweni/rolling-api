@@ -83,7 +83,7 @@ class DescriptiveHormoneAnalysis:
         hormone_dysmenorrhea_phase_group = self.grouper.group_hormone_dysmenorrhea_phase_observations(filtered)
 
         # group by hormone-performance-phase
-        hormone_performance_phase_group = self.grouper.group_hormone_perfromance_phase_observations(filtered)
+        hormone_performance_phase_group = self.grouper.group_hormone_performance_phase_observations(filtered)
 
         # get statistics
         hormone_statistics, hormone_performance_statistics, hormone_phase_statistics, \
@@ -608,6 +608,7 @@ class DescriptiveHormoneAnalysis:
             statistics["hormone_dysmenorrhea_performance_statistics"]
         ),
         "hormone_dysmenorrhea_phase_row_count": len(statistics["hormone_dysmenorrhea_phase_statistics"]),
+        "hormone_performance_phase_row_count": len(statistics["hormone_performance_phase_statistics"]),
         "comparative_hormone_phase_row_count": len(statistics["comparative_hormone_phase_statistics"]),
         "comparative_hormone_performance_row_count": len(statistics["comparative_hormone_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
@@ -654,7 +655,7 @@ class DescriptiveHormoneAnalysis:
         "comparative_hormone_performance_row_count": len(statistics["comparative_hormone_performance_statistics"]),
         "comparative_hormone_dysmenorrhea_row_count": len(statistics["comparative_hormone_dysmenorrhea_statistics"]),
         "comparative_hormone_dysmenorrhea_performance_row_count": len(statistics["comparative_hormone_dysmenorrhea_performance_statistics"]),
-        "comparative_hormone_dysmenorrhea_phase_row_count": len(statistics["comparative_hormone_phase_statistics"]),
+        "comparative_hormone_dysmenorrhea_phase_row_count": len(statistics["comparative_hormone_dysmenorrhea_phase_statistics"]),
         "comparative_hormone_performance_phase_row_count": len(statistics["comparative_hormone_performance_phase_statistics"]),
         "included_hormone_names": payload.include_hormone_names,
         "included_performance_types": payload.include_performance_types,

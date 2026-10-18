@@ -45,7 +45,8 @@ def build_descriptive_hormone_report(result: HormoneAnalysisResult) -> dict[str,
              f"- Hormone + performance observations: {summary.get('hormone_performance_row_count', 0)}",
              f"- Hormone + dysmenorrhea observations: {summary.get('hormone_dysmenorrhea_row_count', 0)}",
              f"- Hormone + dysmenorrhea + performance observations: {summary.get('hormone_dysmenorrhea_performance_row_count', 0)}",
-             f"- Hormone + dysmenorrhea + cycle phase observations {summary.get('hormone_dysmenorrhea_phase_statistics', 0)}"]
+             f"- Hormone + dysmenorrhea + cycle phase observations: {summary.get('hormone_dysmenorrhea_phase_row_count', 0)}",
+             f"- Hormone + performance + cycle phase observations: {summary.get('hormone_performance_phase_row_count', 0)}"]
     
     if hormone_rows:
         lines.extend(["",
