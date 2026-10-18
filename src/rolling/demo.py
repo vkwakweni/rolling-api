@@ -1,4 +1,7 @@
-"""A seeded demonstration of the analysis engine on invented data.
+"""A seeded demonstration of the hormone analysis engine on invented data.
+
+Rolling is built for one study: hormone levels, menstrual cycle phase, dysmenorrhea and cycling performance.
+The demonstration therefore covers all of it: six hormones, four cycle phases, five performance types and the menstrual symptoms.
 
 Every value here is generated from a fixed random seed. No real participant data is used or needed.
 
@@ -20,13 +23,29 @@ from rolling.analysis_engine import (
 SYNTHETIC_NOTICE = "SYNTHETIC DATA: invented from a fixed random seed. Not real participants."
 
 PHASES = ("MENSTRUAL", "FOLLICULAR", "OVULATION", "LUTEAL")
-PERFORMANCE_TYPES = ("TRAINING-PREPARATION", "RACE", "OFF SEASON")
-# invented mean level per phase (pg/mL) for the demonstration only
-PHASE_MEANS = {"MENSTRUAL": 40.0, "FOLLICULAR": 90.0, "OVULATION": 180.0, "LUTEAL": 120.0}
+PERFORMANCE_TYPES = ("TRAINING-RECOVERY", "TRAINING-TAPERING", "TRAINING-PREPARATION", "RACE", "OFF SEASON")
+SYMPTOMS = ("BREAST TENDERNESS", "ACHES", "HEADACHES", "BLOATING", "SLEEP CHANGES", "MOOD CHANGES")
+
+# The hormones of the study, as in the app's lookup table: name -> (unit, invented mean level per phase).
+# The levels are invented for the demonstration and only loosely follow the textbook cycle shape.
+HORMONES = {
+    "OESTROGEN": ("pg/mL", {"MENSTRUAL": 40.0, "FOLLICULAR": 90.0, "OVULATION": 180.0, "LUTEAL": 120.0}),
+    "PROGESTERONE": ("ng/mL", {"MENSTRUAL": 0.6, "FOLLICULAR": 0.8, "OVULATION": 2.0, "LUTEAL": 12.0}),
+    "LH": ("IU/L", {"MENSTRUAL": 5.0, "FOLLICULAR": 6.0, "OVULATION": 30.0, "LUTEAL": 5.0}),
+    "FSH": ("IU/L", {"MENSTRUAL": 7.0, "FOLLICULAR": 6.0, "OVULATION": 12.0, "LUTEAL": 4.0}),
+    "TESTOSTERONE": ("ng/dL", {"MENSTRUAL": 28.0, "FOLLICULAR": 30.0, "OVULATION": 38.0, "LUTEAL": 32.0}),
+    "CORTISOL": ("ug/dL", {"MENSTRUAL": 14.0, "FOLLICULAR": 13.0, "OVULATION": 13.5, "LUTEAL": 15.0}),
+}
+# invented performance metrics: name -> (unit, mean, spread); they ride along with each observation
+METRICS = {"AVG POWER": ("W", 210.0, 25.0), "AVG HR": ("BPM", 148.0, 9.0), "DISTANCE": ("KM", 62.0, 18.0)}
 
 
 def synthetic_observations(seed: int = 2026, participants: int = 8, cycles: int = 3) -> list[HormoneObservation]:
-    """Builds invented oestradiol observations, one per phase per cycle per participant."""
+    """Builds invented observations: every hormone in every phase of every cycle for every participant.
+
+    Each observation also carries a performance type and metric, and a menstrual symptom (dysmenorrhea
+    is made likelier in the menstrual phase).
+    """
     rng = random.Random(seed)
     observations = []
     start = date(2025, 1, 6)
@@ -36,17 +55,26 @@ def synthetic_observations(seed: int = 2026, participants: int = 8, cycles: int 
         for c in range(cycles):
             for i, phase in enumerate(PHASES):
                 observed_on = start + timedelta(days=28 * c + 7 * i + p)
-                value = rng.gauss(PHASE_MEANS[phase] * baseline, 15.0)
-                observations.append(HormoneObservation(
-                    athlete_id=participant_id,
-                    observed_on=observed_on,
-                    hormone_name="OESTRADIOL",
-                    measured_value=round(max(value, 1.0), 1),
-                    measurement_unit="pg/mL",
-                    symptom_name="DYSMENORRHEA" if rng.random() < (0.5 if phase == "MENSTRUAL" else 0.1) else None,
-                    cycle_phase=phase,
-                    performance_type=rng.choice(PERFORMANCE_TYPES),
-                ))
+                performance_type = rng.choice(PERFORMANCE_TYPES)
+                metric_name = rng.choice(tuple(METRICS))
+                metric_unit, metric_mean, metric_spread = METRICS[metric_name]
+                symptom = ("DYSMENORRHEA" if rng.random() < (0.5 if phase == "MENSTRUAL" else 0.1)
+                           else rng.choice(SYMPTOMS + (None, None, None)))
+                for hormone_name, (unit, means) in HORMONES.items():
+                    value = rng.gauss(means[phase] * baseline, means[phase] * 0.15)
+                    observations.append(HormoneObservation(
+                        athlete_id=participant_id,
+                        observed_on=observed_on,
+                        hormone_name=hormone_name,
+                        measured_value=round(max(value, 0.1), 2),
+                        measurement_unit=unit,
+                        symptom_name=symptom,
+                        cycle_phase=phase,
+                        performance_type=performance_type,
+                        metric_name=metric_name,
+                        metric_value=round(max(rng.gauss(metric_mean, metric_spread), 0.0), 1),
+                        metric_unit=metric_unit,
+                    ))
     return observations
 
 

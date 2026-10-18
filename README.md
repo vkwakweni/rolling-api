@@ -5,6 +5,8 @@
 ## Installation as a package
 The analysis engine can be used on its own, as a library. It needs only `scipy`.
 
+The engine is built for one study, and says so in its names: hormone levels (oestrogen, progesterone, LH, FSH, testosterone, cortisol) compared across menstrual cycle phases, dysmenorrhea and cycling performance types. It is not a general-purpose statistics package.
+
 * `python3 -m pip install git+https://github.com/vkwakweni/rolling-api.git`
     * This installs the engine only.
 * The web app and the AI mode are optional extras:
@@ -14,7 +16,7 @@ The analysis engine can be used on its own, as a library. It needs only `scipy`.
     * `pip uninstall rolling`
 
 ### Using the engine as a library
-The demonstration below uses invented data from a fixed random seed. No real participants are involved. Run it with `python -m rolling.demo`.
+The demonstration covers the whole study design with invented data from a fixed random seed: six hormones, four cycle phases, five performance types and the menstrual symptoms. No real participants are involved. Run it with `python -m rolling.demo`.
 
 ```python
 from uuid import uuid4
@@ -25,7 +27,7 @@ from rolling import (DescriptiveHormoneAnalysis, HormoneAnalysisInput,
 athlete = uuid4()
 observations = [
     HormoneObservation(athlete_id=athlete, observed_on=date(2025, 1, d),
-                       hormone_name="OESTRADIOL", measured_value=value,
+                       hormone_name="OESTROGEN", measured_value=value,
                        measurement_unit="pg/mL", cycle_phase=phase)
     for d, value, phase in [(1, 40.0, "MENSTRUAL"), (2, 44.0, "MENSTRUAL"), (3, 38.0, "MENSTRUAL"),
                             (10, 90.0, "FOLLICULAR"), (11, 95.0, "FOLLICULAR"), (12, 88.0, "FOLLICULAR")]

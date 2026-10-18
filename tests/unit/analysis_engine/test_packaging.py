@@ -46,4 +46,14 @@ class TestSeededDemo(unittest.TestCase):
     def test_demo_runs_and_reports(self):
         result, report = run_demo(2026)
         self.assertGreater(result.summary["total_grouped_row_count"], 0)
-        self.assertIn("OESTRADIOL", report["report_text"])
+        self.assertIn("OESTROGEN", report["report_text"])
+        self.assertEqual(result.summary["hormone_row_count"], 6)
+
+    def test_demo_data_is_full(self):
+        observations = synthetic_observations(2026)
+        self.assertEqual({o.hormone_name for o in observations},
+                         {"OESTROGEN", "PROGESTERONE", "LH", "FSH", "TESTOSTERONE", "CORTISOL"})
+        self.assertEqual({o.cycle_phase for o in observations}, {"MENSTRUAL", "FOLLICULAR", "OVULATION", "LUTEAL"})
+        self.assertEqual(len({o.performance_type for o in observations}), 5)
+        self.assertIn("DYSMENORRHEA", {o.symptom_name for o in observations})
+        self.assertTrue(all(o.metric_name for o in observations))
