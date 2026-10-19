@@ -53,7 +53,7 @@ class AIReportPromptBuilder:
                        f"Traditional summary:\n{ai_input.summary_text or ''}\n"
                        f"Metadata:\n{json.dumps(ai_input.metadata, indent=2)}\n"
                        "Make the title of the report 'Descriptive Analysis AI Report "
-                       "of Hormone Changes in Elite Cyclsts'.\n" # TODO fix typo
+                       "of Hormone Changes in Elite Cyclists'.\n"
                        "Include an overview of the analysis, listing the parameters.\n"
                        "For each statistics set, summarise them as a table. Provide a short "
                        "interpretation of the results below the table. Ensure the group members "

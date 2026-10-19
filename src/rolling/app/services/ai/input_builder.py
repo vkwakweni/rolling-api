@@ -148,11 +148,11 @@ class AIInputBuilder:
 
             redacted_rows = []
             for row in table_rows:
-                row = dict()
+                redacted_row = dict()
                 for key, value in row.items():
                     if key in self.ALLOWED_KEYS:
-                        row[key] = value
-                redacted_rows.append(row)
+                        redacted_row[key] = value
+                redacted_rows.append(redacted_row)
 
             redacted_tables.append({"name": table_name,
                                     "rows": redacted_rows})
